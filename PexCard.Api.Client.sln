@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PexCard.Api.Client", "PexCa
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PexCard.Api.Client.Core", "PexCard.Api.Client.Core\PexCard.Api.Client.Core.csproj", "{5CEC6826-2DAD-4CAA-A76B-0FE3DA545EDC}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PexCard.Api.Client.Core.Tests", "PexCard.Api.Client.Core.Tests\PexCard.Api.Client.Core.Tests.csproj", "{13E692E0-2D2D-42C9-BDD1-EA25EE61833D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{5CEC6826-2DAD-4CAA-A76B-0FE3DA545EDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5CEC6826-2DAD-4CAA-A76B-0FE3DA545EDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5CEC6826-2DAD-4CAA-A76B-0FE3DA545EDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13E692E0-2D2D-42C9-BDD1-EA25EE61833D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13E692E0-2D2D-42C9-BDD1-EA25EE61833D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13E692E0-2D2D-42C9-BDD1-EA25EE61833D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13E692E0-2D2D-42C9-BDD1-EA25EE61833D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
