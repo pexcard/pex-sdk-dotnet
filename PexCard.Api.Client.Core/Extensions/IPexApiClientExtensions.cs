@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace PexCard.Api.Client.Core.Extensions
 {
@@ -14,7 +15,7 @@ namespace PexCard.Api.Client.Core.Extensions
         public static async Task<Dictionary<long, List<AllocationTagValue>>> GetTagAllocations(
             this IPexApiClient pexApiClient, 
             string externalToken, 
-            CardholderTransactions transactions, 
+            List<TransactionModel> transactions, 
             CancellationToken cancellationToken = default(CancellationToken))
         {
             if (pexApiClient is null)
@@ -34,7 +35,14 @@ namespace PexCard.Api.Client.Core.Extensions
 
             var result = new Dictionary<long, List<AllocationTagValue>>();
 
-            List<TagDetailsModel> tagDefinitions = await pexApiClient.GetTags(externalToken, cancellationToken);
+            var tagDefinitions = new List<TagDetailsModel>();
+            if (transactions.Any(t => t.TransactionTags?.Tags != null))
+            {
+                //Only get the tag definitions if we see tags on the transactions.
+                //If a businesses uses tags for some time then disables them, this will throw an exception.
+                tagDefinitions.AddRange(await pexApiClient.GetTags(externalToken, cancellationToken));
+            }
+
             Dictionary<string, TagDetailsModel> hashedTagDefinitions = tagDefinitions.ToDictionary(key => key.Id, value => value);
 
             foreach (TransactionModel transaction in transactions)
