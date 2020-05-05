@@ -1,0 +1,43 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+name: $(BuildDefinitionName)_$(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
+
+trigger: none
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+- task: NuGetToolInstaller@1
+  displayName: 'NuGet Tool Installer'
+
+- task: NuGetCommand@2
+  displayName: 'NuGet Restore'
+  inputs:
+    command: 'restore'
+    restoreSolution: '**/*.sln'
+    feedsToUse: 'select'
+
+- script: dotnet build --configuration $(buildConfiguration)
+  displayName: 'dotnet build $(buildConfiguration)'
+
+- task: NuGetCommand@2
+  displayName: 'NuGet Pack'
+  inputs:
+    command: 'pack'
+    packagesToPack: '**/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj;**/PexCard.Api.Client/PexCard.Api.Client.csproj'
+    versioningScheme: 'byBuildNumber'
+
+- task: NuGetCommand@2
+  displayName: 'NuGet Push'
+  inputs:
+    command: 'push'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+    nuGetFeedType: 'internal'
+    publishVstsFeed: '91c9dc01-ffd5-4c7f-83db-ac9fc51adefb'
