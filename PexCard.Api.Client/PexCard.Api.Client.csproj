@@ -2,14 +2,29 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Company>Prepaid Expense Card Solutions Inc</Company>
+    <Authors>PEX Card</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Description>.NET Standard class library to communicate with PEXCard API.</Description>
+    <Product>PEX Card API SDK for .NET</Product>
+    <PackageProjectUrl>https://developer.pexcard.com</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/pexcard/PexCard.Api.Client</RepositoryUrl>
+    <PackageIcon>pexicon-128x128.png</PackageIcon>
   </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\PexCard.Api.Client.Core\PexCard.Api.Client.Core.csproj" />
   </ItemGroup>
-<PropertyGroup>
-   <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-</PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\pexicon-128x128.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
 </Project>
