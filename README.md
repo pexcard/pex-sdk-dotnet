@@ -1,37 +1,85 @@
-# PEX Card API SDK for .NET
+# PEX SDK for .NET
 
-.NET SDK to communicate with [PEX Card API](https://developer.pexcard.com/docs4). To apply for API credentials please follow Sign Up instructions on the [PEX developer portal](https://developer.pexcard.com).
+- [PEX SDK for .NET](#pex-sdk-for-net)
+  * [About](#about)
+    + [Included Packages](#included-packages)
+    + [Prerequisites](#prerequisites)
+    + [Versioning](#versioning)
+  * [Installation](#installation)
+  * [Configuration](#configuration)
+    + [ASP.NET Core](#aspnet-core)
+  * [Examples](#examples)
+  * [Support](#support)
+    + [Problems](#problems)
+    + [Questions](#questions)
+    + [Enhancement Requests](#enhancement-requests)
+  * [Contributions](#contributions)
 
-## Using PexCard.Api.Client with ASP.NET Core HttpClient factory and Polly
+## About
+The PEX SDK for .NET provides access to the PEX platform via the REST API. For more information on the API or to obtain your credentials, please sign up on the [PEX Developer Center](https://developer.pexcard.com).
 
-###### Depended nuget packages:
+### Included Packages
+| Package | Description |
+| ----------- | ----------- |
+| PexCard.Api.Client.Core | Contains interfaces, models, and extension methods use to describe and work with the PEX API |
+| PexCard.Api.Client | Contains interface implementations and error handling for working with the PEX API |
 
-[Microsoft.Extensions.DependencyInjection](https://www.nuget.org/packages/Microsoft.Extensions.DependencyInjection)
-[Microsoft.Extensions.Http](https://www.nuget.org/packages/Microsoft.Extensions.Http)
-[Microsoft.Extensions.Http.Polly](https://www.nuget.org/packages/Microsoft.Extensions.Http.Polly)
-[Polly](https://www.nuget.org/packages/Polly)
-[Polly.Extensions.Http](https://www.nuget.org/packages/Polly.Extensions.Http)
+### Prerequisites
 
-```csharp
-/**********************************************************/
-public void ConfigureServices(IServiceCollection services)
-{
-    var policy = HttpPolicyExtensions
-        .HandleTransientHttpError()
-        .RetryAsync(3);
+### Versioning
+All packages following the versioning convention `{pex-api-version-number}.{major-version-number}.{build-number}` where:
+- `{pex-api-version-number}` is the version of the PEX API for which the package was built.
+- `{major-version-number}` is the major version of the package. Changes in this number indicate new features, enhancements, or breaking changes.
+- `{build-number}`is the internal build number of the package. Channges in this number indicate bug fixes or non-breaking changes.
 
-    services.AddHttpClient<IPexApiClient, PexApiClient>(client =>
-        {
-		    // It's recommended to put the base URL string into config file
-            client.BaseAddress = new Uri("https://coreapi.pexcard.com/v4");
-        })
-        .AddPolicyHandler(policy);
-}
-/**********************************************************/
-```
+## Installation
 
-Once PexApiClient is registered in service collection it could be injected as IPexApiClient.
+## Configuration
+### ASP.NET Core
+1. Reference the following packages:
+    * [Microsoft.Extensions.DependencyInjection](https://www.nuget.org/packages/Microsoft.Extensions.DependencyInjection)
+    * [Microsoft.Extensions.Http](https://www.nuget.org/packages/Microsoft.Extensions.Http)
+    * [Microsoft.Extensions.Http.Polly](https://www.nuget.org/packages/Microsoft.Extensions.Http.Polly)
+    * [Polly](https://www.nuget.org/packages/Polly)
+    * [Polly.Extensions.Http](https://www.nuget.org/packages/Polly.Extensions.Http)
+1. Configure the IoC container:
+    ```csharp
+    public void ConfigureServices(IServiceCollection services)
+    {
+        var policy = HttpPolicyExtensions
+            .HandleTransientHttpError()
+            .RetryAsync(3);
+    
+        services.AddHttpClient<IPexApiClient, PexApiClient>(client =>
+            {
+    	    // It's recommended to put the base URL string into config file
+                client.BaseAddress = new Uri("https://coreapi.pexcard.com/v4");
+            })
+            .AddPolicyHandler(policy);
+    }
+    ```
+1. Inject an instance of `IPexApiClient` into class in which you want to use it.
 
-## License
+## Examples
 
-[MIT](LICENSE)
+## Support
+### Problems
+Please create an issue tagged with `bug` including the following information:
+- Repro Steps
+- Expected Result
+- Actual Result
+- Package Version
+- Operating System
+
+### Questions
+Please create an issue tagged with `question`.
+
+### Enhancement Requests
+Please create an issue tagged with `enhancement` including the following information:
+- Repro Steps
+- Expected Result
+- Actual Result
+- Package Version
+- Operating System
+
+## Contributions
