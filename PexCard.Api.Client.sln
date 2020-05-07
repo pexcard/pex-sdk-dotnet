@@ -3,11 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PexCard.Api.Client", "PexCard.Api.Client\PexCard.Api.Client.csproj", "{CDE791BD-6E70-4753-861E-64B2700B49DE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PexCard.Api.Client", "src\PexCard.Api.Client\PexCard.Api.Client.csproj", "{CDE791BD-6E70-4753-861E-64B2700B49DE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PexCard.Api.Client.Core", "PexCard.Api.Client.Core\PexCard.Api.Client.Core.csproj", "{5CEC6826-2DAD-4CAA-A76B-0FE3DA545EDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PexCard.Api.Client.Core", "src\PexCard.Api.Client.Core\PexCard.Api.Client.Core.csproj", "{5CEC6826-2DAD-4CAA-A76B-0FE3DA545EDC}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PexCard.Api.Client.Core.Tests", "PexCard.Api.Client.Core.Tests\PexCard.Api.Client.Core.Tests.csproj", "{13E692E0-2D2D-42C9-BDD1-EA25EE61833D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PexCard.Api.Client.Core.Tests", "tests\PexCard.Api.Client.Core.Tests\PexCard.Api.Client.Core.Tests.csproj", "{13E692E0-2D2D-42C9-BDD1-EA25EE61833D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{AC00E463-066D-4584-A045-AEC7890F3523}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{33A3F543-DFB5-47C0-A7EC-2B698DC39852}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,6 +34,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CDE791BD-6E70-4753-861E-64B2700B49DE} = {AC00E463-066D-4584-A045-AEC7890F3523}
+		{5CEC6826-2DAD-4CAA-A76B-0FE3DA545EDC} = {AC00E463-066D-4584-A045-AEC7890F3523}
+		{13E692E0-2D2D-42C9-BDD1-EA25EE61833D} = {33A3F543-DFB5-47C0-A7EC-2B698DC39852}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F5694839-EDEE-4298-A670-20869624E84B}
