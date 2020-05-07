@@ -6,6 +6,7 @@
     + [Prerequisites](#prerequisites)
     + [Versioning](#versioning)
   * [Installation](#installation)
+      + [dotnet CLI](#dotnet-cli)
   * [Configuration](#configuration)
     + [ASP.NET Core](#aspnet-core)
   * [Examples](#examples)
@@ -13,7 +14,6 @@
     + [Problems](#problems)
     + [Questions](#questions)
     + [Enhancement Requests](#enhancement-requests)
-  * [Contributions](#contributions)
 
 ## About
 The PEX SDK for .NET provides access to the PEX platform via the REST API. For more information on the API or to obtain your credentials, please sign up on the [PEX Developer Center](https://developer.pexcard.com).
@@ -25,6 +25,8 @@ The PEX SDK for .NET provides access to the PEX platform via the REST API. For m
 | PexCard.Api.Client | Contains interface implementations and error handling for working with the PEX API |
 
 ### Prerequisites
+* A platform supported by [.NET Standard 2.0](https://github.com/dotnet/standard/blob/master/docs/versions/netstandard2.0.md)
+* Valid PEX API credentials obtained from https://developer.pexcard.com
 
 ### Versioning
 All packages following the versioning convention `{pex-api-version-number}.{major-version-number}.{build-number}` where:
@@ -33,6 +35,9 @@ All packages following the versioning convention `{pex-api-version-number}.{majo
 - `{build-number}`is the internal build number of the package. Channges in this number indicate bug fixes or non-breaking changes.
 
 ## Installation
+* dotnet CLI
+    * `dotnet add package PexCard.Api.Client`
+    * `dotnet add package PexCard.Api.Client.Core`
 
 ## Configuration
 ### ASP.NET Core
@@ -58,7 +63,7 @@ All packages following the versioning convention `{pex-api-version-number}.{majo
             .AddPolicyHandler(policy);
     }
     ```
-1. Inject an instance of `IPexApiClient` into class in which you want to use it.
+1. Inject an instance of `IPexApiClient` into the class in which you want to use it.
 
 ## Examples
 
@@ -75,11 +80,4 @@ Please create an issue tagged with `bug` including the following information:
 Please create an issue tagged with `question`.
 
 ### Enhancement Requests
-Please create an issue tagged with `enhancement` including the following information:
-- Repro Steps
-- Expected Result
-- Actual Result
-- Package Version
-- Operating System
-
-## Contributions
+Please create an issue tagged with `enhancement`.
