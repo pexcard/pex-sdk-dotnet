@@ -6,7 +6,7 @@
     <Authors>PEX Card</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Description>.NET Standard class library to communicate with PEXCard API.</Description>
-    <Product>PEX Card API SDK for .NET</Product>
+    <Product>PEX SDK for .NET</Product>
     <PackageProjectUrl>https://developer.pexcard.com</PackageProjectUrl>
     <RepositoryUrl>https://github.com/pexcard/PexCard.Api.Client</RepositoryUrl>
     <PackageIcon>pexicon-128x128.png</PackageIcon>
