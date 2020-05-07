@@ -29,10 +29,7 @@ The PEX SDK for .NET provides access to the PEX platform via the REST API. For m
 * Valid PEX API credentials obtained from https://developer.pexcard.com
 
 ### Versioning
-All packages following the versioning convention `{pex-api-version-number}.{major-version-number}.{build-number}` where:
-- `{pex-api-version-number}` is the version of the PEX API for which the package was built.
-- `{major-version-number}` is the major version of the package. Changes in this number indicate new features, enhancements, or breaking changes.
-- `{build-number}`is the internal build number of the package. Channges in this number indicate bug fixes or non-breaking changes.
+All packages following the [semantic versioning 2.0](https://semver.org/) convention.
 
 ## Installation
 * dotnet CLI
