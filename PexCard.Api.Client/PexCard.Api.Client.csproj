@@ -5,11 +5,12 @@
     <Company>Prepaid Expense Card Solutions Inc</Company>
     <Authors>PEX Card</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Description>.NET Standard class library to communicate with PEXCard API.</Description>
+    <Description>Contains interface implementations and error handling for working with the PEX API</Description>
     <Product>PEX SDK for .NET</Product>
     <PackageProjectUrl>https://developer.pexcard.com</PackageProjectUrl>
     <RepositoryUrl>https://github.com/pexcard/PexCard.Api.Client</RepositoryUrl>
     <PackageIcon>pexicon-128x128.png</PackageIcon>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>
