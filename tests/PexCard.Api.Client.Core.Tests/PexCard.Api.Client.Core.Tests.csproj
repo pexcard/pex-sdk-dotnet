@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PexCard.Api.Client.Core\PexCard.Api.Client.Core.csproj" />
+    <ProjectReference Include="..\..\src\PexCard.Api.Client.Core\PexCard.Api.Client.Core.csproj" />
   </ItemGroup>
 
 </Project>
