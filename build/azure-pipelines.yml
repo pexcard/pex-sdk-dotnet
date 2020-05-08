@@ -14,7 +14,10 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  versionNumber: 1.0.7
+  major: $(MajorVersion)
+  minor: $(MinorVersion)
+  patch: $[counter(variables['minor'], 8)]
+  versionNumber: $(major).$(minor).$(patch)
 
 steps:
 - task: NuGetToolInstaller@1
