@@ -34,18 +34,18 @@ steps:
 # Create nuget packages
 #
 
-# - script: dotnet pack **/src/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj --configuration $(buildConfiguration) --no-build --output $(Build.ArtifactStagingDirectory) -p:PackageVersion=$(versionNumber)
-#   displayName: 'dotnet pack PexCard.Api.Client.Core.csproj'
+- script: dotnet pack **/src/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj --configuration $(buildConfiguration) --no-build --output $(Build.ArtifactStagingDirectory) -p:PackageVersion=$(versionNumber)
+  displayName: 'dotnet pack PexCard.Api.Client.Core.csproj'
 
-# - script: dotnet pack **/src/PexCard.Api.Client/PexCard.Api.Client.csproj --configuration $(buildConfiguration) --no-build --output $(Build.ArtifactStagingDirectory) -p:PackageVersion=$(versionNumber)
-#   displayName: 'dotnet pack PexCard.Api.Client.csproj'
+- script: dotnet pack **/src/PexCard.Api.Client/PexCard.Api.Client.csproj --configuration $(buildConfiguration) --no-build --output $(Build.ArtifactStagingDirectory) -p:PackageVersion=$(versionNumber)
+  displayName: 'dotnet pack PexCard.Api.Client.csproj'
 
-- task: NuGetCommand@2
-  displayName: 'NuGet Pack'
-  inputs:
-    command: 'pack'
-    packagesToPack: '**/src/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj;**/src/PexCard.Api.Client/PexCard.Api.Client.csproj'
-    versioningScheme: 'byBuildNumber'
+# - task: NuGetCommand@2
+#   displayName: 'NuGet Pack'
+#   inputs:
+#     command: 'pack'
+#     packagesToPack: '**/src/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj;**/src/PexCard.Api.Client/PexCard.Api.Client.csproj'
+#     versioningScheme: 'byBuildNumber'
 
 #
 # Push nuget packages
