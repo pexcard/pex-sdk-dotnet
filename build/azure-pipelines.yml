@@ -18,15 +18,18 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- task: NuGetToolInstaller@1
-  displayName: 'NuGet Tool Installer'
+# - task: NuGetToolInstaller@1
+#   displayName: 'NuGet Tool Installer'
 
-- task: NuGetCommand@2
-  displayName: 'NuGet Restore'
-  inputs:
-    command: 'restore'
-    restoreSolution: '**/*.sln'
-    feedsToUse: 'select'
+# - task: NuGetCommand@2
+#   displayName: 'NuGet Restore'
+#   inputs:
+#     command: 'restore'
+#     restoreSolution: '**/*.sln'
+#     feedsToUse: 'select'
+
+- script: dotnet restore
+  displayName: 'dotnet restore'
 
 - script: dotnet build --configuration $(buildConfiguration) -p:Version=$(versionNumber).0
   displayName: 'dotnet build $(buildConfiguration)'
