@@ -8,12 +8,7 @@ name: $(BuildDefinitionName)_$(date:yyyy.MM.dd)$(rev:.r)
 trigger: none
 
 pr: none
-- task: NuGetCommand@2
-  inputs:
-    command: 'push'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
-    nuGetFeedType: 'internal'
-    publishVstsFeed: '91c9dc01-ffd5-4c7f-83db-ac9fc51adefb'
+
 pool:
   vmImage: 'ubuntu-latest'
 
