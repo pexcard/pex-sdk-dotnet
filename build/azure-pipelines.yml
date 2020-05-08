@@ -3,8 +3,6 @@
 # Add steps that run tests, create a NuGet package, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
-name: $(BuildDefinitionName)_1.0$(Rev:.r)
-
 trigger: none
 
 pr: none
@@ -14,6 +12,9 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
+  versionNumber: 1.0$(Rev:.r)
+
+name: $(BuildDefinitionName)_$(versionNumber)
 
 steps:
 - task: NuGetToolInstaller@1
@@ -26,15 +27,35 @@ steps:
     restoreSolution: '**/*.sln'
     feedsToUse: 'select'
 
-- script: dotnet build --configuration $(buildConfiguration)
+- script: dotnet build --configuration $(buildConfiguration) -p:Version=$(versionNumber).0
   displayName: 'dotnet build $(buildConfiguration)'
+
+#
+# Create nuget packages
+#
+
+# - script: dotnet pack **/src/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj --no-build --output $(Build.ArtifactStagingDirectory) -p:PackageVersion=$(versionNumber)
+#   displayName: 'dotnet pack PexCard.Api.Client.Core.csproj'
+
+# - script: dotnet pack **/src/PexCard.Api.Client/PexCard.Api.Client.csproj --no-build --output $(Build.ArtifactStagingDirectory) -p:PackageVersion=$(versionNumber)
+#   displayName: 'dotnet pack PexCard.Api.Client.csproj'
 
 - task: NuGetCommand@2
   displayName: 'NuGet Pack'
   inputs:
     command: 'pack'
-    packagesToPack: '**/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj;**/PexCard.Api.Client/PexCard.Api.Client.csproj'
+    packagesToPack: '**/src/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj;**/src/PexCard.Api.Client/PexCard.Api.Client.csproj'
     versioningScheme: 'byBuildNumber'
+
+#
+# Push nuget packages
+#
+
+# - script: dotnet nuget push $(Build.ArtifactStagingDirectory)/PexCard.Api.Client.Core.nupkg -k $(NugetApiKey) -s https://api.nuget.org/v3/index.json
+#   displayName: 'dotnet nuget push PexCard.Api.Client.Core.nupkg'
+
+# - script: dotnet nuget push $(Build.ArtifactStagingDirectory)/PexCard.Api.Client.nupkg -k $(NugetApiKey) -s https://api.nuget.org/v3/index.json
+#   displayName: 'dotnet nuget push PexCard.Api.Client.nupkg'
 
 - task: NuGetCommand@2
   displayName: 'NuGet Push'
