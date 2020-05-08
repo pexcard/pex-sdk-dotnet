@@ -39,8 +39,8 @@ steps:
   displayName: 'dotnet pack PexCard.Api.Client.csproj'
 
 # Push nuget packages
-- script: dotnet nuget push $(Build.ArtifactStagingDirectory)/PexCard.Api.Client.Core.nupkg -k $(NugetApiKey) -s https://api.nuget.org/v3/index.json
+- script: dotnet nuget push $(Build.ArtifactStagingDirectory)/PexCard.Api.Client.Core.$(versionNumber).nupkg -k $(NugetApiKey) -s https://api.nuget.org/v3/index.json
   displayName: 'dotnet nuget push PexCard.Api.Client.Core.nupkg'
 
-- script: dotnet nuget push $(Build.ArtifactStagingDirectory)/PexCard.Api.Client.nupkg -k $(NugetApiKey) -s https://api.nuget.org/v3/index.json
+- script: dotnet nuget push $(Build.ArtifactStagingDirectory)/PexCard.Api.Client.$(versionNumber).nupkg -k $(NugetApiKey) -s https://api.nuget.org/v3/index.json
   displayName: 'dotnet nuget push PexCard.Api.Client.nupkg'
