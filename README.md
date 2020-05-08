@@ -55,7 +55,7 @@ All packages following the [semantic versioning 2.0](https://semver.org/) conven
         services.AddHttpClient<IPexApiClient, PexApiClient>(client =>
             {
     	    // It's recommended to put the base URL string into config file
-                client.BaseAddress = new Uri("https://coreapi.pexcard.com/v4");
+                client.BaseAddress = new Uri("https://sandbox-coreapi.pexcard.com/v4");
             })
             .AddPolicyHandler(policy);
     }
