@@ -34,10 +34,10 @@ steps:
 # Create nuget packages
 #
 
-# - script: dotnet pack **/src/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj --no-build --output $(Build.ArtifactStagingDirectory) -p:PackageVersion=$(versionNumber)
+# - script: dotnet pack **/src/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj --configuration $(buildConfiguration) --no-build --output $(Build.ArtifactStagingDirectory) -p:PackageVersion=$(versionNumber)
 #   displayName: 'dotnet pack PexCard.Api.Client.Core.csproj'
 
-# - script: dotnet pack **/src/PexCard.Api.Client/PexCard.Api.Client.csproj --no-build --output $(Build.ArtifactStagingDirectory) -p:PackageVersion=$(versionNumber)
+# - script: dotnet pack **/src/PexCard.Api.Client/PexCard.Api.Client.csproj --configuration $(buildConfiguration) --no-build --output $(Build.ArtifactStagingDirectory) -p:PackageVersion=$(versionNumber)
 #   displayName: 'dotnet pack PexCard.Api.Client.csproj'
 
 - task: NuGetCommand@2
