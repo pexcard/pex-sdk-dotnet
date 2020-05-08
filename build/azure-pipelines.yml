@@ -8,16 +8,21 @@ name: $(BuildDefinitionName)_$(date:yyyy.MM.dd)$(rev:.r)
 trigger: none
 
 pr: none
-
+- task: NuGetCommand@2
+  inputs:
+    command: 'push'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+    nuGetFeedType: 'internal'
+    publishVstsFeed: '91c9dc01-ffd5-4c7f-83db-ac9fc51adefb'
 pool:
   vmImage: 'ubuntu-latest'
 
 variables:
   buildConfiguration: 'Release'
-  major: $(MajorVersion)
-  minor: $(MinorVersion)
-  patch: $[counter(format('{0}.{1}', variables['major'], variables['minor']), 0)]
-  versionNumber: $(major).$(minor).$(patch)
+  version.major: $(MajorVersion)
+  version.minor: $(MinorVersion)
+  version.patch: $[counter(format('{0}.{1}', variables['version.major'], variables['version.minor']), 0)]
+  versionNumber: $[format('{0}.{1}.{2}', variables['version.major'], variables['version.minor'], variables['version.patch'])]
 
 steps:
 - task: NuGetToolInstaller@1
