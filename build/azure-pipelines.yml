@@ -14,7 +14,7 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  versionNumber: 1.0$(Rev:.r)
+  versionNumber: 1.0.7
 
 steps:
 - task: NuGetToolInstaller@1
