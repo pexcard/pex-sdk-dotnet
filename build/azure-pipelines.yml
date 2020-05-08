@@ -5,10 +5,8 @@
 
 variables:
   buildConfiguration: 'Release'
-  version.major: $(MajorVersion)
-  version.minor: $(MinorVersion)
-  version.patch: $[counter(format('{0}.{1}', variables['version.major'], variables['version.minor']), 0)]
-  versionNumber: $[format('{0}.{1}.{2}', variables['version.major'], variables['version.minor'], variables['version.patch'])]
+  version.patch: $[counter(format('{0}.{1}', variables['MajorVersion'], variables['MinorVersion']), 0)]
+  versionNumber: $[format('{0}.{1}.{2}', variables['MajorVersion'], variables['MinorVersion'], variables['version.patch'])]
 
 name: $[format('{0}_{1}', variables['Build.SourceBranchName'], variables['versionNumber'])]
 
