@@ -43,13 +43,6 @@ steps:
 - script: dotnet pack **/PexCard.Api.Client/PexCard.Api.Client.csproj --configuration $(buildConfiguration) --no-build --output $(Build.ArtifactStagingDirectory) -p:PackageVersion=$(versionNumber)
   displayName: 'dotnet pack PexCard.Api.Client.csproj'
 
-# - task: NuGetCommand@2
-#   displayName: 'NuGet Pack'
-#   inputs:
-#     command: 'pack'
-#     packagesToPack: '**/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj;**/PexCard.Api.Client/PexCard.Api.Client.csproj'
-#     versioningScheme: 'byBuildNumber'
-
 #
 # Push nuget packages
 #
@@ -60,10 +53,10 @@ steps:
 # - script: dotnet nuget push $(Build.ArtifactStagingDirectory)/PexCard.Api.Client.nupkg -k $(NugetApiKey) -s https://api.nuget.org/v3/index.json
 #   displayName: 'dotnet nuget push PexCard.Api.Client.nupkg'
 
-- task: NuGetCommand@2
-  displayName: 'NuGet Push'
-  inputs:
-    command: 'push'
-    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
-    nuGetFeedType: 'internal'
-    publishVstsFeed: '91c9dc01-ffd5-4c7f-83db-ac9fc51adefb'
+# - task: NuGetCommand@2
+#   displayName: 'NuGet Push'
+#   inputs:
+#     command: 'push'
+#     packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+#     nuGetFeedType: 'internal'
+#     publishVstsFeed: '91c9dc01-ffd5-4c7f-83db-ac9fc51adefb'
