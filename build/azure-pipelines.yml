@@ -14,7 +14,7 @@ variables:
   buildConfiguration: 'Release'
   versionNumber: 1.0$(Rev:.r)
 
-name: $(BuildDefinitionName)_$(versionNumber)
+name: $(BuildDefinitionName)_1.0$(Rev:.r)
 
 steps:
 - task: NuGetToolInstaller@1
