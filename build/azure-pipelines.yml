@@ -3,6 +3,8 @@
 # Add steps that run tests, create a NuGet package, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
+name: $(BuildDefinitionName)_1.0$(Rev:.r)
+
 trigger: none
 
 pr: none
@@ -12,9 +14,7 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-  versionNumber: 1.0$(Rev:.r)
-
-name: $(BuildDefinitionName)_1.0$(Rev:.r)
+  versionNumber: $(Build.BuildNumber)
 
 steps:
 - task: NuGetToolInstaller@1
