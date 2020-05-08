@@ -3,7 +3,7 @@
 # Add steps that run tests, create a NuGet package, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
-name: $(BuildDefinitionName)_1.0$(Rev:.r)
+name: $(BuildDefinitionName)_$(date:yyyy.MM.dd)$(rev:.r)
 
 trigger: none
 
@@ -16,7 +16,7 @@ variables:
   buildConfiguration: 'Release'
   major: $(MajorVersion)
   minor: $(MinorVersion)
-  patch: $[counter(variables['minor'], 8)]
+  patch: $[counter(format('{0}.{1}', variables['major'], variables['minor']), 0)]
   versionNumber: $(major).$(minor).$(patch)
 
 steps:
