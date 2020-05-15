@@ -18,7 +18,7 @@ steps:
 - script: dotnet restore
   displayName: 'dotnet restore'
 
-- script: dotnet publish --configuration $(buildConfiguration)
+- script: dotnet publish --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)
   displayName: 'dotnet publish $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
