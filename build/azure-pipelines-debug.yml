@@ -27,3 +27,15 @@ steps:
     command: test
     projects: '**/*Tests.csproj'
     arguments: '--configuration $(buildConfiguration)'
+
+- task: WhiteSource@20
+  inputs:
+    cwd: '$(Build.ArtifactStagingDirectory)'
+    extensions: '.dll'
+    checkPolicies: 'FAIL_ON_BUILD'
+    productName: 'Marketplace'
+    projectRule: 'projectName'
+    projectName: '$(Build.Repository.Name)'
+    forceCheckAllDependencies: true
+    forceUpdate: true
+    WhiteSourceService: 'WhiteSource'
