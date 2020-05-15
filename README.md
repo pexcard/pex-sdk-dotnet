@@ -21,8 +21,8 @@ The PEX SDK for .NET provides access to the PEX platform via the REST API. For m
 ### Included Packages
 | Package | Description |
 | ----------- | ----------- |
-| PexCard.Api.Client.Core | Contains interfaces, models, and extension methods use to describe and work with the PEX API |
-| PexCard.Api.Client | Contains interface implementations and error handling for working with the PEX API |
+| [PexCard.Api.Client.Core](https://www.nuget.org/packages/PexCard.Api.Client.Core/) | Contains interfaces, models, and extension methods use to describe and work with the PEX API |
+| [PexCard.Api.Client](https://www.nuget.org/packages/PexCard.Api.Client/) | Contains interface implementations and error handling for working with the PEX API |
 
 ### Prerequisites
 * A platform supported by [.NET Standard 2.0](https://github.com/dotnet/standard/blob/master/docs/versions/netstandard2.0.md)
