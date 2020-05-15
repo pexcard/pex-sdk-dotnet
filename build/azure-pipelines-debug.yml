@@ -30,7 +30,7 @@ steps:
 
 - task: WhiteSource@20
   inputs:
-    cwd: '$(Build.ArtifactStagingDirectory)'
+    cwd: '$(Build.SourcesDirectory)'
     extensions: '.dll'
     checkPolicies: 'FAIL_ON_BUILD'
     productName: 'Marketplace'
