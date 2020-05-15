@@ -25,15 +25,15 @@ steps:
   displayName: 'dotnet test $(buildConfiguration)'
   inputs:
     command: test
-    projects: '**/*Tests.csproj'
+    # projects: '**/*Tests.csproj'
     arguments: '--configuration $(buildConfiguration)'
 
 - task: WhiteSource@20
   inputs:
-    cwd: '$(Build.SourcesDirectory)'
+    cwd: '$(Build.SourcesDirectory)/src/**/bin/$buildConfiguration)/netstandard2.0'
     extensions: '.dll'
     checkPolicies: 'FAIL_ON_BUILD'
-    productName: 'Marketplace'
+    productName: '$(System.TeamProject)'
     projectRule: 'projectName'
     projectName: '$(Build.Repository.Name)'
     forceCheckAllDependencies: true
