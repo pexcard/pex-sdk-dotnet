@@ -25,7 +25,6 @@ steps:
   displayName: 'dotnet test $(buildConfiguration)'
   inputs:
     command: test
-    # projects: '**/*Tests.csproj'
     arguments: '--configuration $(buildConfiguration)'
 
 - task: WhiteSource@20
