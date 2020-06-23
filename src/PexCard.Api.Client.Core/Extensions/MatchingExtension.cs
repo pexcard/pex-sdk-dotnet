@@ -18,16 +18,16 @@ namespace PexCard.Api.Client.Core.Extensions
             if (delimiter == default(char))
             {
                 matchedEntities = entities
-                    .Where(c => c.EntityName.Equals(entityName,
+                    .Where(x => x.EntityName.Equals(entityName,
                         StringComparison.InvariantCultureIgnoreCase))
                     .ToList();
                 return matchedEntities.FirstOrDefault();
             }
 
             matchedEntities = entities
-                .Where(c => c.EntityName.Equals(entityName,
+                .Where(x => x.EntityName.Equals(entityName,
                                 StringComparison.InvariantCultureIgnoreCase) ||
-                            c.EntityName.EndsWith($"{delimiter}{entityName}",
+                            x.EntityName.EndsWith($"{delimiter}{entityName}",
                                 StringComparison.InvariantCultureIgnoreCase))
                 .ToList();
 
@@ -36,6 +36,14 @@ namespace PexCard.Api.Client.Core.Extensions
             if (matchedEntities.Count == 1)
             {
                 return matchedEntities.First();
+            }
+
+            var exactlyMatchedEntities = matchedEntities
+                .Where(x => x.EntityName.Equals(entityName, StringComparison.InvariantCultureIgnoreCase))
+                .ToList();
+            if (exactlyMatchedEntities.Count == 1)
+            {
+                return exactlyMatchedEntities.First();
             }
 
             //Try to match entity name on the deepest chunk with PEX tag option name
