@@ -38,9 +38,19 @@ steps:
 - script: dotnet pack **/PexCard.Api.Client/PexCard.Api.Client.csproj --configuration $(buildConfiguration) --no-build --output $(Build.ArtifactStagingDirectory) -p:PackageVersion=$(versionNumber)
   displayName: 'dotnet pack PexCard.Api.Client.csproj'
 
-# Push nuget packages
-- script: dotnet nuget push $(Build.ArtifactStagingDirectory)/PexCard.Api.Client.Core.$(versionNumber).nupkg -k $(NugetApiKey) -s https://api.nuget.org/v3/index.json
-  displayName: 'dotnet nuget push PexCard.Api.Client.Core.nupkg'
 
-- script: dotnet nuget push $(Build.ArtifactStagingDirectory)/PexCard.Api.Client.$(versionNumber).nupkg -k $(NugetApiKey) -s https://api.nuget.org/v3/index.json
-  displayName: 'dotnet nuget push PexCard.Api.Client.nupkg'
+# This temporary step is needed to investigate issue with incorrect aseembly version for PexCard.Api.Client.Core.dll
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish artifacts'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
+
+
+# Push nuget packages
+#- script: dotnet nuget push $(Build.ArtifactStagingDirectory)/PexCard.Api.Client.Core.$(versionNumber).nupkg -k $(NugetApiKey) -s https://api.nuget.org/v3/index.json
+#  displayName: 'dotnet nuget push PexCard.Api.Client.Core.nupkg'
+
+#- script: dotnet nuget push $(Build.ArtifactStagingDirectory)/PexCard.Api.Client.$(versionNumber).nupkg -k $(NugetApiKey) -s https://api.nuget.org/v3/index.json
+#  displayName: 'dotnet nuget push PexCard.Api.Client.nupkg'
