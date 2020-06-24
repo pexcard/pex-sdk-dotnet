@@ -18,29 +18,35 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- script: dotnet restore
+- task: DotNetCoreCLI@2
   displayName: 'dotnet restore'
-
-- script: dotnet build --configuration $(buildConfiguration) -p:Version=$(versionNumber).0
-  displayName: 'dotnet build $(buildConfiguration)'
+  inputs:
+    command: 'restore'
+    feedsToUse: 'select'
 
 - task: DotNetCoreCLI@2
-  displayName: 'dotnet test $(buildConfiguration)'
+  displayName: 'dotnet build'
   inputs:
-    command: test
-    projects: '**/*Tests.csproj'
+    command: 'build'
+    projects: '**/*.csproj'
     arguments: '--configuration $(buildConfiguration)'
 
-# Create nuget packages
-- script: dotnet pack **/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj --configuration $(buildConfiguration) --no-build --output $(Build.ArtifactStagingDirectory) -p:PackageVersion=$(versionNumber)
+- task: DotNetCoreCLI@2
+  displayName: 'dotnet test'
+  inputs:
+    command: test
+    projects: 'tests/**/*.csproj'
+    arguments: '--configuration $(buildConfiguration)'
+
+- script: dotnet pack src/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:PackageVersion=$(versionNumber) -p:Version=$(versionNumber).0
   displayName: 'dotnet pack PexCard.Api.Client.Core.csproj'
 
-- script: dotnet pack **/PexCard.Api.Client/PexCard.Api.Client.csproj --configuration $(buildConfiguration) --no-build --output $(Build.ArtifactStagingDirectory) -p:PackageVersion=$(versionNumber)
+- script: dotnet pack src/PexCard.Api.Client/PexCard.Api.Client.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:PackageVersion=$(versionNumber) -p:Version=$(versionNumber).0
   displayName: 'dotnet pack PexCard.Api.Client.csproj'
 
-# Push nuget packages
-- script: dotnet nuget push $(Build.ArtifactStagingDirectory)/PexCard.Api.Client.Core.$(versionNumber).nupkg -k $(NugetApiKey) -s https://api.nuget.org/v3/index.json
-  displayName: 'dotnet nuget push PexCard.Api.Client.Core.nupkg'
-
-- script: dotnet nuget push $(Build.ArtifactStagingDirectory)/PexCard.Api.Client.$(versionNumber).nupkg -k $(NugetApiKey) -s https://api.nuget.org/v3/index.json
-  displayName: 'dotnet nuget push PexCard.Api.Client.nupkg'
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish artifacts'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
