@@ -24,6 +24,14 @@ steps:
     command: 'restore'
     feedsToUse: 'select'
 
+- task: SonarCloudPrepare@1
+  inputs:
+    SonarCloud: 'SonarCloud - tbaker'
+    organization: 'pex'
+    projectKey: '$(Build.Repository.Name)'
+    projectName: '$(Build.Repository.Name)'
+    projectVersion: '$(Build.BuildNumber)'
+
 - task: DotNetCoreCLI@2
   displayName: 'dotnet build'
   inputs:
@@ -37,6 +45,12 @@ steps:
     command: test
     projects: 'tests/**/*.csproj'
     arguments: '--configuration $(buildConfiguration)'
+
+- task: SonarCloudAnalyze@1
+
+- task: SonarCloudPublish@1
+  inputs:
+    pollingTimeoutSec: '300'
 
 - script: dotnet pack src/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:PackageVersion=$(versionNumber) -p:Version=$(versionNumber).0
   displayName: 'dotnet pack PexCard.Api.Client.Core.csproj'
