@@ -22,7 +22,7 @@ steps:
   inputs:
     SonarCloud: 'SonarCloud - tbaker'
     organization: 'pex'
-    projectKey: '$(Build.Repository.Name)'
+    projectKey: 'pex-sdk-dotnet'
     projectName: '$(Build.Repository.Name)'
     projectVersion: '$(Build.BuildNumber)'
 
