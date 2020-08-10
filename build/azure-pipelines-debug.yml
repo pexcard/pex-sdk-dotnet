@@ -18,6 +18,14 @@ steps:
 - script: dotnet restore
   displayName: 'dotnet restore'
 
+- task: SonarCloudPrepare@1
+  inputs:
+    SonarCloud: 'SonarCloud - tbaker'
+    organization: 'pex'
+    projectKey: 'pex-sdk-dotnet'
+    projectName: '$(Build.Repository.Name)'
+    projectVersion: '$(Build.BuildNumber)'
+
 - script: dotnet publish --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)
   displayName: 'dotnet publish $(buildConfiguration)'
 
@@ -26,6 +34,12 @@ steps:
   inputs:
     command: test
     arguments: '--configuration $(buildConfiguration)'
+
+- task: SonarCloudAnalyze@1
+
+- task: SonarCloudPublish@1
+  inputs:
+    pollingTimeoutSec: '300'
 
 - task: WhiteSource@20
   inputs:
