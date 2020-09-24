@@ -66,6 +66,7 @@ steps:
     SourceFolder: $(Build.ArtifactStagingDirectory)
     Contents: |
       **/**
+      .*/**
 
 - script: dotnet pack src/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:PackageVersion=$(versionNumber) -p:Version=$(versionNumber).0
   displayName: 'dotnet pack PexCard.Api.Client.Core.csproj'
