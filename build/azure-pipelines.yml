@@ -48,12 +48,24 @@ steps:
   inputs:
     pollingTimeoutSec: '300'
 
+- task: WhiteSource@20
+  inputs:
+    cwd: '$(Build.ArtifactStagingDirectory)'
+    extensions: '.dll'
+    checkPolicies: 'FAIL_ON_BUILD'
+    productName: '$(System.TeamProject)'
+    projectRule: 'projectName'
+    projectName: '$(Build.Repository.Name)'
+    forceCheckAllDependencies: true
+    forceUpdate: true
+    WhiteSourceService: 'WhiteSource'
+
 - task: DeleteFiles@1
   displayName: 'Clean Staging Directory'
   inputs:
     SourceFolder: $(Build.ArtifactStagingDirectory)
     Contents: |
-      **/*
+      **/**
 
 - script: dotnet pack src/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:PackageVersion=$(versionNumber) -p:Version=$(versionNumber).0
   displayName: 'dotnet pack PexCard.Api.Client.Core.csproj'
