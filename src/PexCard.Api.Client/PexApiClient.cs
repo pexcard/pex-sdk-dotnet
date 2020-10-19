@@ -278,15 +278,19 @@ namespace PexCard.Api.Client
                 false, token);
 
             var tran = transactions.FindAll(
-                    x => x.TransactionTypeCategory == "CardFunding" && Convert.ToDecimal(x.TransactionAmount) == amount)
+                    x => x.TransactionTypeCategory == "CardFunding" && x.TransactionAmount == amount)
                 .OrderByDescending(x => x.TransactionTime)
-                .First();
+                .FirstOrDefault();
 
-            if (token.IsCancellationRequested)
+            if (tran != null)
             {
-                return fundingResult;
+                if (token.IsCancellationRequested)
+                {
+                    return fundingResult;
+                }
+
+                await AddTransactionNote(externalToken, tran, note, token);
             }
-            await AddTransactionNote(externalToken, tran, note, token);
 
             return fundingResult;
         }
