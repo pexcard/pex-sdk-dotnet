@@ -310,6 +310,24 @@ namespace PexCard.Api.Client
             return result;
         }
 
+        /// <summary>
+        /// Fund a specified card accountID to zero ($0).
+        /// </summary>
+        public async Task<FundResponseModel> ZeroCard(
+            string externalToken, 
+            int cardholderAccountId,
+            CancellationToken token = default)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(TokenType.Token, externalToken);
+
+            var response = await _httpClient.PostAsync($"V4/Card/Zero/{cardholderAccountId}", null, token);
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var result = JsonConvert.DeserializeObject<FundResponseModel>(responseContent);
+
+            return result;
+        }
+
         public async Task<CardholderTransactions> GetCardholderTransactions(
             string externalToken,
             int cardholderAccountId,
