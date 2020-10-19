@@ -94,5 +94,6 @@ namespace PexCard.Api.Client.Core
         /// Determine which API user a token belongs to, as well as the token expiration date.
         /// </summary>
         Task<TokenResponseModel> GetTokens(string externalToken, CancellationToken token = default(CancellationToken));
+        Task<FundResponseModel> ZeroCard(string externalToken, int cardholderAccountId, CancellationToken token = default);
     }
 }
