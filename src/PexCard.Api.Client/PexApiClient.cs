@@ -458,6 +458,20 @@ namespace PexCard.Api.Client
             return result;
         }
 
+        public async Task<int> CreateCardOrder(string externalToken, CardOrderModel cardOrder, CancellationToken token = default(CancellationToken))
+        {
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(TokenType.Token, externalToken);
+
+            var requestContent = JsonConvert.SerializeObject(cardOrder);
+            var request = new StringContent(requestContent, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync("V4/Card/CreateAsync", request, token);
+            var result = await HandleHttpResponseMessage<CardOrderIdModel>(response);
+
+            return result.CardOrderId;
+        }
+
         #region Private methods
 
         private async Task<HttpResponseMessage> GetTagsResponse(string externalToken, CancellationToken token)
