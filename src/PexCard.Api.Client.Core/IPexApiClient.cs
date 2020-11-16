@@ -94,6 +94,16 @@ namespace PexCard.Api.Client.Core
         /// Determine which API user a token belongs to, as well as the token expiration date.
         /// </summary>
         Task<TokenResponseModel> GetTokens(string externalToken, CancellationToken token = default(CancellationToken));
+
+        /// <summary>
+        /// Fund a specified card accountID to zero ($0).
+        /// </summary>
         Task<FundResponseModel> ZeroCard(string externalToken, int cardholderAccountId, CancellationToken token = default);
+
+        /// <summary>
+        /// Create a new card order. This will create new cardholder accounts within your PEX account.
+        /// </summary>
+        Task<int> CreateCardOrder(string externalToken, CardOrderModel cardOrder,
+            CancellationToken token = default(CancellationToken));
     }
 }
