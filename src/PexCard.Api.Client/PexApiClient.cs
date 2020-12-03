@@ -308,8 +308,7 @@ namespace PexCard.Api.Client
             var request = new StringContent(requestContent, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.PostAsync($"V4/Card/Fund/{cardholderAccountId}", request, token);
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<FundResponseModel>(responseContent);
+            var result = await HandleHttpResponseMessage<FundResponseModel>(response);
 
             return result;
         }
@@ -326,8 +325,7 @@ namespace PexCard.Api.Client
                 new AuthenticationHeaderValue(TokenType.Token, externalToken);
 
             var response = await _httpClient.PostAsync($"V4/Card/Zero/{cardholderAccountId}", null, token);
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<FundResponseModel>(responseContent);
+            var result = await HandleHttpResponseMessage<FundResponseModel>(response);
 
             return result;
         }
@@ -354,8 +352,7 @@ namespace PexCard.Api.Client
             builder.Query = query.ToString();
 
             var response = await _httpClient.GetAsync(builder.Uri, token);
-            var responseContent = await response.Content.ReadAsStringAsync();
-            var result = JsonConvert.DeserializeObject<TransactionListModel>(responseContent);
+            var result = await HandleHttpResponseMessage<TransactionListModel>(response);
 
             return new CardholderTransactions(result.TransactionList ?? new List<TransactionModel>());
         }
