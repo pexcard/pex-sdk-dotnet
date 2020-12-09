@@ -11,13 +11,14 @@ namespace PexCard.Api.Client.Core.Extensions
         private const string BusinessFundingCategory = "BusinessFunding";
         private const string CardAccountFeeCategory = "CardAccountFee";
         private const string BusinessAccountFeeCategory = "BusinessAccountFee";
+        private const string DisputeCategory = "Dispute";
         private const string MetadataApprovalStatusApproved = "Approved";
 
         public static List<TransactionModel> SelectTransactionsToSync(this CardholderTransactions transactions,
             bool approvedOnly, string syncedNote = "")
         {
             var result = transactions?.Where(t =>
-                    t.TransactionType == TransactionType.Network &&
+                    (t.TransactionType == TransactionType.Network || (t.TransactionType == TransactionType.Transfer && t.TransactionTypeCategory == DisputeCategory)) &&
                     (string.IsNullOrEmpty(syncedNote) ||
                      !(t.TransactionNotes?.Exists(n => n.NoteText.ToLower().Contains(syncedNote.ToLower())) ??
                        false)) &&
