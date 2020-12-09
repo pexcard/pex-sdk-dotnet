@@ -1,21 +1,29 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <Company>Prepaid Expense Card Solutions Inc</Company>
     <Authors>PEX</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Description>Contains interfaces, models, and extension methods use to describe and work with the PEX API</Description>
+    <Description>The official SDK for the PEX API, containing interfaces, models, and extension methods used to describe and work with it.</Description>
     <Product>PEX SDK for .NET</Product>
     <PackageProjectUrl>https://developer.pexcard.com</PackageProjectUrl>
     <RepositoryUrl>https://github.com/pexcard/pex-sdk-dotnet</RepositoryUrl>
     <PackageIcon>pexicon-128x128.png</PackageIcon>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
   </ItemGroup>
+
+  <PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
 
   <ItemGroup>
     <None Include="..\..\pexicon-128x128.png">
