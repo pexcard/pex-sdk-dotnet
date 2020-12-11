@@ -5,21 +5,29 @@
     <Company>Prepaid Expense Card Solutions Inc</Company>
     <Authors>PEX</Authors>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Description>Contains interface implementations and error handling for working with the PEX API</Description>
+    <Description>The official SDK for the PEX API, containing  interface implementations and error handling for working with it.</Description>
     <Product>PEX SDK for .NET</Product>
     <PackageProjectUrl>https://developer.pexcard.com</PackageProjectUrl>
     <RepositoryUrl>https://github.com/pexcard/pex-sdk-dotnet</RepositoryUrl>
     <PackageIcon>pexicon-128x128.png</PackageIcon>
     <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <DebugType>embedded</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\PexCard.Api.Client.Core\PexCard.Api.Client.Core.csproj" />
   </ItemGroup>
+
+  <PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
 
   <ItemGroup>
     <None Include="..\..\pexicon-128x128.png">
