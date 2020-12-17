@@ -105,5 +105,7 @@ namespace PexCard.Api.Client.Core
         /// </summary>
         Task<int> CreateCardOrder(string externalToken, CardOrderModel cardOrder,
             CancellationToken token = default(CancellationToken));
+
+        Task<PartnerModel> GetPartner(string externalToken, CancellationToken token = default(CancellationToken));
     }
 }

@@ -381,7 +381,6 @@ namespace PexCard.Api.Client
 
             return result;
         }
-        
 
         public async Task<List<TagDetailsModel>> GetTags(string externalToken, CancellationToken token = default(CancellationToken))
         {
@@ -467,6 +466,17 @@ namespace PexCard.Api.Client
             var result = await HandleHttpResponseMessage<CardOrderIdModel>(response);
 
             return result.CardOrderId;
+        }
+
+        public async Task<PartnerModel> GetPartner(string externalToken, CancellationToken token = default(CancellationToken))
+        {
+            _httpClient.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue(TokenType.Token, externalToken);
+
+            var response = await _httpClient.GetAsync($"v4/Partner", token);
+            var result = await HandleHttpResponseMessage<PartnerModel>(response);
+
+            return result;
         }
 
         #region Private methods
