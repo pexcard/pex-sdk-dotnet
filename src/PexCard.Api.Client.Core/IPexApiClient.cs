@@ -74,11 +74,7 @@ namespace PexCard.Api.Client.Core
             CancellationToken cancellationToken = default(CancellationToken));
 
         Task<FundResponseModel> FundCard(string externalToken, int cardholderAccountId, decimal amount,
-            string note,
-            CancellationToken token = default(CancellationToken));
-
-        Task<FundResponseModel> FundCard(string externalToken, int cardholderAccountId, decimal amount,
-            CancellationToken token = default(CancellationToken));
+            string note ="", CancellationToken token = default(CancellationToken));
 
         Task<CardholderTransactions> GetCardholderTransactions(
             string externalToken,

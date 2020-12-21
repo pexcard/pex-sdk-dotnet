@@ -210,7 +210,7 @@ namespace PexCard.Api.Client
 
             await HandleHttpResponseMessage(response);
         }
-        
+
 
         public async Task<bool> IsTagsEnabled(string externalToken,
             CancellationToken token = default(CancellationToken))
@@ -251,60 +251,20 @@ namespace PexCard.Api.Client
 
         /// <summary>
         /// Creates a card funding transaction. This transfers money from the business to the card making funds immediately available to spend.
-        /// Retrieves the latest transactions and attaches a note to the latest funding transaction matching the requested amount. 
-        /// </summary>
-        public async Task<FundResponseModel> FundCard(string externalToken, int cardholderAccountId, decimal amount, string note,
-            CancellationToken token = default(CancellationToken))
-        {
-            var fundingResult = await FundCard(externalToken, cardholderAccountId, amount, token);
-            if (token.IsCancellationRequested)
-            {
-                return fundingResult;
-            }
-            var startDate = DateTime.UtcNow.AddSeconds(-30);
-            startDate = new DateTime(
-                startDate.Year,
-                startDate.Month,
-                startDate.Day,
-                startDate.Hour,
-                startDate.Minute,
-                startDate.Second,
-                DateTimeKind.Utc
-            );
-
-            var endDate = startDate.AddMinutes(1);
-
-            var transactions = await GetCardholderTransactions(externalToken, cardholderAccountId, startDate, endDate, false,
-                false, token);
-
-            var tran = transactions.FindAll(
-                    x => x.TransactionTypeCategory == "CardFunding" && x.TransactionAmount == amount)
-                .OrderByDescending(x => x.TransactionTime)
-                .FirstOrDefault();
-
-            if (tran != null)
-            {
-                if (token.IsCancellationRequested)
-                {
-                    return fundingResult;
-                }
-
-                await AddTransactionNote(externalToken, tran, note, token);
-            }
-
-            return fundingResult;
-        }
-
-        /// <summary>
-        /// Creates a card funding transaction. This transfers money from the business to the card making funds immediately available to spend.
+        /// Attaches a note to the latest funding transaction matching the requested amount.
         /// </summary>
         public async Task<FundResponseModel> FundCard(string externalToken, int cardholderAccountId, decimal amount,
-            CancellationToken token = default(CancellationToken))
+           string note = "", CancellationToken token = default(CancellationToken))
         {
             _httpClient.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue(TokenType.Token, externalToken);
 
-            var requestContent = JsonConvert.SerializeObject(new FundRequestModel {Amount = amount});
+            var requestContent = JsonConvert.SerializeObject(
+                new FundRequestModel
+                {
+                    Amount = amount,
+                    NoteText = note
+                });
             var request = new StringContent(requestContent, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.PostAsync($"V4/Card/Fund/{cardholderAccountId}", request, token);
@@ -317,7 +277,7 @@ namespace PexCard.Api.Client
         /// Fund a specified card accountID to zero ($0).
         /// </summary>
         public async Task<FundResponseModel> ZeroCard(
-            string externalToken, 
+            string externalToken,
             int cardholderAccountId,
             CancellationToken token = default)
         {
@@ -528,7 +488,7 @@ namespace PexCard.Api.Client
         private async Task<string> HandleHttpResponseMessageError(HttpResponseMessage response)
         {
             var responseContent = await response.Content.ReadAsStringAsync();
-            if ((int) response.StatusCode >= (int) HttpStatusCode.InternalServerError)
+            if ((int)response.StatusCode >= (int)HttpStatusCode.InternalServerError)
             {
                 throw new PexApiClientException(response.StatusCode, responseContent);
             }
