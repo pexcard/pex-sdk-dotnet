@@ -10,5 +10,8 @@
 
         /// <summary>Ledger balance for the card account, rounded to 2 decimal places</summary>
         public decimal LedgerBalance { get; set; }
+
+        /// <summary>Transaction Id of funded transaction</summary>
+        public long? TransactionId { get; set; }
     }
 }
