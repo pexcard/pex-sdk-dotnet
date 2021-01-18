@@ -216,20 +216,21 @@ namespace PexCard.Api.Client
             CancellationToken token = default(CancellationToken))
         {
             var response = await GetTagsResponse(externalToken, token);
-            await HandleHttpResponseMessageError(response);
-            var result = response.StatusCode != HttpStatusCode.Forbidden;
-            return result;
+
+            if (response.StatusCode == HttpStatusCode.Forbidden) return false;
+
+            await HandleHttpResponseMessage(response);
+            return true;
         }
 
         public async Task<bool> IsTagsAvailable(string externalToken, CustomFieldType fieldType,
             CancellationToken token = default(CancellationToken))
         {
             var response = await GetTagsResponse(externalToken, token);
-            var responseContent = await HandleHttpResponseMessageError(response);
 
             if (response.StatusCode == HttpStatusCode.Forbidden) return false;
 
-            var tags = JsonConvert.DeserializeObject<List<TagDetailsModel>>(responseContent);
+            var tags = await HandleHttpResponseMessage<List<TagDetailsModel>>(response);
             var result = tags.Any(x => x.Type == fieldType);
             return result;
         }
@@ -484,17 +485,6 @@ namespace PexCard.Api.Client
                 throw new PexApiClientException(response.StatusCode, responseContent);
             }
         }
-
-        private async Task<string> HandleHttpResponseMessageError(HttpResponseMessage response)
-        {
-            var responseContent = await response.Content.ReadAsStringAsync();
-            if ((int)response.StatusCode >= (int)HttpStatusCode.InternalServerError)
-            {
-                throw new PexApiClientException(response.StatusCode, responseContent);
-            }
-            return responseContent;
-        }
-
         #endregion
     }
 }
