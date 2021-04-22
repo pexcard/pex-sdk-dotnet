@@ -415,6 +415,14 @@ namespace PexCard.Api.Client
             return result;
         }
 
+        public async Task<TokenDataModel> GetToken(string externalToken, CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var tokens = await GetTokens(externalToken, cancellationToken);
+
+            var token = tokens.Tokens.FirstOrDefault(pt => pt.Token == externalToken);
+            return token;
+        }
+
         public async Task<int> CreateCardOrder(string externalToken, CardOrderModel cardOrder, CancellationToken token = default(CancellationToken))
         {
             _httpClient.DefaultRequestHeaders.Authorization =
