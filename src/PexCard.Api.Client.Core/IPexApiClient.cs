@@ -103,5 +103,6 @@ namespace PexCard.Api.Client.Core
             CancellationToken token = default(CancellationToken));
 
         Task<PartnerModel> GetPartner(string externalToken, CancellationToken token = default(CancellationToken));
+        Task<TokenDataModel> GetToken(string externalToken, CancellationToken cancellationToken = default);
     }
 }
