@@ -479,7 +479,8 @@ namespace PexCard.Api.Client
                 {
                     return default(T);
                 }
-                throw new PexApiClientException(response.StatusCode, responseContent);
+                var errorModel = JsonConvert.DeserializeObject<ErrorMessageModel>(responseContent);
+                throw new PexApiClientException(response.StatusCode, errorModel.Message);
             }
             var result = JsonConvert.DeserializeObject<T>(responseContent);
             return result;
@@ -490,7 +491,8 @@ namespace PexCard.Api.Client
             if (!response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
-                throw new PexApiClientException(response.StatusCode, responseContent);
+                var errorModel = JsonConvert.DeserializeObject<ErrorMessageModel>(responseContent);
+                throw new PexApiClientException(response.StatusCode, errorModel.Message);
             }
         }
         #endregion
