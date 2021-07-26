@@ -51,7 +51,9 @@ namespace PexCard.Api.Client.Core
 
         Task<bool> IsTagsEnabled(string externalToken, CancellationToken token = default(CancellationToken));
         Task<bool> IsTagsAvailable(string externalToken, CustomFieldType fieldType, CancellationToken token = default(CancellationToken));
+
         Task<BusinessDetailsModel> GetBusinessDetails(string externalToken, CancellationToken token = default(CancellationToken));
+        Task<BusinessSettingsModel> GetBusinessSettings(string externalToken, CancellationToken token = default(CancellationToken));
 
         Task<CardholderDetailsModel> GetCardholderDetails(string externalToken, int cardholderAccountId,
             CancellationToken token = default(CancellationToken));
@@ -74,7 +76,7 @@ namespace PexCard.Api.Client.Core
             CancellationToken cancellationToken = default(CancellationToken));
 
         Task<FundResponseModel> FundCard(string externalToken, int cardholderAccountId, decimal amount,
-            string note ="", CancellationToken token = default(CancellationToken));
+            string note = "", CancellationToken token = default(CancellationToken));
 
         Task<CardholderTransactions> GetCardholderTransactions(
             string externalToken,

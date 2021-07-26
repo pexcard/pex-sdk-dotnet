@@ -250,6 +250,16 @@ namespace PexCard.Api.Client
             return result;
         }
 
+        public async Task<BusinessSettingsModel> GetBusinessSettings(string externalToken, CancellationToken token = default(CancellationToken))
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+
+            var response = await _httpClient.GetAsync("V4/Business/Settings", token);
+            var result = await HandleHttpResponseMessage<BusinessSettingsModel>(response);
+
+            return result;
+        }
+
         /// <summary>
         /// Creates a card funding transaction. This transfers money from the business to the card making funds immediately available to spend.
         /// Attaches a note to the latest funding transaction matching the requested amount.
