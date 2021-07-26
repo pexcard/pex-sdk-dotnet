@@ -1,5 +1,4 @@
-﻿
-namespace PexCard.Api.Client.Core.Models
+﻿namespace PexCard.Api.Client.Core.Models
 {
     public enum CardType
     {
