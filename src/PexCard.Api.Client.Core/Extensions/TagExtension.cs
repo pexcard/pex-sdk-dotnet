@@ -73,10 +73,55 @@ namespace PexCard.Api.Client.Core.Extensions
             }
         }
 
+        public static void UpsertTagOptions(this TagDropdownDataModel tag, IEnumerable<IMatchableEntity> entities, out int syncCount, bool updateNames = false)
+        {
+            syncCount = 0;
+
+            if (entities != null)
+            {
+                foreach (var entity in entities)
+                {
+                    // we only add new tag options (or update tag option NAMES if updateNames is true) and we do NOT change IsEnabled statuses.
+                    var option = tag.Options.Find(item => item.Value.Equals(entity.EntityId, StringComparison.InvariantCultureIgnoreCase));
+                    if (option != null)
+                    {
+                        if (updateNames && !string.Equals(option.Name, entity.EntityName))
+                        {
+                            option.Name = entity.EntityName;
+                            syncCount++;
+                        }
+                    }
+                    else
+                    {
+                        tag.Options.Add(
+                            new TagOptionModel
+                            {
+                                IsEnabled = true,
+                                Name = entity.EntityName,
+                                Value = entity.EntityId
+                            }
+                        );
+                        syncCount++;
+                    }
+                }
+            }
+
+            // At least one option should be enabled.
+            // So lets enable the first one that in fact should be default option.
+            if (tag.Options.All(o => !o.IsEnabled))
+            {
+                var firstOption = tag.Options.FirstOrDefault();
+                if (firstOption != null)
+                {
+                    firstOption.IsEnabled = true;
+                    syncCount++;
+                }
+            }
+        }
+
         private static void ProcessTagOption(TagDropdownDataModel tag, string tagOptionValue, string tagOptionName)
         {
-            var option = tag.Options.Find(item =>
-                item.Value.Equals(tagOptionValue, StringComparison.InvariantCultureIgnoreCase));
+            var option = tag.Options.Find(item => item.Value.Equals(tagOptionValue, StringComparison.InvariantCultureIgnoreCase));
             if (option != null)
             {
                 option.IsEnabled = true;
