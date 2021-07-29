@@ -73,16 +73,37 @@ namespace PexCard.Api.Client.Core.Extensions
             }
         }
 
-        public static void UpsertTagOptions(this TagDropdownDataModel tag, IEnumerable<IMatchableEntity> entities, out int syncCount)
+        public static void UpsertTagOptions(this TagDropdownDataModel tag, IEnumerable<IMatchableEntity> entities, out int syncCount, bool updateNames = false)
         {
             syncCount = 0;
 
-            foreach (var entity in entities)
+            if (entities != null)
             {
-                // we only add new tag options (or update tag option NAMES) and we do NOT change IsEnabled statuses.
-                ProcessTagOption(tag, entity.EntityId, entity.EntityName, false);
-
-                syncCount++;
+                foreach (var entity in entities)
+                {
+                    // we only add new tag options (or update tag option NAMES if updateNames is true) and we do NOT change IsEnabled statuses.
+                    var option = tag.Options.Find(item => item.Value.Equals(entity.EntityId, StringComparison.InvariantCultureIgnoreCase));
+                    if (option != null)
+                    {
+                        if (updateNames && !string.Equals(option.Name, entity.EntityName))
+                        {
+                            option.Name = entity.EntityName;
+                            syncCount++;
+                        }
+                    }
+                    else
+                    {
+                        tag.Options.Add(
+                            new TagOptionModel
+                            {
+                                IsEnabled = true,
+                                Name = entity.EntityName,
+                                Value = entity.EntityId
+                            }
+                        );
+                        syncCount++;
+                    }
+                }
             }
 
             // At least one option should be enabled.
@@ -98,12 +119,12 @@ namespace PexCard.Api.Client.Core.Extensions
             }
         }
 
-        private static void ProcessTagOption(TagDropdownDataModel tag, string tagOptionValue, string tagOptionName, bool updateEnabled = true)
+        private static void ProcessTagOption(TagDropdownDataModel tag, string tagOptionValue, string tagOptionName)
         {
             var option = tag.Options.Find(item => item.Value.Equals(tagOptionValue, StringComparison.InvariantCultureIgnoreCase));
             if (option != null)
             {
-                option.IsEnabled = updateEnabled ? true : option.IsEnabled;
+                option.IsEnabled = true;
                 option.Name = tagOptionName;
             }
             else
