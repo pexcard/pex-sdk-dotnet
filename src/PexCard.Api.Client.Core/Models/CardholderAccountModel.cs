@@ -1,4 +1,6 @@
-﻿namespace PexCard.Api.Client.Core.Models
+﻿using System;
+
+namespace PexCard.Api.Client.Core.Models
 {
     public class CardholderAccountModel
     {
@@ -44,5 +46,30 @@
         /// (alphanumeric up to 50 characters)
         /// </summary>
         public string CustomId { get; set; }
+
+        /// <summary>
+        /// Cardholder's group id.
+        /// </summary>
+        public int? GroupId { get; set; }
+
+        /// <summary>
+        /// Cardholder's group name.
+        /// </summary>
+        public string GroupName { get; set; }
+
+        /// <summary>
+        /// Cardholder's active card's last 4 digits.
+        /// </summary>
+        public string CardNumber4Digits { get; set; }
+
+        /// <summary>
+        /// Cardhodler's active card's issue date.
+        /// </summary>
+        public DateTime CardIssueDate { get; set; }
+
+        /// <summary>
+        /// Cardhodler's active card's expiry date.
+        /// </summary>
+        public DateTime CardExpiryDate { get; set; }
     }
 }
