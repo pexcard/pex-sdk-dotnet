@@ -114,8 +114,8 @@ namespace PexCard.Api.Client.Core.Tests.Extensions
             var onlyOption = tag.Options.SingleOrDefault();
             Assert.NotNull(onlyOption);
             Assert.Equal(1, syncCount);
-            Assert.Equal(newTagEntity.Id, onlyOption.Value);
-            Assert.Equal(newTagEntity.Name, onlyOption.Name);
+            Assert.Equal(tagId, onlyOption.Value);
+            Assert.Equal(tagName, onlyOption.Name);
         }
 
         [Fact]
