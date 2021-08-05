@@ -72,6 +72,8 @@ namespace PexCard.Api.Client.Core.Extensions
                     syncCount++;
                 }
             }
+
+            ValidateDropdownTag(tag);
         }
 
         public static void UpsertTagOptions(this TagDropdownDataModel tag, IEnumerable<IMatchableEntity> entities, out int syncCount, bool updateNames = false)
@@ -118,9 +120,11 @@ namespace PexCard.Api.Client.Core.Extensions
                     syncCount++;
                 }
             }
+
+            ValidateDropdownTag(tag);
         }
 
-        public static void ValidateTag(this TagDropdownDataModel tag)
+        private static void ValidateDropdownTag(this TagDropdownDataModel tag)
         {
             if (tag is null)
             {
@@ -131,6 +135,11 @@ namespace PexCard.Api.Client.Core.Extensions
             if (duplicateTagOptionNamesOrValues.Any())
             {
                 throw new DataException($"{nameof(TagDropdownDataModel)} '{tag.Name}' has duplicate tag option names and/or values: {string.Join(", ", duplicateTagOptionNamesOrValues.Select(x => $"[Name: '{x.Name}', Value: '{x.Value}']"))}.");
+            }
+
+            if (!tag.Options.Any(x => x.IsEnabled))
+            {
+                throw new DataException($"{nameof(TagDropdownDataModel)} '{tag.Name}' has no options enabled. At least one option must be enabled.");
             }
         }
 
