@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using PexCard.Api.Client.Core.Interfaces;
 using PexCard.Api.Client.Core.Models;
@@ -116,6 +117,20 @@ namespace PexCard.Api.Client.Core.Extensions
                     firstOption.IsEnabled = true;
                     syncCount++;
                 }
+            }
+        }
+
+        public static void ValidateTag(this TagDropdownDataModel tag)
+        {
+            if (tag is null)
+            {
+                throw new ArgumentNullException(nameof(tag));
+            }
+
+            var duplicateTagOptionNamesOrValues = tag.Options.Where(x => tag.Options.Count(y => y.Name == x.Name) > 1 || tag.Options.Count(y => y.Value == x.Value) > 1).ToList();
+            if (duplicateTagOptionNamesOrValues.Any())
+            {
+                throw new DataException($"{nameof(TagDropdownDataModel)} '{tag.Name}' has duplicate tag option names and/or values: {string.Join(", ", duplicateTagOptionNamesOrValues.Select(x => $"[Name: '{x.Name}', Value: '{x.Value}']"))}.");
             }
         }
 
