@@ -3,6 +3,7 @@ using PexCard.Api.Client.Core.Interfaces;
 using PexCard.Api.Client.Core.Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using Xunit;
 
@@ -11,7 +12,7 @@ namespace PexCard.Api.Client.Core.Tests.Extensions
     public class TagExtensionsTests
     {
         [Fact]
-        public void UpsertTagOptions_WithNullOptions_SyncsNothing()
+        public void UpsertTagOptions_WithNullOptions_ThrowDataException()
         {
             //Arrange
             var tag = new TagDropdownDataModel
@@ -21,10 +22,10 @@ namespace PexCard.Api.Client.Core.Tests.Extensions
             };
 
             //Act
-            tag.UpsertTagOptions(null, out var syncCount);
+            var ex = Assert.Throws<DataException>(() => tag.UpsertTagOptions(null, out var syncCount));
 
             //Assert
-            Assert.Equal(0, syncCount);
+            Assert.Contains("At least one option must be enabled.", ex.Message);
         }
 
         [Fact]
