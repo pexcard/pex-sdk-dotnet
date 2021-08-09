@@ -119,7 +119,7 @@ namespace PexCard.Api.Client.Core.Tests.Extensions
         }
 
         [Fact]
-        public void UpsertTagOptions_WithUpdateNameFalse_DoesNotUpdateExistingOption()
+        public void UpsertTagOptions_WithUpdateNamesFalse_DoesNotUpdateExistingOptionNames()
         {
             //Arrange
             var tagId = Guid.NewGuid().ToString();
@@ -156,7 +156,7 @@ namespace PexCard.Api.Client.Core.Tests.Extensions
         }
 
         [Fact]
-        public void UpsertTagOptions_WithUpdateNameTrue_UpdatesExistingOption()
+        public void UpsertTagOptions_WithUpdateNamesTrue_UpdatesExistingOptionNames()
         {
             //Arrange
             var tagId = Guid.NewGuid().ToString();
@@ -184,6 +184,44 @@ namespace PexCard.Api.Client.Core.Tests.Extensions
 
             //Act
             tag.UpsertTagOptions(new[] { exisintTagEntity }, out var syncCount, true);
+
+            //Assert
+            var onlyOption = tag.Options.SingleOrDefault();
+            Assert.NotNull(onlyOption);
+            Assert.Equal(1, syncCount);
+            Assert.Equal(tagId, onlyOption.Value);
+            Assert.Equal(newTagName, onlyOption.Name);
+        }
+
+        [Fact]
+        public void UpsertTagOptions_WithUpdateNamesDefault_UpdatesExistingOptionNames()
+        {
+            //Arrange
+            var tagId = Guid.NewGuid().ToString();
+            var tagName = "Test Option";
+            var newTagName = "New Test Option";
+            var existingTagOption = new TagOptionModel
+            {
+                Value = tagId,
+                Name = tagName,
+                IsEnabled = true
+            };
+            var exisintTagEntity = new TestEntity
+            {
+                Id = tagId,
+                Name = newTagName
+            };
+            var tag = new TagDropdownDataModel
+            {
+                Name = "Test Tag",
+                Options = new List<TagOptionModel>
+                {
+                    existingTagOption
+                }
+            };
+
+            //Act
+            tag.UpsertTagOptions(new[] { exisintTagEntity }, out var syncCount);
 
             //Assert
             var onlyOption = tag.Options.SingleOrDefault();
