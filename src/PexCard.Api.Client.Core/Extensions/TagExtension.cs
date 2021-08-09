@@ -76,7 +76,7 @@ namespace PexCard.Api.Client.Core.Extensions
             ValidateDropdownTag(tag);
         }
 
-        public static void UpsertTagOptions(this TagDropdownDataModel tag, IEnumerable<IMatchableEntity> entities, out int syncCount, bool updateNames = false)
+        public static void UpsertTagOptions(this TagDropdownDataModel tag, IEnumerable<IMatchableEntity> entities, out int syncCount, bool updateNames = true)
         {
             syncCount = 0;
 
