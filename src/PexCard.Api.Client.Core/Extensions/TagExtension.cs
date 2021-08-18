@@ -131,7 +131,7 @@ namespace PexCard.Api.Client.Core.Extensions
                 throw new ArgumentNullException(nameof(tag));
             }
 
-            var duplicateTagOptionNamesOrValues = tag.Options.Where(x => tag.Options.Count(y => y.Name == x.Name) > 1 || tag.Options.Count(y => y.Value == x.Value) > 1).ToList();
+            var duplicateTagOptionNamesOrValues = tag.Options.Where(x => tag.Options.Count(y => string.Equals(y.Name, x.Name, StringComparison.InvariantCultureIgnoreCase)) > 1 || tag.Options.Count(y => string.Equals(y.Value, x.Value, StringComparison.InvariantCultureIgnoreCase)) > 1).ToList();
             if (duplicateTagOptionNamesOrValues.Any())
             {
                 throw new DataException($"{nameof(TagDropdownDataModel)} '{tag.Name}' has duplicate tag option names and/or values: {string.Join(", ", duplicateTagOptionNamesOrValues.Select(x => $"[Name: '{x.Name}', Value: '{x.Value}']"))}.");
