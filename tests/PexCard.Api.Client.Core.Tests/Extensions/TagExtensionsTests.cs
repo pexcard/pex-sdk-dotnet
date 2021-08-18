@@ -96,6 +96,11 @@ namespace PexCard.Api.Client.Core.Tests.Extensions
                 new TagOptionEntity
                 {
                     Id = "one",
+                    Name = "foo"
+                },
+                new TagOptionEntity
+                {
+                    Id = "One",
                     Name = "Bar"
                 },
             };
@@ -104,7 +109,7 @@ namespace PexCard.Api.Client.Core.Tests.Extensions
             var ex = Assert.Throws<DataException>(() => tag.UpsertTagOptions(tagOptions, out var syncCount));
 
             //Assert
-            Assert.Contains("has duplicate tag option names and/or values", ex.Message);
+            Assert.Contains("Duplicate tag option entity names and/or ids", ex.Message);
         }
 
         [Fact]
@@ -141,7 +146,7 @@ namespace PexCard.Api.Client.Core.Tests.Extensions
             var ex = Assert.Throws<DataException>(() => tag.UpsertTagOptions(tagOptions, out var syncCount));
 
             //Assert
-            Assert.Contains("Duplicate tag option entity names ids and/or ids", ex.Message);
+            Assert.Contains("Duplicate tag option entity names and/or ids", ex.Message);
         }
 
         [Fact]
@@ -178,7 +183,7 @@ namespace PexCard.Api.Client.Core.Tests.Extensions
             var ex = Assert.Throws<DataException>(() => tag.UpsertTagOptions(tagOptions, out var syncCount));
 
             //Assert
-            Assert.Contains("Duplicate tag option entity names ids and/or ids", ex.Message);
+            Assert.Contains("Duplicate tag option entity names and/or ids", ex.Message);
         }
 
         [Fact]
