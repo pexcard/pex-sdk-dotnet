@@ -94,7 +94,7 @@ namespace PexCard.Api.Client.Core.Extensions
                 foreach (var entity in entitiesList)
                 {
                     // we only add new tag options (or update tag option NAMES if updateNames is true) and we do NOT change IsEnabled statuses.
-                    var option = tag.Options.Find(item => string.Equals(item.Value, entity.EntityId));
+                    var option = tag.Options.Find(item => string.Equals(item.Value, entity.EntityId, StringComparison.InvariantCultureIgnoreCase));
                     if (option != null)
                     {
                         if (updateNames && !string.Equals(option.Name, entity.EntityName))
