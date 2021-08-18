@@ -143,7 +143,7 @@ namespace PexCard.Api.Client.Core.Extensions
             var duplicateTagOptionNamesOrValues = options.Where(x => options.Count(y => string.Equals(y.EntityName, x.EntityName, StringComparison.InvariantCultureIgnoreCase)) > 1 || options.Count(y => string.Equals(y.EntityId, x.EntityId, StringComparison.InvariantCultureIgnoreCase)) > 1).ToList();
             if (duplicateTagOptionNamesOrValues.Any())
             {
-                throw new DataException($"Duplicate tag option entity names ids and/or ids: {string.Join(", ", duplicateTagOptionNamesOrValues.Select(x => $"[EntityName: '{x.EntityName}', EntityId: '{x.EntityId}']"))}.");
+                throw new DataException($"Duplicate tag option entity names and/or ids: {string.Join(", ", duplicateTagOptionNamesOrValues.Select(x => $"[EntityName: '{x.EntityName}', EntityId: '{x.EntityId}']"))}.");
             }
         }
 
