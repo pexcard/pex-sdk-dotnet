@@ -37,39 +37,45 @@ namespace PexCard.Api.Client.Core.Extensions
         {
             syncCount = 0;
             removalCount = 0;
-            var entitiesList = entities.ToList();
-            foreach (var entity in entitiesList)
-            {
-                var tagOption = tag.Options.FirstOrDefault(o =>
-                    o.Value.Equals(entity.EntityId, StringComparison.InvariantCultureIgnoreCase));
-                if (tagOption != null && tagOption.IsEnabled && tagOption.Name.Equals(entity.EntityName))
-                {
-                    continue;
-                }
 
-                ProcessTagOption(tag, entity.EntityId, entity.EntityName);
-                syncCount++;
-            }
-
-            foreach (var option in tag.Options)
+            if (entities != null)
             {
-                if (entitiesList.All(item =>
-                    !item.EntityId.Equals(option.Value, StringComparison.InvariantCultureIgnoreCase)))
-                {
-                    if (option.IsEnabled) removalCount++;
-                    DisableTagOption(tag, option.Value);
-                }
-            }
+                var entitiesList = entities.ToList();
+                entitiesList.ValidateTagEntities();
 
-            // At least one option should be enabled.
-            // So lets enable the first one that in fact should be default option.
-            if (tag.Options.All(o => !o.IsEnabled))
-            {
-                var firstOption = tag.Options.FirstOrDefault();
-                if (firstOption != null)
+                foreach (var entity in entitiesList)
                 {
-                    firstOption.IsEnabled = true;
+                    var tagOption = tag.Options.FirstOrDefault(o =>
+                        o.Value.Equals(entity.EntityId, StringComparison.InvariantCultureIgnoreCase));
+                    if (tagOption != null && tagOption.IsEnabled && tagOption.Name.Equals(entity.EntityName))
+                    {
+                        continue;
+                    }
+
+                    ProcessTagOption(tag, entity.EntityId, entity.EntityName);
                     syncCount++;
+                }
+
+                foreach (var option in tag.Options)
+                {
+                    if (entitiesList.All(item =>
+                        !item.EntityId.Equals(option.Value, StringComparison.InvariantCultureIgnoreCase)))
+                    {
+                        if (option.IsEnabled) removalCount++;
+                        DisableTagOption(tag, option.Value);
+                    }
+                }
+
+                // At least one option should be enabled.
+                // So lets enable the first one that in fact should be default option.
+                if (tag.Options.All(o => !o.IsEnabled))
+                {
+                    var firstOption = tag.Options.FirstOrDefault();
+                    if (firstOption != null)
+                    {
+                        firstOption.IsEnabled = true;
+                        syncCount++;
+                    }
                 }
             }
 
@@ -82,10 +88,13 @@ namespace PexCard.Api.Client.Core.Extensions
 
             if (entities != null)
             {
-                foreach (var entity in entities)
+                var entitiesList = entities.ToList();
+                entitiesList.ValidateTagEntities();
+
+                foreach (var entity in entitiesList)
                 {
                     // we only add new tag options (or update tag option NAMES if updateNames is true) and we do NOT change IsEnabled statuses.
-                    var option = tag.Options.Find(item => item.Value.Equals(entity.EntityId, StringComparison.InvariantCultureIgnoreCase));
+                    var option = tag.Options.Find(item => string.Equals(item.Value, entity.EntityId));
                     if (option != null)
                     {
                         if (updateNames && !string.Equals(option.Name, entity.EntityName))
@@ -122,6 +131,20 @@ namespace PexCard.Api.Client.Core.Extensions
             }
 
             ValidateDropdownTag(tag);
+        }
+
+        private static void ValidateTagEntities(this IList<IMatchableEntity> options)
+        {
+            if (options is null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+
+            var duplicateTagOptionNamesOrValues = options.Where(x => options.Count(y => string.Equals(y.EntityName, x.EntityName, StringComparison.InvariantCultureIgnoreCase)) > 1 || options.Count(y => string.Equals(y.EntityId, x.EntityId, StringComparison.InvariantCultureIgnoreCase)) > 1).ToList();
+            if (duplicateTagOptionNamesOrValues.Any())
+            {
+                throw new DataException($"Duplicate tag option entity names ids and/or ids: {string.Join(", ", duplicateTagOptionNamesOrValues.Select(x => $"[EntityName: '{x.EntityName}', EntityId: '{x.EntityId}']"))}.");
+            }
         }
 
         private static void ValidateDropdownTag(this TagDropdownDataModel tag)

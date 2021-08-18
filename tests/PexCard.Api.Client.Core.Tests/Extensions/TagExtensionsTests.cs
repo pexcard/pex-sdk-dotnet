@@ -12,6 +12,176 @@ namespace PexCard.Api.Client.Core.Tests.Extensions
     public class TagExtensionsTests
     {
         [Fact]
+        public void UpsertTagOptions_WithDuplicateNamesSameCaseOptions_ThrowDataException()
+        {
+            //Arrange
+            var tag = new TagDropdownDataModel
+            {
+                Name = "Test Tag",
+                Options = new List<TagOptionModel>
+                {
+                    new TagOptionModel
+                    {
+                        Value = "One",
+                        Name = "Foo"
+                    }
+                }
+            };
+            var tagOptions = new List<TagOptionEntity>
+            {
+                new TagOptionEntity
+                {
+                    Id = "Two",
+                    Name = "Foo"
+                },
+            };
+
+            //Act
+            var ex = Assert.Throws<DataException>(() => tag.UpsertTagOptions(tagOptions, out var syncCount));
+
+            //Assert
+            Assert.Contains("has duplicate tag option names and/or values", ex.Message);
+        }
+
+        [Fact]
+        public void UpsertTagOptions_WithDuplicateNamesDiffCaseOptions_ThrowDataException()
+        {
+            //Arrange
+            var tag = new TagDropdownDataModel
+            {
+                Name = "Test Tag",
+                Options = new List<TagOptionModel>
+                {
+                    new TagOptionModel
+                    {
+                        Value = "One",
+                        Name = "Foo"
+                    }
+                }
+            };
+            var tagOptions = new List<TagOptionEntity>
+            {
+                new TagOptionEntity
+                {
+                    Id = "Two",
+                    Name = "foo"
+                },
+            };
+
+            //Act
+            var ex = Assert.Throws<DataException>(() => tag.UpsertTagOptions(tagOptions, out var syncCount));
+
+            //Assert
+            Assert.Contains("has duplicate tag option names and/or values", ex.Message);
+        }
+
+        [Fact]
+        public void UpsertTagOptions_WithDuplicateIdsDiffCaseOptions_ThrowDataException()
+        {
+            //Arrange
+            var tag = new TagDropdownDataModel
+            {
+                Name = "Test Tag",
+                Options = new List<TagOptionModel>
+                {
+                    new TagOptionModel
+                    {
+                        Value = "One",
+                        Name = "Foo"
+                    }
+                }
+            };
+            var tagOptions = new List<TagOptionEntity>
+            {
+                new TagOptionEntity
+                {
+                    Id = "one",
+                    Name = "Bar"
+                },
+            };
+
+            //Act
+            var ex = Assert.Throws<DataException>(() => tag.UpsertTagOptions(tagOptions, out var syncCount));
+
+            //Assert
+            Assert.Contains("has duplicate tag option names and/or values", ex.Message);
+        }
+
+        [Fact]
+        public void UpsertTagOptions_WithDuplicateIdsDiffCaseInUpdateOptions_ThrowDataException()
+        {
+            //Arrange
+            var tag = new TagDropdownDataModel
+            {
+                Name = "Test Tag",
+                Options = new List<TagOptionModel>
+                {
+                    new TagOptionModel
+                    {
+                        Value = "One",
+                        Name = "Foo"
+                    }
+                }
+            };
+            var tagOptions = new List<TagOptionEntity>
+            {
+                new TagOptionEntity
+                {
+                    Id = "One",
+                    Name = "Bar1"
+                },
+                new TagOptionEntity
+                {
+                    Id = "one",
+                    Name = "Bar2"
+                },
+            };
+
+            //Act
+            var ex = Assert.Throws<DataException>(() => tag.UpsertTagOptions(tagOptions, out var syncCount));
+
+            //Assert
+            Assert.Contains("Duplicate tag option entity names ids and/or ids", ex.Message);
+        }
+
+        [Fact]
+        public void UpsertTagOptions_WithDuplicateNamesDiffCaseInUpdateOptions_ThrowDataException()
+        {
+            //Arrange
+            var tag = new TagDropdownDataModel
+            {
+                Name = "Test Tag",
+                Options = new List<TagOptionModel>
+                {
+                    new TagOptionModel
+                    {
+                        Value = "One",
+                        Name = "Foo"
+                    }
+                }
+            };
+            var tagOptions = new List<TagOptionEntity>
+            {
+                new TagOptionEntity
+                {
+                    Id = "Two",
+                    Name = "Bar1"
+                },
+                new TagOptionEntity
+                {
+                    Id = "Three",
+                    Name = "bar1"
+                },
+            };
+
+            //Act
+            var ex = Assert.Throws<DataException>(() => tag.UpsertTagOptions(tagOptions, out var syncCount));
+
+            //Assert
+            Assert.Contains("Duplicate tag option entity names ids and/or ids", ex.Message);
+        }
+
+        [Fact]
         public void UpsertTagOptions_WithNullOptions_ThrowDataException()
         {
             //Arrange
@@ -96,7 +266,7 @@ namespace PexCard.Api.Client.Core.Tests.Extensions
             //Arrange
             var tagId = Guid.NewGuid().ToString();
             var tagName = "Test Option";
-            var newTagEntity = new TestEntity
+            var newTagEntity = new TagOptionEntity
             {
                 Id = tagId,
                 Name = tagName
@@ -130,7 +300,7 @@ namespace PexCard.Api.Client.Core.Tests.Extensions
                 Name = tagName,
                 IsEnabled = true
             };
-            var exisintTagEntity = new TestEntity
+            var exisintTagEntity = new TagOptionEntity
             {
                 Id = tagId,
                 Name = tagName
@@ -168,7 +338,7 @@ namespace PexCard.Api.Client.Core.Tests.Extensions
                 Name = tagName,
                 IsEnabled = true
             };
-            var exisintTagEntity = new TestEntity
+            var exisintTagEntity = new TagOptionEntity
             {
                 Id = tagId,
                 Name = newTagName
@@ -206,7 +376,7 @@ namespace PexCard.Api.Client.Core.Tests.Extensions
                 Name = tagName,
                 IsEnabled = true
             };
-            var exisintTagEntity = new TestEntity
+            var exisintTagEntity = new TagOptionEntity
             {
                 Id = tagId,
                 Name = newTagName
@@ -231,7 +401,7 @@ namespace PexCard.Api.Client.Core.Tests.Extensions
             Assert.Equal(newTagName, onlyOption.Name);
         }
 
-        private class TestEntity : IMatchableEntity
+        private class TagOptionEntity : IMatchableEntity
         {
             public string Id { get; set; }
 
