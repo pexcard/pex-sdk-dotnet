@@ -68,12 +68,12 @@ namespace PexCard.Api.Client.Core.Models
         public string CardNumber4Digits { get; set; }
 
         /// <summary>
-        /// Cardhodler's active card's issue date.
+        /// Cardholder's active card's issue date.
         /// </summary>
         public DateTime? CardIssueDate { get; set; }
 
         /// <summary>
-        /// Cardhodler's active card's expiry date.
+        /// Cardholder's active card's expiry date.
         /// </summary>
         public DateTime? CardExpiryDate { get; set; }
     }
