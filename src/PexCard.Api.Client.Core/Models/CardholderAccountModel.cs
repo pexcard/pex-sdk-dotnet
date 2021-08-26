@@ -65,11 +65,11 @@ namespace PexCard.Api.Client.Core.Models
         /// <summary>
         /// Cardhodler's active card's issue date.
         /// </summary>
-        public DateTime CardIssueDate { get; set; }
+        public DateTime? CardIssueDate { get; set; }
 
         /// <summary>
         /// Cardhodler's active card's expiry date.
         /// </summary>
-        public DateTime CardExpiryDate { get; set; }
+        public DateTime? CardExpiryDate { get; set; }
     }
 }
