@@ -58,6 +58,11 @@ namespace PexCard.Api.Client.Core.Models
         public string GroupName { get; set; }
 
         /// <summary>
+        /// Cardholder's active card status (NULL, Active, Inactive, Closed, Blocked).
+        /// </summary>
+        public string CardStatus { get; set; }
+
+        /// <summary>
         /// Cardholder's active card's last 4 digits.
         /// </summary>
         public string CardNumber4Digits { get; set; }
