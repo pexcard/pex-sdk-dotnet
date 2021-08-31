@@ -11,10 +11,10 @@ namespace PexCard.Api.Client.Core.Tests.Extensions
         {
             const string entityName = "OFFICE ADMINISTRATION:Administrator Meetings";
             //Arrange
-            var testEntity = new TestEntity
+            var testEntity = new TestTagOption
             {
-                Id = "500",
-                Name = entityName
+                OptionValue = "500",
+                OptionName = entityName
             };
             var entities = new[]
             {
@@ -23,9 +23,11 @@ namespace PexCard.Api.Client.Core.Tests.Extensions
 
             //Act
             var matchedEntity = entities.MatchEntityByName(entityName, ':');
+            var newMatchedEntity = entities.FindMatchingEntity("123", entityName, ':');
 
             //Assert
             Assert.Equal(testEntity, matchedEntity);
+            Assert.Equal(testEntity, newMatchedEntity);
         }
 
         [Fact]
@@ -33,26 +35,28 @@ namespace PexCard.Api.Client.Core.Tests.Extensions
         {
             const string entityName = "Administrator Meetings";
             //Arrange
-            var testEntity = new TestEntity
+            var testEntity = new TestTagOption
             {
-                Id = "500",
-                Name = entityName
+                OptionValue = "500",
+                OptionName = entityName
             };
             var entities = new[]
             {
                 testEntity,
-                new TestEntity
+                new TestTagOption
                 {
-                    Id = "510",
-                    Name = $"OFFICE ADMINISTRATION:{entityName}"
+                    OptionValue = "510",
+                    OptionName = $"OFFICE ADMINISTRATION:{entityName}"
                 }
             };
 
             //Act
             var matchedEntity = entities.MatchEntityByName(entityName, ':');
+            var newMatchedEntity = entities.FindMatchingEntity("123", entityName, ':');
 
             //Assert
             Assert.Equal(testEntity, matchedEntity);
+            Assert.Equal(testEntity, newMatchedEntity);
         }
 
         [Fact]
@@ -60,36 +64,97 @@ namespace PexCard.Api.Client.Core.Tests.Extensions
         {
             const string entityName = "Administrator Meetings";
             //Arrange
-            var testEntity = new TestEntity
+            var testEntity = new TestTagOption
             {
-                Id = "500",
-                Name = $"MANAGEMENT:OFFICE ADMINISTRATION:{entityName}"
+                OptionValue = "500",
+                OptionName = $"MANAGEMENT:OFFICE ADMINISTRATION:{entityName}"
             };
             var entities = new[]
             {
-                new TestEntity
+                new TestTagOption
                 {
-                    Id = "510",
-                    Name = $"OFFICE ADMINISTRATION:{entityName}"
+                    OptionValue = "510",
+                    OptionName = $"OFFICE ADMINISTRATION:{entityName}"
                 },
                 testEntity
             };
 
             //Act
             var matchedEntity = entities.MatchEntityByName(entityName, ':');
+            var newMatchedEntity = entities.FindMatchingEntity("123", entityName, ':');
 
             //Assert
             Assert.Equal(testEntity, matchedEntity);
+            Assert.Equal(testEntity, newMatchedEntity);
         }
 
-        private class TestEntity : IMatchableEntity
+        [Fact]
+        public void FindMatchingEntity_MatchesOnId_WhenNameAlsoMatches()
         {
-            public string Id { get; set; }
-            public string Name { get; set; }
+            const string entityName = "Administrator Meetings";
+            //Arrange
+            var testEntity = new TestTagOption
+            {
+                OptionValue = "500",
+                OptionName = $"MANAGEMENT:OFFICE ADMINISTRATION:{entityName}"
+            };
+            var entities = new[]
+            {
+                new TestTagOption
+                {
+                    OptionValue = "510",
+                    OptionName = $"OFFICE ADMINISTRATION:{entityName}"
+                },
+                testEntity
+            };
 
-            string IMatchableEntity.EntityId => Id;
+            //Act
+            var newMatchedEntity = entities.FindMatchingEntity("500", $"OFFICE ADMINISTRATION:{entityName}", ':');
 
-            string IMatchableEntity.EntityName => Name;
+            //Assert
+            Assert.Equal(testEntity, newMatchedEntity);
+        }
+
+        [Fact]
+        public void FindMatchingEntity_MatchesOnId_WhenNameAndHierarchyAlsoMatches()
+        {
+            const string entityName = "Administrator Meetings";
+            //Arrange
+            var testEntity = new TestTagOption
+            {
+                OptionValue = "500",
+                OptionName = $"MANAGEMENT:OFFICE ADMINISTRATION:{entityName}"
+            };
+            var entities = new[]
+            {
+                new TestTagOption
+                {
+                    OptionValue = "510",
+                    OptionName = $"OFFICE ADMINISTRATION:{entityName}"
+                },
+                                new TestTagOption
+                {
+                    OptionValue = "511",
+                    OptionName = entityName
+                },
+                testEntity
+            };
+
+            //Act
+            var newMatchedEntity = entities.FindMatchingEntity("500", entityName, ':');
+
+            //Assert
+            Assert.Equal(testEntity, newMatchedEntity);
+        }
+
+        private class TestTagOption : IMatchableEntity
+        {
+            public string OptionValue { get; set; }
+            public string OptionName { get; set; }
+
+            string IMatchableEntity.EntityId => OptionValue;
+
+            string IMatchableEntity.EntityName => OptionName;
         }
     }
 }
