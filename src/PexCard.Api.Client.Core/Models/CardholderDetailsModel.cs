@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace PexCard.Api.Client.Core.Models
 {
@@ -16,5 +17,7 @@ namespace PexCard.Api.Client.Core.Models
         public string Email { get; set; }
         public bool IsVirtual { get; set; }
         public string CustomId { get; set; }
+        public CardholderGroupModel Group { get; set; }
+        public List<CardDetailModel> CardList { get; set; }
     }
 }
