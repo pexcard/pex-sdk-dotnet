@@ -235,6 +235,16 @@ namespace PexCard.Api.Client
             return result;
         }
 
+        public async Task<GetAdminProfileModel> GetMyAdminProfile(string externalToken, CancellationToken token = default(CancellationToken))
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+
+            var response = await _httpClient.GetAsync("V4/Business/MyProfile", token);
+            var result = await HandleHttpResponseMessage<GetAdminProfileModel>(response);
+
+            return result;
+        }
+
         /// <summary>
         /// Return all accounts associated with your business.
         /// </summary>
