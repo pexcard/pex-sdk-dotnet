@@ -13,9 +13,15 @@ namespace PexCard.Api.Client.Core.Exceptions
             Code = code;
         }
 
+        public PexApiClientException(HttpStatusCode code, string responseContent, Exception innerException)
+            : base(responseContent, innerException)
+        {
+            Code = code;
+        }
+
         public override string ToString()
         {
-            var result = $"{(int) Code} {Code}: {base.ToString()}";
+            var result = $"{(int)Code} {Code}: {base.ToString()}";
             return result;
         }
     }

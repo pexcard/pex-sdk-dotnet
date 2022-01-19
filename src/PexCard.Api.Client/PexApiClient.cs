@@ -508,7 +508,7 @@ namespace PexCard.Api.Client
             }
             catch (Exception ex)
             {
-                throw new PexApiClientException(response.StatusCode, $"Error parsing response: {ex.Message}\nContent: {responseContent}");
+                throw new PexApiClientException(response.StatusCode, $"Error parsing response: {ex.Message}\nContent: {responseContent}", ex);
             }
         }
 
@@ -525,7 +525,7 @@ namespace PexCard.Api.Client
                 }
                 catch (Exception ex)
                 {
-                    throw new PexApiClientException(response.StatusCode, $"Error parsing response: {ex.Message}\nContent: {responseContent}");
+                    throw new PexApiClientException(response.StatusCode, $"Error parsing response: {ex.Message}\nContent: {responseContent}", ex);
                 }
             }
         }
