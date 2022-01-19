@@ -493,17 +493,23 @@ namespace PexCard.Api.Client
         private async Task<T> HandleHttpResponseMessage<T>(HttpResponseMessage response, bool notFoundAsDefault = false)
         {
             var responseContent = await response.Content.ReadAsStringAsync();
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                if (response.StatusCode == HttpStatusCode.NotFound && notFoundAsDefault)
+                if (!response.IsSuccessStatusCode)
                 {
-                    return default(T);
+                    if (response.StatusCode == HttpStatusCode.NotFound && notFoundAsDefault)
+                    {
+                        return default(T);
+                    }
+                    var errorModel = JsonConvert.DeserializeObject<ErrorMessageModel>(responseContent);
+                    throw new PexApiClientException(response.StatusCode, errorModel.Message);
                 }
-                var errorModel = JsonConvert.DeserializeObject<ErrorMessageModel>(responseContent);
-                throw new PexApiClientException(response.StatusCode, errorModel.Message);
+                return JsonConvert.DeserializeObject<T>(responseContent);
             }
-            var result = JsonConvert.DeserializeObject<T>(responseContent);
-            return result;
+            catch (Exception ex)
+            {
+                throw new PexApiClientException(response.StatusCode, $"Error parsing response: {ex.Message}\nContent: {responseContent}", ex);
+            }
         }
 
         private async Task HandleHttpResponseMessage(HttpResponseMessage response)
@@ -511,8 +517,16 @@ namespace PexCard.Api.Client
             if (!response.IsSuccessStatusCode)
             {
                 var responseContent = await response.Content.ReadAsStringAsync();
-                var errorModel = JsonConvert.DeserializeObject<ErrorMessageModel>(responseContent);
-                throw new PexApiClientException(response.StatusCode, errorModel.Message);
+
+                try
+                {
+                    var errorModel = JsonConvert.DeserializeObject<ErrorMessageModel>(responseContent);
+                    throw new PexApiClientException(response.StatusCode, errorModel.Message);
+                }
+                catch (Exception ex)
+                {
+                    throw new PexApiClientException(response.StatusCode, $"Error parsing response: {ex.Message}\nContent: {responseContent}", ex);
+                }
             }
         }
         #endregion
