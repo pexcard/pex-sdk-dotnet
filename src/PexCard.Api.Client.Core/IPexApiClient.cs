@@ -107,5 +107,15 @@ namespace PexCard.Api.Client.Core
 
         Task<PartnerModel> GetPartner(string externalToken, CancellationToken token = default(CancellationToken));
         Task<TokenDataModel> GetToken(string externalToken, CancellationToken cancellationToken = default);
+
+        Task<List<CardholderGroupModel>> GetCardholderGroups(string externalToken, CancellationToken token = default);
+
+        Task<CardholderGroupModel> GetCardholderGroup(string externalToken, int groupId, CancellationToken token = default);
+
+        Task<CardholderGroupModel> CreateCardholderGroup(string externalToken, string groupName, CancellationToken token = default);
+
+        Task<CardholderGroupModel> UpdateCardholderGroupName(string externalToken, int groupId, string groupName, CancellationToken token = default);
+
+        Task DeleteCardholderGroup(string externalToken, int groupId, CancellationToken token = default);
     }
 }

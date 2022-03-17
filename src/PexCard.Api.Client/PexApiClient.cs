@@ -468,6 +468,60 @@ namespace PexCard.Api.Client
             return result;
         }
 
+        public async Task<List<CardholderGroupModel>> GetCardholderGroups(string externalToken, CancellationToken token = default)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+
+            var response = await _httpClient.GetAsync($"v4/Group", token);
+            var result = await HandleHttpResponseMessage<List<CardholderGroupModel>>(response);
+
+            return result;
+        }
+
+        public async Task<CardholderGroupModel> GetCardholderGroup(string externalToken, int groupId, CancellationToken token = default)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+
+            var response = await _httpClient.GetAsync($"v4/Group/{groupId}", token);
+            var result = await HandleHttpResponseMessage<CardholderGroupModel>(response);
+
+            return result;
+        }
+
+        public async Task<CardholderGroupModel> CreateCardholderGroup(string externalToken, string groupName, CancellationToken token = default)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+
+            var requestContent = JsonConvert.SerializeObject(new UpsertCardholderGroupModel { Name = groupName });
+            var request = new StringContent(requestContent, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync("V4/Group", request, token);
+            var result = await HandleHttpResponseMessage<CardholderGroupModel>(response);
+
+            return result;
+        }
+
+        public async Task<CardholderGroupModel> UpdateCardholderGroupName(string externalToken, int groupId, string groupName, CancellationToken token = default)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+
+            var requestContent = JsonConvert.SerializeObject(new UpsertCardholderGroupModel { Name = groupName });
+            var request = new StringContent(requestContent, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PutAsync($"V4/Group/{groupId}", request, token);
+            var result = await HandleHttpResponseMessage<CardholderGroupModel>(response);
+
+            return result;
+        }
+
+        public async Task DeleteCardholderGroup(string externalToken, int groupId, CancellationToken token = default)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+
+            var response = await _httpClient.DeleteAsync($"V4/Group/{groupId}", token);
+            await HandleHttpResponseMessage<CardholderGroupModel>(response);
+        }
+
         #region Private methods
 
         private async Task<HttpResponseMessage> GetTagsResponse(string externalToken, CancellationToken token)
