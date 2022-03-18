@@ -2,6 +2,6 @@
 {
     public class CardholderGroupResponseModel
     {
-        public CardholderGroupModel Group { get; set; }
+        public GroupModel Group { get; set; }
     }
 }
