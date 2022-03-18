@@ -4,6 +4,6 @@ namespace PexCard.Api.Client.Core.Models
 {
     public class CardholderGroupsResponseModel
     {
-        public List<CardholderGroupModel> Groups { get; set; }
+        public List<GroupModel> Groups { get; set; }
     }
 }
