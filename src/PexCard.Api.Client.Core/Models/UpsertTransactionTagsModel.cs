@@ -4,6 +4,6 @@ namespace PexCard.Api.Client.Core.Models
 {
     public class UpsertTransactionTagsModel
     {
-        public List<UpsertTagValueModel> Values { get; set; }
+        public List<UpsertTagValueModel> Values { get; set; } = new List<UpsertTagValueModel>();
     }
 }
