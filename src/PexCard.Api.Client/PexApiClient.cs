@@ -522,6 +522,17 @@ namespace PexCard.Api.Client
             await HandleHttpResponseMessage<CardholderGroupModel>(response);
         }
 
+        public async Task AddTransactionTags(string externalToken, long transactionId, UpsertTransactionTagsModel transactionTags, CancellationToken token = default)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+
+            var requestContent = JsonConvert.SerializeObject(transactionTags);
+            var request = new StringContent(requestContent, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync($"V4/Transactions/{transactionId}/Tags", request, token);
+            await HandleHttpResponseMessage(response);
+        }
+
         public async Task UpdateTransactionTags(string externalToken, long transactionId, UpsertTransactionTagsModel transactionTags, CancellationToken token = default)
         {
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
