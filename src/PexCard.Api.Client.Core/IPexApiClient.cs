@@ -118,6 +118,8 @@ namespace PexCard.Api.Client.Core
 
         Task DeleteCardholderGroup(string externalToken, int groupId, CancellationToken token = default);
 
+        Task<TagsModel> GetTransactionTags(string externalToken, long transactionId, CancellationToken token = default);
+
         Task AddTransactionTags(string externalToken, long transactionId, UpsertTransactionTagsModel transactionTags, CancellationToken token = default);
 
         Task UpdateTransactionTags(string externalToken, long transactionId, UpsertTransactionTagsModel transactionTags, CancellationToken token = default);
