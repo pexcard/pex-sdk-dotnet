@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using PexCard.Api.Client.Core.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-using PexCard.Api.Client.Core.Interfaces;
 
 namespace PexCard.Api.Client.Core.Extensions
 {
@@ -19,18 +18,13 @@ namespace PexCard.Api.Client.Core.Extensions
             List<T> matchedEntities;
             if (delimiter == default(char))
             {
-                matchedEntities = entities
-                    .Where(x => x.EntityName.Equals(entityName,
-                        StringComparison.InvariantCultureIgnoreCase))
-                    .ToList();
+                matchedEntities = entities.Where(x => string.Equals(x.EntityName, entityName, StringComparison.InvariantCultureIgnoreCase)).ToList();
                 return matchedEntities.FirstOrDefault();
             }
 
             matchedEntities = entities
-                .Where(x => x.EntityName.Equals(entityName,
-                                StringComparison.InvariantCultureIgnoreCase) ||
-                            x.EntityName.EndsWith($"{delimiter}{entityName}",
-                                StringComparison.InvariantCultureIgnoreCase))
+                .Where(x => string.Equals(x.EntityName, entityName, StringComparison.InvariantCultureIgnoreCase) ||
+                            x.EntityName?.EndsWith($"{delimiter}{entityName}", StringComparison.InvariantCultureIgnoreCase) == true)
                 .ToList();
 
             if (!matchedEntities.Any()) return default(T);
@@ -41,7 +35,7 @@ namespace PexCard.Api.Client.Core.Extensions
             }
 
             var exactlyMatchedEntities = matchedEntities
-                .Where(x => x.EntityName.Equals(entityName, StringComparison.InvariantCultureIgnoreCase))
+                .Where(x => string.Equals(x.EntityName, entityName, StringComparison.InvariantCultureIgnoreCase))
                 .ToList();
             if (exactlyMatchedEntities.Count == 1)
             {
@@ -54,7 +48,7 @@ namespace PexCard.Api.Client.Core.Extensions
             // Entities are following: "1 One", "2 Expense:One" and "3 Expense:Category:One"
             // We should match "3 Expense:Category:One" as entity
             var groupedEntities = matchedEntities
-                .GroupBy(c => c.EntityName.Count(x => x == delimiter))
+                .GroupBy(c => c.EntityName?.Count(x => x == delimiter))
                 .ToList();
             var maxKey = groupedEntities.Max(c => c.Key);
             return groupedEntities.First(e => e.Key == maxKey).First();
@@ -83,7 +77,7 @@ namespace PexCard.Api.Client.Core.Extensions
             {
                 logger?.LogDebug($"Searching against entity: '{entity.EntityId}' / '{entity.EntityName}'");
 
-                if (entity.EntityId.Equals(entityValue, StringComparison.InvariantCultureIgnoreCase))
+                if (string.Equals(entity.EntityId, entityValue, StringComparison.InvariantCultureIgnoreCase))
                 {
                     //If there is an exact match on Id, use the first match.
                     logger?.LogDebug($"Matched on value");
@@ -91,7 +85,7 @@ namespace PexCard.Api.Client.Core.Extensions
                     break;
                 }
 
-                if (entity.EntityName.Equals(entityName, StringComparison.InvariantCultureIgnoreCase))
+                if (string.Equals(entity.EntityName, entityName, StringComparison.InvariantCultureIgnoreCase))
                 {
                     //If there is an exact match on Name, use it unless we find an Id match later.
                     logger?.LogDebug($"Matched on name");
@@ -100,7 +94,7 @@ namespace PexCard.Api.Client.Core.Extensions
                 }
 
                 if (entityNameHierarchyDelimiter != default
-                    && entity.EntityName.EndsWith($"{entityNameHierarchyDelimiter}{entityName}", StringComparison.InvariantCultureIgnoreCase))
+                    && entity.EntityName?.EndsWith($"{entityNameHierarchyDelimiter}{entityName}", StringComparison.InvariantCultureIgnoreCase) == true)
                 {
                     //If there is a match on a child entity name, use the most specific one unless there is an exact match on Id or Name later.
                     var currentHierarchyLevel = entity.EntityName.Count(x => x == entityNameHierarchyDelimiter);

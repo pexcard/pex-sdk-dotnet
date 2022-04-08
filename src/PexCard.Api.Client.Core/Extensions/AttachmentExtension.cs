@@ -26,7 +26,7 @@ namespace PexCard.Api.Client.Core.Extensions
             }
             else
             {
-                var mimeStr = attachment.Content.Substring(0, 5);
+                var mimeStr = attachment.Content?.Substring(0, 5);
                 result = IsBase64Png(mimeStr) ? "image/png" : "image/jpeg";
             }
             return result;
@@ -41,7 +41,7 @@ namespace PexCard.Api.Client.Core.Extensions
             }
             else
             {
-                var mimeStr = attachment.Content.Substring(0, 5);
+                var mimeStr = attachment.Content?.Substring(0, 5);
                 result = $"{attachment.AttachmentId}.{(IsBase64Png(mimeStr) ? "png" : "jpg")}";
             }
             return result;
@@ -49,7 +49,7 @@ namespace PexCard.Api.Client.Core.Extensions
 
         private static bool IsBase64Png(string base64Str)
         {
-            var result = base64Str.Equals("ivbor", StringComparison.InvariantCultureIgnoreCase);
+            var result = string.Equals(base64Str, "ivbor", StringComparison.InvariantCultureIgnoreCase);
             return result;
         }
     }
