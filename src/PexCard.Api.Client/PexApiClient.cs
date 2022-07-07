@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Newtonsoft.Json;
 using PexCard.Api.Client.Const;
 using PexCard.Api.Client.Core;
@@ -21,11 +23,13 @@ namespace PexCard.Api.Client
 {
     public class PexApiClient : IPexApiClient
     {
+        private readonly string PexCorrelationIdHeaderName = "X-CORRELATION-ID";
+
         private readonly HttpClient _httpClient;
 
         public PexApiClient(HttpClient httpClient)
         {
-            _httpClient = httpClient;
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         }
 
         public Uri BaseUri => _httpClient.BaseAddress;
@@ -585,14 +589,19 @@ namespace PexCard.Api.Client
                     {
                         return default(T);
                     }
+
                     var errorModel = JsonConvert.DeserializeObject<ErrorMessageModel>(responseContent);
-                    throw new PexApiClientException(response.StatusCode, errorModel.Message);
+                    var correlationId = GetPexCorrelationId(response);
+
+                    throw new PexApiClientException(response.StatusCode, errorModel.Message, correlationId);
                 }
                 return JsonConvert.DeserializeObject<T>(responseContent);
             }
             catch (Exception ex)
             {
-                throw new PexApiClientException(response.StatusCode, $"Error parsing response: {ex.Message}\nContent: {responseContent}", ex);
+                var correlationId = GetPexCorrelationId(response);
+
+                throw new PexApiClientException(response.StatusCode, $"Error parsing response: {ex.Message}\nContent: {responseContent}", ex, correlationId);
             }
         }
 
@@ -605,14 +614,36 @@ namespace PexCard.Api.Client
                 try
                 {
                     var errorModel = JsonConvert.DeserializeObject<ErrorMessageModel>(responseContent);
-                    throw new PexApiClientException(response.StatusCode, errorModel.Message);
+                    var correlationId = GetPexCorrelationId(response);
+
+                    throw new PexApiClientException(response.StatusCode, errorModel.Message, correlationId);
                 }
                 catch (Exception ex)
                 {
-                    throw new PexApiClientException(response.StatusCode, $"Error parsing response: {ex.Message}\nContent: {responseContent}", ex);
+                    var correlationId = GetPexCorrelationId(response);
+
+                    throw new PexApiClientException(response.StatusCode, $"Error parsing response: {ex.Message}\nContent: {responseContent}", ex, correlationId);
                 }
             }
         }
+
+        private string GetPexCorrelationId(HttpResponseMessage response)
+        {
+            if (response is null)
+            {
+                throw new ArgumentNullException(nameof(response));
+            }
+
+            string correlationId = default;
+
+            if (response.Headers.TryGetValues(PexCorrelationIdHeaderName, out var correlationIdHeaders))
+            {
+                correlationId = correlationIdHeaders.FirstOrDefault();
+            }
+
+            return correlationId;
+        }
+
         #endregion
     }
 }
