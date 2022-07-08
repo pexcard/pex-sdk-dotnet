@@ -579,7 +579,7 @@ namespace PexCard.Api.Client
             var requestContent = JsonConvert.SerializeObject(upsertModel);
             var request = new StringContent(requestContent, Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync("V4/callback-subscription", request);
+            var response = await _httpClient.PostAsync("V4/callback-subscription", request, token);
             await HandleHttpResponseMessage(response);
         }
 
@@ -592,7 +592,7 @@ namespace PexCard.Api.Client
             var requestContent = JsonConvert.SerializeObject(upsertModel);
             var request = new StringContent(requestContent, Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PutAsync($"V4/callback-subscription/{callbackId}", request);
+            var response = await _httpClient.PutAsync($"V4/callback-subscription/{callbackId}", request, token);
             await HandleHttpResponseMessage(response);
         }
 
