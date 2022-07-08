@@ -123,5 +123,13 @@ namespace PexCard.Api.Client.Core
         Task AddTransactionTags(string externalToken, long transactionId, UpsertTransactionTagsModel transactionTags, CancellationToken token = default);
 
         Task UpdateTransactionTags(string externalToken, long transactionId, UpsertTransactionTagsModel transactionTags, CancellationToken token = default);
+
+        Task<List<CallbackSubscriptionModel>> GetCallbackSubscriptions(string externalToken, CancellationToken token = default);
+
+        Task<CallbackSubscriptionModel> GetCallbackSubscription(string externalToken, int callbackId, CancellationToken token = default);
+
+        Task AddCallbackSubscription(string externalToken, CallbackType callbackType, Uri callbackUri, CallbackStatus callbackStatus = CallbackStatus.Active, CancellationToken token = default);
+
+        Task UpdateCallbackSubscription(string externalToken, int callbackId, CallbackType callbackType, Uri callbackUri, CallbackStatus callbackStatus, CancellationToken token = default);
     }
 }
