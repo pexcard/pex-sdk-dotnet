@@ -554,6 +554,48 @@ namespace PexCard.Api.Client
             await HandleHttpResponseMessage(response);
         }
 
+        public async Task<List<CallbackSubscriptionModel>> GetCallbackSubscriptions(string externalToken, CancellationToken token = default)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+
+            var response = await _httpClient.GetAsync("V4/callback-subscription", token);
+            return await HandleHttpResponseMessage<List<CallbackSubscriptionModel>>(response);
+        }
+
+        public async Task<CallbackSubscriptionModel> GetCallbackSubscription(string externalToken, int callbackId, CancellationToken token = default)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+
+            var response = await _httpClient.GetAsync($"V4/callback-subscription/{callbackId}", token);
+            return await HandleHttpResponseMessage<CallbackSubscriptionModel>(response);
+        }
+
+        public async Task AddCallbackSubscription(string externalToken, CallbackType callbackType, Uri callbackUri, CallbackStatus callbackStatus = CallbackStatus.Active, CancellationToken token = default)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+
+            var upsertModel = new UpsertCallbackSubscriptionModel(callbackType, callbackStatus, callbackUri);
+
+            var requestContent = JsonConvert.SerializeObject(upsertModel);
+            var request = new StringContent(requestContent, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync("V4/callback-subscription", request, token);
+            await HandleHttpResponseMessage(response);
+        }
+
+        public async Task UpdateCallbackSubscription(string externalToken, int callbackId, CallbackType callbackType, Uri callbackUri, CallbackStatus callbackStatus, CancellationToken token = default)
+        {
+            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+
+            var upsertModel = new UpsertCallbackSubscriptionModel(callbackType, callbackStatus, callbackUri);
+
+            var requestContent = JsonConvert.SerializeObject(upsertModel);
+            var request = new StringContent(requestContent, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PutAsync($"V4/callback-subscription/{callbackId}", request, token);
+            await HandleHttpResponseMessage(response);
+        }
+
         #region Private methods
 
         private async Task<HttpResponseMessage> GetTagsResponse(string externalToken, CancellationToken token)
