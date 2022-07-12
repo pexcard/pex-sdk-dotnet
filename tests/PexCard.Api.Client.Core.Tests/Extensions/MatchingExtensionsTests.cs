@@ -147,6 +147,91 @@ namespace PexCard.Api.Client.Core.Tests.Extensions
             Assert.Equal(testEntity, newMatchedEntity);
         }
 
+        [Fact]
+        public void FindMatchingEntity_MatchesOnNameFromName()
+        {
+            const string entityName = "Match Me";
+
+            //Arrange
+            var testEntity = new TestTagOption
+            {
+                OptionValue = "1",
+                OptionName = entityName
+            };
+            var entities = new[]
+            {
+                new TestTagOption
+                {
+                    OptionValue = "2",
+                    OptionName = "Shouldn't Match Me"
+                },
+                testEntity
+            };
+
+            //Act
+            var newMatchedEntity = entities.FindMatchingEntity("XXX", entityName);
+
+            //Assert
+            Assert.Equal(testEntity, newMatchedEntity);
+        }
+
+        [Fact]
+        public void FindMatchingEntity_MatchesOnNameFromValue()
+        {
+            const string entityName = "Match Me";
+
+            //Arrange
+            var testEntity = new TestTagOption
+            {
+                OptionValue = "1",
+                OptionName = entityName
+            };
+            var entities = new[]
+            {
+                new TestTagOption
+                {
+                    OptionValue = "2",
+                    OptionName = "Shouldn't Match Me"
+                },
+                testEntity
+            };
+
+            //Act
+            var newMatchedEntity = entities.FindMatchingEntity(entityName, "XXX");
+
+            //Assert
+            Assert.Equal(testEntity, newMatchedEntity);
+        }
+
+
+        [Fact]
+        public void FindMatchingEntity_MatchesOnNameFromNameFirst()
+        {
+            const string entityName = "Match Me";
+
+            //Arrange
+            var testEntity = new TestTagOption
+            {
+                OptionValue = "1",
+                OptionName = entityName
+            };
+            var entities = new[]
+            {
+                new TestTagOption
+                {
+                    OptionValue = entityName,
+                    OptionName = "Shouldn't Match Me"
+                },
+                testEntity
+            };
+
+            //Act
+            var newMatchedEntity = entities.FindMatchingEntity("XXX", entityName);
+
+            //Assert
+            Assert.Equal(testEntity, newMatchedEntity);
+        }
+
         private class TestTagOption : IMatchableEntity
         {
             public string OptionValue { get; set; }

@@ -13,6 +13,8 @@ namespace PexCard.Api.Client.Core.Extensions
             this TransactionTagModel transactionTag,
             IEnumerable<TagOptionModel> tagOptions)
         {
+            if (transactionTag == null) return null;
+
             var result = tagOptions
                 ?.FirstOrDefault(o => o.Value.Equals(transactionTag.Value))
                 ?.Name;
@@ -23,6 +25,8 @@ namespace PexCard.Api.Client.Core.Extensions
             this TagValueItem transactionTag,
             IEnumerable<TagOptionModel> tagOptions)
         {
+            if (transactionTag == null) return null;
+            
             var result = tagOptions
                 ?.FirstOrDefault(o => o.Value.Equals(transactionTag.Value))
                 ?.Name;
