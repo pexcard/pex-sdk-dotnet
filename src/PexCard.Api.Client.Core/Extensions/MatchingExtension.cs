@@ -65,8 +65,8 @@ namespace PexCard.Api.Client.Core.Extensions
             T entityIdMatchedByValue = default;
             T entityNameMatchedByName = default;
             T entityNameMatchedByValue = default;
-            T entityNameMatchedByNameHeirarchy = default;
-            T entityNameMatchedByValueHeirarchy = default;
+            T entityNameMatchedByNameHierarchy = default;
+            T entityNameMatchedByValueHierarchy = default;
 
             int entityNameMatchedByNameHierarchyLevel = default;
             int entityNameMatchedByValueHierarchyLevel = default;
@@ -107,7 +107,7 @@ namespace PexCard.Api.Client.Core.Extensions
 
                     if (currentHierarchyLevel > entityNameMatchedByNameHierarchyLevel)
                     {
-                        entityNameMatchedByNameHeirarchy = entity;
+                        entityNameMatchedByNameHierarchy = entity;
                         entityNameMatchedByNameHierarchyLevel = currentHierarchyLevel;
                     }
                 }
@@ -120,7 +120,7 @@ namespace PexCard.Api.Client.Core.Extensions
 
                     if (currentHierarchyLevel > entityNameMatchedByValueHierarchyLevel)
                     {
-                        entityNameMatchedByValueHeirarchy = entity;
+                        entityNameMatchedByValueHierarchy = entity;
                         entityNameMatchedByValueHierarchyLevel = currentHierarchyLevel;
                     }
                 }
@@ -130,10 +130,10 @@ namespace PexCard.Api.Client.Core.Extensions
             // - if we matched entity id by value arg
             // - if we matched by entity name from name arg
             // - if we matched by entity name from value arg
-            // - if we matched by entity name from name arg using heirarchy+delimiter
-            // - if we matched by entity name from value arg using heirarchy+delimiter
+            // - if we matched by entity name from name arg using Hierarchy+delimiter
+            // - if we matched by entity name from value arg using Hierarchy+delimiter
 
-            return entityIdMatchedByValue ?? entityNameMatchedByName ?? entityNameMatchedByValue ?? entityNameMatchedByNameHeirarchy ?? entityNameMatchedByValueHeirarchy;
+            return entityIdMatchedByValue ?? entityNameMatchedByName ?? entityNameMatchedByValue ?? entityNameMatchedByNameHierarchy ?? entityNameMatchedByValueHierarchy;
         }
     }
 }
