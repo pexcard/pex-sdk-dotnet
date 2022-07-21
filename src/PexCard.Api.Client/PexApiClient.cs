@@ -101,12 +101,12 @@ namespace PexCard.Api.Client
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Details/AllCardholderTransactionCount"));
 
-            var requestQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
-            requestQueryParams.Add("IncludePendings", includePendings.ToString());
-            requestQueryParams.Add("IncludeDeclines", includeDeclines.ToString());
-            requestQueryParams.Add("StartDate", startDate.ToDateTimeString());
-            requestQueryParams.Add("EndDate", endDate.ToDateTimeString());
-            requestUriBuilder.Query = requestQueryParams.ToString();
+            var requestUriQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
+            requestUriQueryParams.Add("IncludePendings", includePendings.ToString());
+            requestUriQueryParams.Add("IncludeDeclines", includeDeclines.ToString());
+            requestUriQueryParams.Add("StartDate", startDate.ToDateTimeString());
+            requestUriQueryParams.Add("EndDate", endDate.ToDateTimeString());
+            requestUriBuilder.Query = requestUriQueryParams.ToString();
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
             request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
@@ -120,12 +120,12 @@ namespace PexCard.Api.Client
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Details/AllCardholderTransactions"));
 
-            var requestQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
-            requestQueryParams.Add("IncludePendings", includePendings.ToString());
-            requestQueryParams.Add("IncludeDeclines", includeDeclines.ToString());
-            requestQueryParams.Add("StartDate", startDate.ToDateTimeString());
-            requestQueryParams.Add("EndDate", endDate.ToDateTimeString());
-            requestUriBuilder.Query = requestQueryParams.ToString();
+            var requestUriQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
+            requestUriQueryParams.Add("IncludePendings", includePendings.ToString());
+            requestUriQueryParams.Add("IncludeDeclines", includeDeclines.ToString());
+            requestUriQueryParams.Add("StartDate", startDate.ToDateTimeString());
+            requestUriQueryParams.Add("EndDate", endDate.ToDateTimeString());
+            requestUriBuilder.Query = requestUriQueryParams.ToString();
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
             request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
@@ -141,12 +141,12 @@ namespace PexCard.Api.Client
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Details/TransactionDetails"));
 
-            var requestQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
-            requestQueryParams.Add("IncludePendings", includePendings.ToString());
-            requestQueryParams.Add("IncludeDeclines", includeDeclines.ToString());
-            requestQueryParams.Add("StartDate", startDate.ToDateTimeString());
-            requestQueryParams.Add("EndDate", endDate.ToDateTimeString());
-            requestUriBuilder.Query = requestQueryParams.ToString();
+            var requestUriQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
+            requestUriQueryParams.Add("IncludePendings", includePendings.ToString());
+            requestUriQueryParams.Add("IncludeDeclines", includeDeclines.ToString());
+            requestUriQueryParams.Add("StartDate", startDate.ToDateTimeString());
+            requestUriQueryParams.Add("EndDate", endDate.ToDateTimeString());
+            requestUriBuilder.Query = requestUriQueryParams.ToString();
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
             request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
@@ -297,12 +297,12 @@ namespace PexCard.Api.Client
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Details/TransactionDetails/{cardholderAccountId}"));
 
-            var requestQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
-            requestQueryParams.Add("IncludePendings", includePending.ToString());
-            requestQueryParams.Add("IncludeDeclines", includeDeclines.ToString());
-            requestQueryParams.Add("StartDate", startDate.ToEst().ToDateTimeString());
-            requestQueryParams.Add("EndDate", endDate.ToEst().ToDateTimeString());
-            requestUriBuilder.Query = requestQueryParams.ToString();
+            var requestUriQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
+            requestUriQueryParams.Add("IncludePendings", includePending.ToString());
+            requestUriQueryParams.Add("IncludeDeclines", includeDeclines.ToString());
+            requestUriQueryParams.Add("StartDate", startDate.ToEst().ToDateTimeString());
+            requestUriQueryParams.Add("EndDate", endDate.ToEst().ToDateTimeString());
+            requestUriBuilder.Query = requestUriQueryParams.ToString();
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
             request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
