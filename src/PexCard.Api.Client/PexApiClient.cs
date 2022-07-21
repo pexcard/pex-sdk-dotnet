@@ -21,7 +21,8 @@ namespace PexCard.Api.Client
 {
     public class PexApiClient : IPexApiClient
     {
-        private readonly string PexCorrelationIdHeaderName = "X-CORRELATION-ID";
+        private const string PexCorrelationIdHeaderName = "X-CORRELATION-ID";
+        private const string JsonMediaType = "application/json";
 
         private readonly HttpClient _httpClient;
 
@@ -32,616 +33,628 @@ namespace PexCard.Api.Client
 
         public Uri BaseUri => _httpClient.BaseAddress;
 
-        public async Task<bool> Ping(CancellationToken token = default(CancellationToken))
+        public async Task<bool> Ping(CancellationToken cancelToken = default)
         {
-            const string url = "v4/ping";
-            var response = await _httpClient.GetAsync(url, token);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Ping"));
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<RenewTokenResponseModel> RenewExternalToken(string externalToken,
-            CancellationToken token = default(CancellationToken))
+        public async Task<RenewTokenResponseModel> RenewExternalToken(string externalToken, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Token/Renew"));
 
-            var response = await _httpClient.PostAsync("V4/Token/Renew", null, token);
-            var result = await HandleHttpResponseMessage<RenewTokenResponseModel>(response);
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
 
-            return result;
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<RenewTokenResponseModel>(response);
         }
 
-        public async Task<string> ExchangeJwtForApiToken(string jwt, ExchangeTokenRequestModel exchangeTokenRequest,
-            CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<string> ExchangeJwtForApiToken(string jwt, ExchangeTokenRequestModel exchangeTokenRequest, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(TokenType.Bearer, jwt);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "Internal/V4/Account/Token/Exchange"));
 
-            var content = new StringContent(JsonConvert.SerializeObject(exchangeTokenRequest), Encoding.UTF8,
-                "application/json");
+            var requestData = exchangeTokenRequest;
 
-            var response =
-                await _httpClient.PostAsync("Internal/V4/Account/Token/Exchange", content, cancellationToken);
-            var result = await HandleHttpResponseMessage<string>(response);
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Bearer, jwt);
+            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, JsonMediaType);
 
-            return result;
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<string>(response);
         }
 
-        public async Task DeleteExternalToken(string externalToken, CancellationToken token = default(CancellationToken))
+        public async Task DeleteExternalToken(string externalToken, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(TokenType.Token, externalToken);
-            var response = await _httpClient.DeleteAsync("V4/Token", token);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Token"));
+
+            var request = new HttpRequestMessage(HttpMethod.Delete, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
 
             await HandleHttpResponseMessage(response);
         }
 
-
-        public async Task<decimal> GetPexAccountBalance(string externalToken, CancellationToken token = default(CancellationToken))
+        public async Task<decimal> GetPexAccountBalance(string externalToken, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Business/Balance"));
 
-            var builder = new UriBuilder(new Uri(_httpClient.BaseAddress, "V4/Business/Balance"));
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
 
-            var response = await _httpClient.GetAsync(builder.Uri, token);
-            var result = await HandleHttpResponseMessage<BusinessBalanceModel>(response);
+            var response = await _httpClient.SendAsync(request, cancelToken);
 
-            return result?.BusinessAccountBalance ?? 0;
+            var responseData = await HandleHttpResponseMessage<BusinessBalanceModel>(response);
+
+            return responseData?.BusinessAccountBalance ?? 0;
         }
 
-        public async Task<int> GetAllCardholderTransactionsCount(
-            string externalToken,
-            DateTime startDate,
-            DateTime endDate,
-            bool includePendings = false,
-            bool includeDeclines = false,
-            CancellationToken token = default(CancellationToken))
+        public async Task<int> GetAllCardholderTransactionsCount(string externalToken, DateTime startDate, DateTime endDate, bool includePendings = false, bool includeDeclines = false, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Details/AllCardholderTransactionCount"));
 
-            var builder = new UriBuilder(new Uri(_httpClient.BaseAddress, "V4/Details/AllCardholderTransactionCount"));
+            var requestQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
+            requestQueryParams.Add("IncludePendings", includePendings.ToString());
+            requestQueryParams.Add("IncludeDeclines", includeDeclines.ToString());
+            requestQueryParams.Add("StartDate", startDate.ToDateTimeString());
+            requestQueryParams.Add("EndDate", endDate.ToDateTimeString());
+            requestUriBuilder.Query = requestQueryParams.ToString();
 
-            var query = HttpUtility.ParseQueryString(string.Empty);
-            query.Add("IncludePendings", includePendings.ToString());
-            query.Add("IncludeDeclines", includeDeclines.ToString());
-            query.Add("StartDate", startDate.ToDateTimeString());
-            query.Add("EndDate", endDate.ToDateTimeString());
-            builder.Query = query.ToString();
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
 
-            var response = await _httpClient.GetAsync(builder.Uri, token);
-            var result = await HandleHttpResponseMessage<int>(response);
+            var response = await _httpClient.SendAsync(request, cancelToken);
 
-            return result;
+            return await HandleHttpResponseMessage<int>(response);
         }
 
-        public async Task<CardholderTransactions> GetAllCardholderTransactions(
-            string externalToken,
-            DateTime startDate,
-            DateTime endDate,
-            bool includePendings = false,
-            bool includeDeclines = false,
-            CancellationToken token = default(CancellationToken))
+        public async Task<CardholderTransactions> GetAllCardholderTransactions(string externalToken, DateTime startDate, DateTime endDate, bool includePendings = false, bool includeDeclines = false, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Details/AllCardholderTransactions"));
 
-            var builder = new UriBuilder(new Uri(_httpClient.BaseAddress, "V4/Details/AllCardholderTransactions"));
+            var requestQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
+            requestQueryParams.Add("IncludePendings", includePendings.ToString());
+            requestQueryParams.Add("IncludeDeclines", includeDeclines.ToString());
+            requestQueryParams.Add("StartDate", startDate.ToDateTimeString());
+            requestQueryParams.Add("EndDate", endDate.ToDateTimeString());
+            requestUriBuilder.Query = requestQueryParams.ToString();
 
-            var query = HttpUtility.ParseQueryString(string.Empty);
-            query.Add("IncludePendings", includePendings.ToString());
-            query.Add("IncludeDeclines", includeDeclines.ToString());
-            query.Add("StartDate", startDate.ToDateTimeString());
-            query.Add("EndDate", endDate.ToDateTimeString());
-            builder.Query = query.ToString();
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
 
-            var response = await _httpClient.GetAsync(builder.Uri, token);
-            var result = await HandleHttpResponseMessage<TransactionListModel>(response);
+            var response = await _httpClient.SendAsync(request, cancelToken);
 
-            return new CardholderTransactions(result?.TransactionList ?? new List<TransactionModel>());
+            var responseData = await HandleHttpResponseMessage<TransactionListModel>(response);
+
+            return new CardholderTransactions(responseData?.TransactionList ?? new List<TransactionModel>());
         }
 
-        public async Task<BusinessAccountTransactions> GetBusinessAccountTransactions(
-            string externalToken,
-            DateTime startDate,
-            DateTime endDate,
-            bool includePendings = false,
-            bool includeDeclines = false,
-            CancellationToken token = default(CancellationToken))
+        public async Task<BusinessAccountTransactions> GetBusinessAccountTransactions(string externalToken, DateTime startDate, DateTime endDate, bool includePendings = false, bool includeDeclines = false, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Details/TransactionDetails"));
 
-            var builder = new UriBuilder(new Uri(_httpClient.BaseAddress, "V4/Details/TransactionDetails"));
+            var requestQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
+            requestQueryParams.Add("IncludePendings", includePendings.ToString());
+            requestQueryParams.Add("IncludeDeclines", includeDeclines.ToString());
+            requestQueryParams.Add("StartDate", startDate.ToDateTimeString());
+            requestQueryParams.Add("EndDate", endDate.ToDateTimeString());
+            requestUriBuilder.Query = requestQueryParams.ToString();
 
-            var query = HttpUtility.ParseQueryString(string.Empty);
-            query.Add("IncludePendings", includePendings.ToString());
-            query.Add("IncludeDeclines", includeDeclines.ToString());
-            query.Add("StartDate", startDate.ToDateTimeString());
-            query.Add("EndDate", endDate.ToDateTimeString());
-            builder.Query = query.ToString();
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
 
-            var response = await _httpClient.GetAsync(builder.Uri, token);
-            var result = await HandleHttpResponseMessage<TransactionListModel>(response);
+            var response = await _httpClient.SendAsync(request, cancelToken);
 
-            return new BusinessAccountTransactions(result?.TransactionList ?? new List<TransactionModel>());
+            var responseData = await HandleHttpResponseMessage<TransactionListModel>(response);
+
+            return new BusinessAccountTransactions(responseData?.TransactionList ?? new List<TransactionModel>());
         }
 
-        public async Task<List<AttachmentLinkModel>> GetTransactionAttachments(string externalToken, long transactionId,
-            CancellationToken token = default(CancellationToken))
+        public async Task<List<AttachmentLinkModel>> GetTransactionAttachments(string externalToken, long transactionId, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Transactions/{transactionId}/Attachments"));
 
-            var response = await _httpClient.GetAsync($"V4/Transactions/{transactionId}/Attachments", token);
-            var result = await HandleHttpResponseMessage<AttachmentsModel>(response, true);
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
 
-            return result?.Attachments;
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            var responseData = await HandleHttpResponseMessage<AttachmentsModel>(response, true);
+
+            return responseData?.Attachments;
         }
 
-        public async Task<AttachmentModel> GetTransactionAttachment(string externalToken, long transactionId,
-            string attachmentId, CancellationToken token = default(CancellationToken))
+        public async Task<AttachmentModel> GetTransactionAttachment(string externalToken, long transactionId, string attachmentId, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Transactions/{transactionId}/Attachment/{attachmentId}"));
 
-            var response =
-                await _httpClient.GetAsync($"V4/Transactions/{transactionId}/Attachment/{attachmentId}", token);
-            var result = await HandleHttpResponseMessage<AttachmentModel>(response, true);
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
 
-            return result;
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<AttachmentModel>(response, true);
         }
 
-        public async Task AddTransactionNote(string externalToken, TransactionModel transaction,
-            string noteText, CancellationToken token = default(CancellationToken))
+        public async Task AddTransactionNote(string externalToken, TransactionModel transaction, string noteText, CancellationToken cancelToken = default)
         {
-            var noteRequest = new NoteRequestModel
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Note"));
+
+            var requestData = new NoteRequestModel
             {
                 NoteText = noteText,
                 Pending = transaction.IsPending,
                 TransactionId = transaction.TransactionId
             };
 
-            const string url = "v4/note";
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(TokenType.Token, externalToken);
-            var content = new StringContent(JsonConvert.SerializeObject(noteRequest), Encoding.UTF8,
-                "application/json");
-            var response = await _httpClient.PostAsync(url, content, token);
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, JsonMediaType);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
 
             await HandleHttpResponseMessage(response);
         }
 
-
-        public async Task<bool> IsTagsEnabled(string externalToken,
-            CancellationToken token = default(CancellationToken))
+        public async Task<bool> IsTagsEnabled(string externalToken, CancellationToken cancelToken = default)
         {
-            var response = await GetTagsResponse(externalToken, token);
+            var response = await GetTagsResponse(externalToken, cancelToken);
 
             if (response.StatusCode == HttpStatusCode.Forbidden) return false;
 
             await HandleHttpResponseMessage(response);
+
             return true;
         }
 
-        public async Task<bool> IsTagsAvailable(string externalToken, CustomFieldType fieldType,
-            CancellationToken token = default(CancellationToken))
+        public async Task<bool> IsTagsAvailable(string externalToken, CustomFieldType fieldType, CancellationToken cancelToken = default)
         {
-            var response = await GetTagsResponse(externalToken, token);
+            var response = await GetTagsResponse(externalToken, cancelToken);
 
             if (response.StatusCode == HttpStatusCode.Forbidden) return false;
 
-            var tags = await HandleHttpResponseMessage<List<TagDetailsModel>>(response);
-            var result = tags.Any(x => x.Type == fieldType);
-            return result;
+            var responseData = await HandleHttpResponseMessage<List<TagDetailsModel>>(response);
+
+            return responseData.Any(x => x.Type == fieldType);
         }
 
-        public async Task<GetAdminProfileModel> GetMyAdminProfile(string externalToken, CancellationToken token = default(CancellationToken))
+        public async Task<GetAdminProfileModel> GetMyAdminProfile(string externalToken, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Business/MyProfile"));
 
-            var response = await _httpClient.GetAsync("V4/Business/MyProfile", token);
-            var result = await HandleHttpResponseMessage<GetAdminProfileModel>(response);
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
 
-            return result;
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<GetAdminProfileModel>(response);
         }
 
-        /// <summary>
-        /// Return all accounts associated with your business.
-        /// </summary>
-        public async Task<BusinessDetailsModel> GetBusinessDetails(string externalToken,
-            CancellationToken token = default(CancellationToken))
+        public async Task<BusinessDetailsModel> GetBusinessDetails(string externalToken, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Details/AccountDetails"));
 
-            var response = await _httpClient.GetAsync("V4/Details/AccountDetails", token);
-            var result = await HandleHttpResponseMessage<BusinessDetailsModel>(response);
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
 
-            return result;
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<BusinessDetailsModel>(response);
         }
 
-        public async Task<BusinessSettingsModel> GetBusinessSettings(string externalToken, CancellationToken token = default(CancellationToken))
+        public async Task<BusinessSettingsModel> GetBusinessSettings(string externalToken, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Details/Settings"));
 
-            var response = await _httpClient.GetAsync("V4/Business/Settings", token);
-            var result = await HandleHttpResponseMessage<BusinessSettingsModel>(response);
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
 
-            return result;
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<BusinessSettingsModel>(response);
         }
 
-        /// <summary>
-        /// Creates a card funding transaction. This transfers money from the business to the card making funds immediately available to spend.
-        /// Attaches a note to the latest funding transaction matching the requested amount.
-        /// </summary>
-        public async Task<FundResponseModel> FundCard(string externalToken, int cardholderAccountId, decimal amount,
-           string note = "", CancellationToken token = default(CancellationToken))
+        public async Task<FundResponseModel> FundCard(string externalToken, int cardholderAccountId, decimal amount, string note = "", CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Card/Fund/{cardholderAccountId}"));
 
-            var requestContent = JsonConvert.SerializeObject(
-                new FundRequestModel
-                {
-                    Amount = amount,
-                    NoteText = note
-                });
-            var request = new StringContent(requestContent, Encoding.UTF8, "application/json");
+            var requestData = new FundRequestModel
+            {
+                Amount = amount,
+                NoteText = note
+            };
 
-            var response = await _httpClient.PostAsync($"V4/Card/Fund/{cardholderAccountId}", request, token);
-            var result = await HandleHttpResponseMessage<FundResponseModel>(response);
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, JsonMediaType);
 
-            return result;
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<FundResponseModel>(response);
         }
 
-        /// <summary>
-        /// Fund a specified card accountID to zero ($0).
-        /// </summary>
-        public async Task<FundResponseModel> ZeroCard(
-            string externalToken,
-            int cardholderAccountId,
-            CancellationToken token = default)
+        public async Task<FundResponseModel> ZeroCard(string externalToken, int cardholderAccountId, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Card/Zero/{cardholderAccountId}"));
 
-            var response = await _httpClient.PostAsync($"V4/Card/Zero/{cardholderAccountId}", null, token);
-            var result = await HandleHttpResponseMessage<FundResponseModel>(response);
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
 
-            return result;
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<FundResponseModel>(response);
         }
 
-        public async Task<CardholderTransactions> GetCardholderTransactions(
-            string externalToken,
-            int cardholderAccountId,
-            DateTime startDate,
-            DateTime endDate,
-            bool includePending = false,
-            bool includeDeclines = false,
-            CancellationToken token = default(CancellationToken))
+        public async Task<CardholderTransactions> GetCardholderTransactions(string externalToken, int cardholderAccountId, DateTime startDate, DateTime endDate, bool includePending = false, bool includeDeclines = false, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Details/TransactionDetails/{cardholderAccountId}"));
 
-            var builder = new UriBuilder(new Uri(_httpClient.BaseAddress, $"V4/Details/TransactionDetails/{cardholderAccountId}"));
+            var requestQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
+            requestQueryParams.Add("IncludePendings", includePending.ToString());
+            requestQueryParams.Add("IncludeDeclines", includeDeclines.ToString());
+            requestQueryParams.Add("StartDate", startDate.ToEst().ToDateTimeString());
+            requestQueryParams.Add("EndDate", endDate.ToEst().ToDateTimeString());
+            requestUriBuilder.Query = requestQueryParams.ToString();
 
-            var query = HttpUtility.ParseQueryString(string.Empty);
-            query.Add("IncludePendings", includePending.ToString());
-            query.Add("IncludeDeclines", includeDeclines.ToString());
-            query.Add("StartDate", startDate.ToEst().ToDateTimeString());
-            query.Add("EndDate", endDate.ToEst().ToDateTimeString());
-            builder.Query = query.ToString();
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
 
-            var response = await _httpClient.GetAsync(builder.Uri, token);
-            var result = await HandleHttpResponseMessage<TransactionListModel>(response);
+            var response = await _httpClient.SendAsync(request, cancelToken);
 
-            return new CardholderTransactions(result.TransactionList ?? new List<TransactionModel>());
+            var responseData = await HandleHttpResponseMessage<TransactionListModel>(response);
+
+            return new CardholderTransactions(responseData?.TransactionList ?? new List<TransactionModel>());
         }
 
-
-        public async Task<CardholderDetailsModel> GetCardholderDetails(string externalToken,
-            int cardholderAccountId, CancellationToken token = default(CancellationToken))
+        public async Task<CardholderDetailsModel> GetCardholderDetails(string externalToken, int cardholderAccountId, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Details/AccountDetails/{cardholderAccountId}"));
 
-            var response = await _httpClient.GetAsync($"V4/Details/AccountDetails/{cardholderAccountId}", token);
-            var result = await HandleHttpResponseMessage<CardholderDetailsModel>(response);
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
 
-            return result;
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<CardholderDetailsModel>(response);
         }
 
-        public async Task<CardholderProfileModel> GetCardholderProfile(string externalToken,
-            int cardholderAccountId, CancellationToken token = default(CancellationToken))
+        public async Task<CardholderProfileModel> GetCardholderProfile(string externalToken, int cardholderAccountId, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Card/Profile/{cardholderAccountId}"));
 
-            var response = await _httpClient.GetAsync($"V4/Card/Profile/{cardholderAccountId}", token);
-            var result = await HandleHttpResponseMessage<CardholderProfileModel>(response);
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
 
-            return result;
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<CardholderProfileModel>(response);
         }
 
-        public async Task<List<TagDetailsModel>> GetTags(string externalToken, CancellationToken token = default(CancellationToken))
+        public async Task<List<TagDetailsModel>> GetTags(string externalToken, CancellationToken cancelToken = default)
         {
-            var response = await GetTagsResponse(externalToken, token);
-            var result = await HandleHttpResponseMessage<List<TagDetailsModel>>(response);
+            var response = await GetTagsResponse(externalToken, cancelToken);
 
-            return result;
+            return await HandleHttpResponseMessage<List<TagDetailsModel>>(response);
         }
 
-        public async Task<TagDetailsModel> GetTag(string externalToken, string tagId,
-            CancellationToken token = default(CancellationToken))
+        public async Task<TagDetailsModel> GetTag(string externalToken, string tagId, CancellationToken cancelToken = default)
         {
-            var result = await GetTag<TagDetailsModel>(externalToken, tagId, token);
-            return result;
+            return await GetTag<TagDetailsModel>(externalToken, tagId, cancelToken);
         }
 
-        public async Task<TagDropdownDetailsModel> GetDropdownTag(string externalToken, string tagId,
-            CancellationToken token = default(CancellationToken))
+        public async Task<TagDropdownDetailsModel> GetDropdownTag(string externalToken, string tagId, CancellationToken cancelToken = default)
         {
-            var result = await GetTag<TagDropdownDetailsModel>(externalToken, tagId, token);
-            return result;
+            return await GetTag<TagDropdownDetailsModel>(externalToken, tagId, cancelToken);
         }
 
-        public async Task<TagDropdownDetailsModel> CreateDropdownTag(string externalToken, TagDropdownDataModel tag,
-            CancellationToken token = default(CancellationToken))
+        public async Task<TagDropdownDetailsModel> CreateDropdownTag(string externalToken, TagDropdownDataModel tag, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Business/Configuration/Tag/Dropdown"));
 
-            var requestContent = JsonConvert.SerializeObject(tag);
-            var request = new StringContent(requestContent, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("V4/Business/Configuration/Tag/Dropdown", request, token);
-            var result = await HandleHttpResponseMessage<TagDropdownDetailsModel>(response);
+            var requestData = tag;
 
-            return result;
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, JsonMediaType);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<TagDropdownDetailsModel>(response);
         }
 
-        public async Task<TagDropdownDetailsModel> UpdateDropdownTag(string externalToken, string tagId, TagDropdownModel tag,
-            CancellationToken token = default(CancellationToken))
+        public async Task<TagDropdownDetailsModel> UpdateDropdownTag(string externalToken, string tagId, TagDropdownModel tag, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Business/Configuration/Tag/Dropdown/{tagId}"));
 
-            var requestContent = JsonConvert.SerializeObject(tag);
-            var request = new StringContent(requestContent, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PutAsync($"V4/Business/Configuration/Tag/Dropdown/{tagId}", request, token);
-            var result = await HandleHttpResponseMessage<TagDropdownDetailsModel>(response);
+            var requestData = tag;
 
-            return result;
+            var request = new HttpRequestMessage(HttpMethod.Put, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, JsonMediaType);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<TagDropdownDetailsModel>(response);
         }
 
-        public async Task<TagDropdownDetailsModel> DeleteDropdownTag(string externalToken, string tagId,
-            CancellationToken token = default(CancellationToken))
+        public async Task<TagDropdownDetailsModel> DeleteDropdownTag(string externalToken, string tagId, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Business/Configuration/Tag/Dropdown/{tagId}"));
 
-            var response = await _httpClient.DeleteAsync($"V4/Business/Configuration/Tag/Dropdown/{tagId}", token);
-            var result = await HandleHttpResponseMessage<TagDropdownDetailsModel>(response);
+            var request = new HttpRequestMessage(HttpMethod.Delete, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
 
-            return result;
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<TagDropdownDetailsModel>(response);
         }
 
-        public async Task<TokenResponseModel> GetTokens(string externalToken, CancellationToken token = default(CancellationToken))
+        public async Task<TokenResponseModel> GetTokens(string externalToken, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Token"));
 
-            var response = await _httpClient.GetAsync("V4/Token", token);
-            var result = await HandleHttpResponseMessage<TokenResponseModel>(response);
-            return result;
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<TokenResponseModel>(response);
         }
 
-        public async Task<TokenDataModel> GetToken(string externalToken, CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<TokenDataModel> GetToken(string externalToken, CancellationToken cancelToken = default)
         {
-            var tokens = await GetTokens(externalToken, cancellationToken);
+            var tokens = await GetTokens(externalToken, cancelToken);
 
-            var token = tokens.Tokens.FirstOrDefault(pt => pt.Token == externalToken);
-            return token;
+            return tokens.Tokens.FirstOrDefault(pt => pt.Token == externalToken);
         }
 
-        public async Task<int> CreateCardOrder(string externalToken, CardOrderModel cardOrder, CancellationToken token = default(CancellationToken))
+        public async Task<int> CreateCardOrder(string externalToken, CardOrderModel cardOrder, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Card/CreateAsync"));
 
-            var requestContent = JsonConvert.SerializeObject(cardOrder);
-            var request = new StringContent(requestContent, Encoding.UTF8, "application/json");
+            var requestData = cardOrder;
 
-            var response = await _httpClient.PostAsync("V4/Card/CreateAsync", request, token);
-            var result = await HandleHttpResponseMessage<CardOrderIdModel>(response);
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, JsonMediaType);
 
-            return result.CardOrderId;
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            var responseData = await HandleHttpResponseMessage<CardOrderIdModel>(response);
+
+            return responseData.CardOrderId;
         }
 
-        public async Task<PartnerModel> GetPartner(string externalToken, CancellationToken token = default(CancellationToken))
+        public async Task<PartnerModel> GetPartner(string externalToken, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Partner"));
 
-            var response = await _httpClient.GetAsync($"v4/Partner", token);
-            var result = await HandleHttpResponseMessage<PartnerModel>(response);
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
 
-            return result;
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<PartnerModel>(response);
         }
 
-        public async Task<CardholderGroupsResponseModel> GetCardholderGroups(string externalToken, CancellationToken token = default)
+        public async Task<CardholderGroupsResponseModel> GetCardholderGroups(string externalToken, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Group"));
 
-            var response = await _httpClient.GetAsync($"v4/Group", token);
-            var result = await HandleHttpResponseMessage<CardholderGroupsResponseModel>(response);
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
 
-            return result;
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<CardholderGroupsResponseModel>(response);
         }
 
-        public async Task<CardholderGroupResponseModel> GetCardholderGroup(string externalToken, int groupId, CancellationToken token = default)
+        public async Task<CardholderGroupResponseModel> GetCardholderGroup(string externalToken, int groupId, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Group/{groupId}"));
 
-            var response = await _httpClient.GetAsync($"v4/Group/{groupId}", token);
-            var result = await HandleHttpResponseMessage<CardholderGroupResponseModel>(response);
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
 
-            return result;
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<CardholderGroupResponseModel>(response);
         }
 
-        public async Task<CardholderGroupResponseModel> CreateCardholderGroup(string externalToken, string groupName, CancellationToken token = default)
+        public async Task<CardholderGroupResponseModel> CreateCardholderGroup(string externalToken, string groupName, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Group"));
 
-            var requestContent = JsonConvert.SerializeObject(new UpsertCardholderGroupModel { Name = groupName });
-            var request = new StringContent(requestContent, Encoding.UTF8, "application/json");
+            var requestData = new UpsertCardholderGroupModel { Name = groupName };
 
-            var response = await _httpClient.PostAsync("V4/Group", request, token);
-            var result = await HandleHttpResponseMessage<CardholderGroupResponseModel>(response);
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, JsonMediaType);
 
-            return result;
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<CardholderGroupResponseModel>(response);
         }
 
-        public async Task<CardholderGroupResponseModel> UpdateCardholderGroupName(string externalToken, int groupId, string groupName, CancellationToken token = default)
+        public async Task<CardholderGroupResponseModel> UpdateCardholderGroupName(string externalToken, int groupId, string groupName, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Group/{groupId}"));
 
-            var requestContent = JsonConvert.SerializeObject(new UpsertCardholderGroupModel { Name = groupName });
-            var request = new StringContent(requestContent, Encoding.UTF8, "application/json");
+            var requestData = new UpsertCardholderGroupModel { Name = groupName };
 
-            var response = await _httpClient.PutAsync($"V4/Group/{groupId}", request, token);
-            var result = await HandleHttpResponseMessage<CardholderGroupResponseModel>(response);
+            var request = new HttpRequestMessage(HttpMethod.Put, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, JsonMediaType);
 
-            return result;
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<CardholderGroupResponseModel>(response);
         }
 
-        public async Task DeleteCardholderGroup(string externalToken, int groupId, CancellationToken token = default)
+        public async Task DeleteCardholderGroup(string externalToken, int groupId, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Group/{groupId}"));
 
-            var response = await _httpClient.DeleteAsync($"V4/Group/{groupId}", token);
-            await HandleHttpResponseMessage<CardholderGroupModel>(response);
+            var request = new HttpRequestMessage(HttpMethod.Delete, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            await HandleHttpResponseMessage(response);
         }
 
-        public async Task<TagsModel> GetTransactionTags(string externalToken, long transactionId, CancellationToken token = default)
+        public async Task<TagsModel> GetTransactionTags(string externalToken, long transactionId, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Transactions/{transactionId}/Tags"));
 
-            var response = await _httpClient.GetAsync($"V4/Transactions/{transactionId}/Tags", token);
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
             return await HandleHttpResponseMessage<TagsModel>(response);
         }
 
-        public async Task AddTransactionTags(string externalToken, long transactionId, UpsertTransactionTagsModel transactionTags, CancellationToken token = default)
+        public async Task AddTransactionTags(string externalToken, long transactionId, UpsertTransactionTagsModel transactionTags, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Transactions/{transactionId}/Tags"));
 
-            var requestContent = JsonConvert.SerializeObject(transactionTags);
-            var request = new StringContent(requestContent, Encoding.UTF8, "application/json");
+            var requestData = transactionTags;
 
-            var response = await _httpClient.PostAsync($"V4/Transactions/{transactionId}/Tags", request, token);
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, JsonMediaType);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
             await HandleHttpResponseMessage(response);
         }
 
-        public async Task UpdateTransactionTags(string externalToken, long transactionId, UpsertTransactionTagsModel transactionTags, CancellationToken token = default)
+        public async Task UpdateTransactionTags(string externalToken, long transactionId, UpsertTransactionTagsModel transactionTags, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Transactions/{transactionId}/Tags"));
 
-            var requestContent = JsonConvert.SerializeObject(transactionTags);
-            var request = new StringContent(requestContent, Encoding.UTF8, "application/json");
+            var requestData = transactionTags;
 
-            var response = await _httpClient.PutAsync($"V4/Transactions/{transactionId}/Tags", request, token);
+            var request = new HttpRequestMessage(HttpMethod.Put, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, JsonMediaType);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
             await HandleHttpResponseMessage(response);
         }
 
-        public async Task<List<CallbackSubscriptionModel>> GetCallbackSubscriptions(string externalToken, CancellationToken token = default)
+        public async Task<List<CallbackSubscriptionModel>> GetCallbackSubscriptions(string externalToken, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Callback-Subscription"));
 
-            var response = await _httpClient.GetAsync("V4/callback-subscription", token);
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
             return await HandleHttpResponseMessage<List<CallbackSubscriptionModel>>(response);
         }
 
-        public async Task<CallbackSubscriptionModel> GetCallbackSubscription(string externalToken, int callbackId, CancellationToken token = default)
+        public async Task<CallbackSubscriptionModel> GetCallbackSubscription(string externalToken, int callbackId, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Callback-Subscription/{callbackId}"));
 
-            var response = await _httpClient.GetAsync($"V4/callback-subscription/{callbackId}", token);
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
             return await HandleHttpResponseMessage<CallbackSubscriptionModel>(response);
         }
 
-        public async Task AddCallbackSubscription(string externalToken, CallbackType callbackType, Uri callbackUri, CallbackStatus callbackStatus = CallbackStatus.Active, CancellationToken token = default)
+        public async Task AddCallbackSubscription(string externalToken, CallbackType callbackType, Uri callbackUri, CallbackStatus callbackStatus = CallbackStatus.Active, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Callback-Subscription"));
 
-            var upsertModel = new UpsertCallbackSubscriptionModel(callbackType, callbackStatus, callbackUri);
+            var requestData = new UpsertCallbackSubscriptionModel(callbackType, callbackStatus, callbackUri);
 
-            var requestContent = JsonConvert.SerializeObject(upsertModel);
-            var request = new StringContent(requestContent, Encoding.UTF8, "application/json");
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, JsonMediaType);
 
-            var response = await _httpClient.PostAsync("V4/callback-subscription", request, token);
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
             await HandleHttpResponseMessage(response);
         }
 
-        public async Task UpdateCallbackSubscription(string externalToken, int callbackId, CallbackType callbackType, Uri callbackUri, CallbackStatus callbackStatus, CancellationToken token = default)
+        public async Task UpdateCallbackSubscription(string externalToken, int callbackId, CallbackType callbackType, Uri callbackUri, CallbackStatus callbackStatus, CancellationToken cancelToken = default)
         {
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Callback-Subscription/{callbackId}"));
 
-            var upsertModel = new UpsertCallbackSubscriptionModel(callbackType, callbackStatus, callbackUri);
+            var requestData = new UpsertCallbackSubscriptionModel(callbackType, callbackStatus, callbackUri);
 
-            var requestContent = JsonConvert.SerializeObject(upsertModel);
-            var request = new StringContent(requestContent, Encoding.UTF8, "application/json");
+            var request = new HttpRequestMessage(HttpMethod.Put, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, JsonMediaType);
 
-            var response = await _httpClient.PutAsync($"V4/callback-subscription/{callbackId}", request, token);
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
             await HandleHttpResponseMessage(response);
         }
 
         #region Private methods
 
-        private async Task<HttpResponseMessage> GetTagsResponse(string externalToken, CancellationToken token)
+        private async Task<HttpResponseMessage> GetTagsResponse(string externalToken, CancellationToken cancelToken)
         {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Business/Configuration/Tags"));
 
-            var result = await _httpClient.GetAsync("V4/Business/Configuration/Tags", token);
-            return result;
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+
+            return await _httpClient.SendAsync(request, cancelToken);
         }
 
-        private async Task<T> GetTag<T>(string externalToken, string tagId, CancellationToken token) where T : TagDataModel
+        private async Task<TTagModel> GetTag<TTagModel>(string externalToken, string tagId, CancellationToken cancelToken) where TTagModel : TagDataModel
         {
-            _httpClient.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Business/Configuration/Tag/{tagId}"));
 
-            var response = await _httpClient.GetAsync($"V4/Business/Configuration/Tag/{tagId}", token);
-            var result = await HandleHttpResponseMessage<T>(response);
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
 
-            return result;
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<TTagModel>(response);
         }
 
-        private async Task<T> HandleHttpResponseMessage<T>(HttpResponseMessage response, bool notFoundAsDefault = false)
+        private async Task<TContent> HandleHttpResponseMessage<TContent>(HttpResponseMessage response, bool notFoundAsDefault = false)
         {
-            var responseContent = await response.Content.ReadAsStringAsync();
+            var responseData = await response.Content.ReadAsStringAsync();
             try
             {
                 if (!response.IsSuccessStatusCode)
                 {
                     if (response.StatusCode == HttpStatusCode.NotFound && notFoundAsDefault)
                     {
-                        return default(T);
+                        return default;
                     }
 
-                    var errorModel = JsonConvert.DeserializeObject<ErrorMessageModel>(responseContent);
+                    var errorModel = JsonConvert.DeserializeObject<ErrorMessageModel>(responseData);
                     var correlationId = GetPexCorrelationId(response);
 
                     throw new PexApiClientException(response.StatusCode, errorModel.Message, correlationId);
                 }
-                return JsonConvert.DeserializeObject<T>(responseContent);
+                return JsonConvert.DeserializeObject<TContent>(responseData);
             }
             catch (Exception ex)
             {
                 var correlationId = GetPexCorrelationId(response);
 
-                throw new PexApiClientException(response.StatusCode, $"Error parsing response: {ex.Message}\nContent: {responseContent}", ex, correlationId);
+                throw new PexApiClientException(response.StatusCode, $"Error parsing response: {ex.Message}\nContent: {responseData}", ex, correlationId);
             }
         }
 
@@ -649,11 +662,11 @@ namespace PexCard.Api.Client
         {
             if (!response.IsSuccessStatusCode)
             {
-                var responseContent = await response.Content.ReadAsStringAsync();
+                var responseData = await response.Content.ReadAsStringAsync();
 
                 try
                 {
-                    var errorModel = JsonConvert.DeserializeObject<ErrorMessageModel>(responseContent);
+                    var errorModel = JsonConvert.DeserializeObject<ErrorMessageModel>(responseData);
                     var correlationId = GetPexCorrelationId(response);
 
                     throw new PexApiClientException(response.StatusCode, errorModel.Message, correlationId);
@@ -662,7 +675,7 @@ namespace PexCard.Api.Client
                 {
                     var correlationId = GetPexCorrelationId(response);
 
-                    throw new PexApiClientException(response.StatusCode, $"Error parsing response: {ex.Message}\nContent: {responseContent}", ex, correlationId);
+                    throw new PexApiClientException(response.StatusCode, $"Error parsing response: {ex.Message}\nContent: {responseData}", ex, correlationId);
                 }
             }
         }
