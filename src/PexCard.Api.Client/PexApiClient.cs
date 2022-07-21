@@ -22,7 +22,8 @@ namespace PexCard.Api.Client
     public class PexApiClient : IPexApiClient
     {
         private const string PexCorrelationIdHeaderName = "X-CORRELATION-ID";
-        private const string JsonMediaType = "application/json";
+        private const string PexJsonMediaType = "application/json";
+        private readonly Encoding PexEncodingType = Encoding.UTF8;
 
         private readonly HttpClient _httpClient;
 
@@ -64,7 +65,7 @@ namespace PexCard.Api.Client
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
             request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Bearer, jwt);
-            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, JsonMediaType);
+            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), PexEncodingType, PexJsonMediaType);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -197,7 +198,7 @@ namespace PexCard.Api.Client
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
             request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
-            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, JsonMediaType);
+            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), PexEncodingType, PexJsonMediaType);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -274,7 +275,7 @@ namespace PexCard.Api.Client
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
             request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
-            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, JsonMediaType);
+            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), PexEncodingType, PexJsonMediaType);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -363,7 +364,7 @@ namespace PexCard.Api.Client
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
             request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
-            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, JsonMediaType);
+            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), PexEncodingType, PexJsonMediaType);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -378,7 +379,7 @@ namespace PexCard.Api.Client
 
             var request = new HttpRequestMessage(HttpMethod.Put, requestUriBuilder.Uri);
             request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
-            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, JsonMediaType);
+            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), PexEncodingType, PexJsonMediaType);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -424,7 +425,7 @@ namespace PexCard.Api.Client
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
             request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
-            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, JsonMediaType);
+            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), PexEncodingType, PexJsonMediaType);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -477,7 +478,7 @@ namespace PexCard.Api.Client
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
             request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
-            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, JsonMediaType);
+            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), PexEncodingType, PexJsonMediaType);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -492,7 +493,7 @@ namespace PexCard.Api.Client
 
             var request = new HttpRequestMessage(HttpMethod.Put, requestUriBuilder.Uri);
             request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
-            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, JsonMediaType);
+            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), PexEncodingType, PexJsonMediaType);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -531,7 +532,7 @@ namespace PexCard.Api.Client
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
             request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
-            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, JsonMediaType);
+            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), PexEncodingType, PexJsonMediaType);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -546,7 +547,7 @@ namespace PexCard.Api.Client
 
             var request = new HttpRequestMessage(HttpMethod.Put, requestUriBuilder.Uri);
             request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
-            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, JsonMediaType);
+            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), PexEncodingType, PexJsonMediaType);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -585,7 +586,7 @@ namespace PexCard.Api.Client
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
             request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
-            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, JsonMediaType);
+            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), PexEncodingType, PexJsonMediaType);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -600,7 +601,7 @@ namespace PexCard.Api.Client
 
             var request = new HttpRequestMessage(HttpMethod.Put, requestUriBuilder.Uri);
             request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
-            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), Encoding.UTF8, JsonMediaType);
+            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), PexEncodingType, PexJsonMediaType);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
