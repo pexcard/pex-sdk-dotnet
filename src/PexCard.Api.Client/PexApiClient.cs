@@ -253,7 +253,7 @@ namespace PexCard.Api.Client
 
         public async Task<BusinessSettingsModel> GetBusinessSettings(string externalToken, CancellationToken cancelToken = default)
         {
-            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Details/Settings"));
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Business/Settings"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
             request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
