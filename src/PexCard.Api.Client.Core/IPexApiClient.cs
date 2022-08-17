@@ -49,9 +49,9 @@ namespace PexCard.Api.Client.Core
 
         Task<TagsModel> GetTransactionTags(string externalToken, long transactionId, CancellationToken cancelToken = default);
 
-        Task AddTransactionTags(string externalToken, long transactionId, UpsertTransactionTagsModel transactionTags, CancellationToken cancelToken = default);
+        Task AddTransactionTags(string externalToken, long transactionId, UpsertTransactionTagsModel transactionTags, bool force = false, CancellationToken cancelToken = default);
 
-        Task UpdateTransactionTags(string externalToken, long transactionId, UpsertTransactionTagsModel transactionTags, CancellationToken cancelToken = default);
+        Task UpdateTransactionTags(string externalToken, long transactionId, UpsertTransactionTagsModel transactionTags, bool force = false, CancellationToken cancelToken = default);
 
         Task<CardholderDetailsModel> GetCardholderDetails(string externalToken, int cardholderAccountId, CancellationToken cancelToken = default);
 
