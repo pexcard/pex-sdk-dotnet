@@ -47,7 +47,7 @@ namespace PexCard.Api.Client.Core.Extensions
                 tagDefinitions);
         }
 
-        public static async Task<Dictionary<long, List<AllocationTagValue>>> GetTagAllocations(
+        public static Task<Dictionary<long, List<AllocationTagValue>>> GetTagAllocations(
             this IPexApiClient pexApiClient,
             string externalToken,
             List<TransactionModel> transactions,
@@ -114,7 +114,7 @@ namespace PexCard.Api.Client.Core.Extensions
                 result.Add(transaction.TransactionId, allocations);
             }
 
-            return result;
+            return Task.FromResult(result);
         }
     }
 }
