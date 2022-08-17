@@ -525,12 +525,15 @@ namespace PexCard.Api.Client
             return await HandleHttpResponseMessage<TagsModel>(response);
         }
 
-        public async Task AddTransactionTags(string externalToken, long transactionId, UpsertTransactionTagsModel transactionTags, bool force = false, CancellationToken cancelToken = default)
+        public async Task AddTransactionTags(string externalToken, long transactionId, UpsertTransactionTagsModel transactionTags, bool? force = default, CancellationToken cancelToken = default)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Transactions/{transactionId}/Tags"));
 
             var requestUriQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
-            requestUriQueryParams.Add("force", force.ToString());
+            if (force.HasValue)
+            {
+                requestUriQueryParams.Add("force", force.ToString());
+            }
             requestUriBuilder.Query = requestUriQueryParams.ToString();
 
             var requestData = transactionTags;
@@ -544,12 +547,15 @@ namespace PexCard.Api.Client
             await HandleHttpResponseMessage(response);
         }
 
-        public async Task UpdateTransactionTags(string externalToken, long transactionId, UpsertTransactionTagsModel transactionTags, bool force = false, CancellationToken cancelToken = default)
+        public async Task UpdateTransactionTags(string externalToken, long transactionId, UpsertTransactionTagsModel transactionTags, bool? force = default, CancellationToken cancelToken = default)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Transactions/{transactionId}/Tags"));
 
             var requestUriQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
-            requestUriQueryParams.Add("force", force.ToString());
+            if (force.HasValue)
+            {
+                requestUriQueryParams.Add("force", force.ToString());
+            }
             requestUriBuilder.Query = requestUriQueryParams.ToString();
 
             var requestData = transactionTags;
