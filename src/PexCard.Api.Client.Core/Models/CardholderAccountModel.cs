@@ -20,6 +20,11 @@ namespace PexCard.Api.Client.Core.Models
         public string LastName { get; set; }
 
         /// <summary>
+        /// Cardholder email
+        /// </summary>
+        public string Email { get; set; }
+
+        /// <summary>
         /// Ledger balance for the cardholder account, rounded to 2 decimal
         /// places
         /// </summary>
