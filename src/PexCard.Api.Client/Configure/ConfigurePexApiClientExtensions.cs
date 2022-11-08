@@ -20,7 +20,6 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             services.Configure<PexApiClientOptions>(configSection);
-            services.AddSingleton(sp => sp.GetRequiredService<IOptions<PexApiClientOptions>>().Value.Retries);
 
             return services.RegisterPexApiClient();
         }
@@ -58,7 +57,6 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             services.Configure(configure);
-            services.AddSingleton(sp => sp.GetRequiredService<IOptions<PexApiClientOptions>>().Value.Retries);
 
             return services.RegisterPexApiClient();
         }
