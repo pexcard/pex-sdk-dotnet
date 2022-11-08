@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.ComponentModel;
+using System.Text.Json.Serialization;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -16,7 +16,7 @@ namespace Microsoft.Extensions.DependencyInjection
             Retries = retries;
         }
 
-        [JsonConverter(typeof(TimeSpanConverter))]
+        [JsonConverter(typeof(JsonTimeSpanConverter))]
         public TimeSpan Delay { get; set; } = TimeSpan.FromMilliseconds(100);
 
         public int Retries { get; set; } = 1;
