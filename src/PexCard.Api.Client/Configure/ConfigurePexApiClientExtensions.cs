@@ -38,7 +38,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return services.AddPexApiClient((x) =>
             {
                 x.BaseUri = options.BaseUri;
-                x.TimeOut = options.TimeOut;
+                x.Timeout = options.Timeout;
                 x.Retries = options.Retries;
                 x.LogLevelSuccess = options.LogLevelSuccess;
                 x.LogLevelFailure = options.LogLevelFailure;
@@ -73,7 +73,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 var options = sp.GetRequiredService<IOptions<PexApiClientOptions>>().Value;
 
                 httpClient.BaseAddress = options.BaseUri;
-                httpClient.Timeout = options.TimeOut;
+                httpClient.Timeout = options.Timeout;
             })
             .UsePexTerseLogging<PexApiClient>(sp =>
             {

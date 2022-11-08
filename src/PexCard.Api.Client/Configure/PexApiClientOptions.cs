@@ -13,7 +13,7 @@ namespace PexCard.Api.Client
 #pragma warning restore S1075 // URIs should not be hardcoded
 
         [JsonConverter(typeof(JsonTimeSpanConverter))]
-        public TimeSpan TimeOut { get; set; } = TimeSpan.FromMinutes(3);
+        public TimeSpan Timeout { get; set; } = TimeSpan.FromMinutes(3);
 
         public LogLevel LogLevelSuccess { get; set; } = LogLevel.Information;
 
