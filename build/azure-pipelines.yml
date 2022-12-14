@@ -18,6 +18,12 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
+- task: UseDotNet@2
+  displayName: 'use dotnet (global.json)'
+  inputs:
+    packageType: 'sdk'
+    useGlobalJson: true
+    
 - task: DotNetCoreCLI@2
   displayName: 'dotnet restore'
   inputs:
