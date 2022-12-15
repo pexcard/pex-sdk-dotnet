@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 
 namespace System.Text.Json.Serialization
 {
-    public class JsonTimeSpanConverter : JsonConverter<TimeSpan>
+    internal class JsonTimeSpanConverter : JsonConverter<TimeSpan>
     {
         /// <summary>
         /// Format: Days.Hours:Minutes:Seconds:Milliseconds
