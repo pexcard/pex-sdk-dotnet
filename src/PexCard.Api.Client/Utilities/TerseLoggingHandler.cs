@@ -7,7 +7,7 @@ namespace System.Net.Http
 {
     // based on https://github.com/serilog/serilog-aspnetcore/blob/main/src/Serilog.AspNetCore/AspNetCore/RequestLoggingMiddleware.cs
     // but using dotnet logger. much more terse and easier to read http request log messages.
-    public class TerseLoggingHandler<TClient> : DelegatingHandler
+    internal class TerseLoggingHandler<TClient> : DelegatingHandler
     {
         private readonly ILogger _logger;
         private readonly LogLevel _successLogLevel;
