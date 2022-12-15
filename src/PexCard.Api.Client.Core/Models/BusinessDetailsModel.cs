@@ -10,5 +10,6 @@ namespace PexCard.Api.Client.Core.Models
         public decimal BusinessAccountBalance { get; set; }
         public decimal PendingTransferAmount { get; set; }
         public List<CardholderAccountModel> CHAccountList { get; set; }
+        public string BusinessAccountNumber { get; set; }
     }
 }
