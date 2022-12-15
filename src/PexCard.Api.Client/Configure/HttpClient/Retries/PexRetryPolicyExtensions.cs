@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Polly;
 using Polly.Contrib.WaitAndRetry;
 using System;
@@ -48,7 +49,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(getOptions));
             }
 
-            return builder.UsePexRetryPolicies<TClient>(sp => getOptions(sp));
+            return builder.AddPolicyHandler((sp, req) => GetRetryPolicy(sp, sp.GetRequiredService<ILoggerFactory>().CreateLogger<TClient>(), getOptions(sp)));
         }
 
         public static IHttpClientBuilder UsePexRetryPolicies<TClient>(this IHttpClientBuilder builder, PexRetryPolicyOptions options)
