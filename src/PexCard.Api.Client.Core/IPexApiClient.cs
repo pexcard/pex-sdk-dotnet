@@ -102,6 +102,11 @@ namespace PexCard.Api.Client.Core
         Task<List<InvoiceAllocationModel>> GetInvoiceAllocations(string externalToken, int invoiceId, CancellationToken cancelToken = default);
 
         Task<List<InvoicePaymentModel>> GetInvoicePayments(string externalToken, int invoiceId, CancellationToken cancelToken = default);
-        
+
+        Task<VendorCardOrderResponseModel> GetVendorCardOrder(string externalToken, int orderId, CancellationToken cancelToken = default);
+
+        Task<VendorCardCreateOrderResponseModel> CreateVendorCardOrder(string externalToken, VendorCardCreateOrderRequestModel createOrder, CancellationToken cancelToken = default);
+
+        Task SendVendorCardData(string externalToken, VendorCardDataModel data, CancellationToken cancelToken = default);
     }
 }
