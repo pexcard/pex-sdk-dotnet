@@ -659,6 +659,48 @@ namespace PexCard.Api.Client
             return await HandleHttpResponseMessage<List<InvoicePaymentModel>>(response);
         }
 
+        public async Task<VendorCardOrderResponseModel> GetVendorCardOrder(string externalToken, int orderId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/VendorCard/Order/{orderId}"));
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<VendorCardOrderResponseModel>(response);
+        }
+
+        public async Task<VendorCardCreateOrderResponseModel> CreateVendorCardOrder(string externalToken, VendorCardCreateOrderRequestModel createOrder, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/VendorCard/Order"));
+
+            var requestData = createOrder;
+
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), PexEncodingType, PexJsonMediaType);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<VendorCardCreateOrderResponseModel>(response);
+        }
+
+        public async Task SendVendorCardData(string externalToken, VendorCardDataModel data, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/VendorCard/Data"));
+
+            var requestData = data;
+
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), PexEncodingType, PexJsonMediaType);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            await HandleHttpResponseMessage(response);
+        }
+
         #region Private methods
 
         private async Task<HttpResponseMessage> GetTagsResponse(string externalToken, CancellationToken cancelToken)
