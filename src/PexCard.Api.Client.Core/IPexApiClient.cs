@@ -111,7 +111,7 @@ namespace PexCard.Api.Client.Core
 
         Task<GetSpendingRulesetsResponseModel> GetSpendingRulesets(string externalToken, CancellationToken cancelToken = default);
 
-        Task<GetSpendingRulesetsResponseModel> GetSpendingRuleset(string externalToken, int rulesetId, CancellationToken cancelToken = default);
+        Task<GetSpendingRulesetResponseModel> GetSpendingRuleset(string externalToken, int rulesetId, CancellationToken cancelToken = default);
 
         Task<SpendingRulesetResponseModel> CreateSpendingRuleset(string externalToken, CreateSpendingRulesetRequestModel createRuleset, CancellationToken cancelToken = default);
 

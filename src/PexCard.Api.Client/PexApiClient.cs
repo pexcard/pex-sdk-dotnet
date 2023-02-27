@@ -712,7 +712,7 @@ namespace PexCard.Api.Client
             return await HandleHttpResponseMessage<GetSpendingRulesetsResponseModel>(response);
         }
 
-        public async Task<GetSpendingRulesetsResponseModel> GetSpendingRuleset(string externalToken, int rulesetId, CancellationToken cancelToken = default)
+        public async Task<GetSpendingRulesetResponseModel> GetSpendingRuleset(string externalToken, int rulesetId, CancellationToken cancelToken = default)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/SpendingRuleset/{rulesetId}"));
 
@@ -721,7 +721,7 @@ namespace PexCard.Api.Client
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
-            return await HandleHttpResponseMessage<GetSpendingRulesetsResponseModel>(response);
+            return await HandleHttpResponseMessage<GetSpendingRulesetResponseModel>(response);
         }
 
         public async Task<SpendingRulesetResponseModel> CreateSpendingRuleset(string externalToken, CreateSpendingRulesetRequestModel createRuleset, CancellationToken cancelToken = default)
