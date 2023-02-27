@@ -1,15 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Web;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using PexCard.Api.Client.Const;
 using PexCard.Api.Client.Core;
 using PexCard.Api.Client.Core.Enums;
@@ -17,6 +6,16 @@ using PexCard.Api.Client.Core.Exceptions;
 using PexCard.Api.Client.Core.Models;
 using PexCard.Api.Client.Extensions;
 using PexCard.Api.Client.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Web;
 
 namespace PexCard.Api.Client
 {
@@ -699,6 +698,90 @@ namespace PexCard.Api.Client
             var response = await _httpClient.SendAsync(request, cancelToken);
 
             await HandleHttpResponseMessage(response);
+        }
+
+        public async Task<GetSpendingRulesetsResponseModel> GetSpendingRulesets(string externalToken, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/SpendingRuleset"));
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<GetSpendingRulesetsResponseModel>(response);
+        }
+
+        public async Task<GetSpendingRulesetsResponseModel> GetSpendingRuleset(string externalToken, int rulesetId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/SpendingRuleset/{rulesetId}"));
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<GetSpendingRulesetsResponseModel>(response);
+        }
+
+        public async Task<SpendingRulesetResponseModel> CreateSpendingRuleset(string externalToken, CreateSpendingRulesetRequestModel createRuleset, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/SpendingRuleset"));
+
+            var requestData = createRuleset;
+
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), PexEncodingType, PexJsonMediaType);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<SpendingRulesetResponseModel>(response);
+        }
+
+        public async Task<SpendingRulesetResponseModel> UpdateSpendingRuleset(string externalToken, UpdateSpendingRulesetRequestModel updateRuleset, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/SpendingRuleset"));
+
+            var requestData = updateRuleset;
+
+            var request = new HttpRequestMessage(HttpMethod.Put, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), PexEncodingType, PexJsonMediaType);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<SpendingRulesetResponseModel>(response);
+        }
+
+        public async Task<SpendingRulesetResponseModel> DeleteSpendingRuleset(string externalToken, int rulesetId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/SpendingRuleset"));
+
+            var requestData = new DeleteSpendingRulesetRequestModel
+            {
+                RulesetId = rulesetId
+            };
+
+            var request = new HttpRequestMessage(HttpMethod.Delete, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+            request.Content = new StringContent(JsonConvert.SerializeObject(requestData), PexEncodingType, PexJsonMediaType);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<SpendingRulesetResponseModel>(response);
+        }
+
+        public async Task<List<CardholderDetailsModel>> GetSpendingRulesetCards(string externalToken, int rulesetId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/SpendingRuleset/{rulesetId}/Cards"));
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<List<CardholderDetailsModel>>(response);
         }
 
         #region Private methods

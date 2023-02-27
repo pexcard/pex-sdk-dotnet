@@ -108,5 +108,17 @@ namespace PexCard.Api.Client.Core
         Task<VendorCardCreateOrderResponseModel> CreateVendorCardOrder(string externalToken, VendorCardCreateOrderRequestModel createOrder, CancellationToken cancelToken = default);
 
         Task SendVendorCardData(string externalToken, VendorCardDataModel data, CancellationToken cancelToken = default);
+
+        Task<GetSpendingRulesetsResponseModel> GetSpendingRulesets(string externalToken, CancellationToken cancelToken = default);
+
+        Task<GetSpendingRulesetsResponseModel> GetSpendingRuleset(string externalToken, int rulesetId, CancellationToken cancelToken = default);
+
+        Task<SpendingRulesetResponseModel> CreateSpendingRuleset(string externalToken, CreateSpendingRulesetRequestModel createRuleset, CancellationToken cancelToken = default);
+
+        Task<SpendingRulesetResponseModel> UpdateSpendingRuleset(string externalToken, UpdateSpendingRulesetRequestModel updateRuleset, CancellationToken cancelToken = default);
+
+        Task<SpendingRulesetResponseModel> DeleteSpendingRuleset(string externalToken, int rulesetId, CancellationToken cancelToken = default);
+
+        Task<List<CardholderDetailsModel>> GetSpendingRulesetCards(string externalToken, int rulesetId, CancellationToken cancelToken = default);
     }
 }
