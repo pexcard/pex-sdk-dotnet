@@ -24,13 +24,12 @@ namespace PexCard.Api.Client
         private const string PexCorrelationIdHeaderName = "X-CORRELATION-ID";
         private const string PexJsonMediaType = "application/json";
         private readonly Encoding PexEncodingType = Encoding.UTF8;
-
-        private readonly HttpClient _httpClient;
-
-        private readonly JsonSerializerSettings _jsonSettings = new JsonSerializerSettings
+        private readonly JsonSerializerSettings PexJsonSettings = new JsonSerializerSettings
         {
             NullValueHandling = NullValueHandling.Ignore,
         };
+
+        private readonly HttpClient _httpClient;
 
         public PexApiClient(HttpClient httpClient)
         {
@@ -891,7 +890,7 @@ namespace PexCard.Api.Client
 
         private string ToJson<TData>(TData data)
         {
-            return JsonConvert.SerializeObject(data, _jsonSettings);
+            return JsonConvert.SerializeObject(data, PexJsonSettings);
         }
 
         #endregion
