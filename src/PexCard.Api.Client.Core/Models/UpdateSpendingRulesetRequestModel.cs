@@ -1,6 +1,4 @@
-﻿using Newtonsoft.Json;
-
-namespace PexCard.Api.Client.Core.Models
+﻿namespace PexCard.Api.Client.Core.Models
 {
     public class UpdateSpendingRulesetRequestModel
     {
@@ -20,7 +18,7 @@ namespace PexCard.Api.Client.Core.Models
 
         public bool CardNotPresentAllowed { get; set; }
 
-        public int? CardPresence { get; set; }
+        public CardPresence? CardPresence { get; set; }
 
         public bool UsePexAccountBalanceForAuths { get; set; }
 

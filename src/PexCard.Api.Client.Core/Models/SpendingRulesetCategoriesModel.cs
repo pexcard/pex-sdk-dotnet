@@ -2,22 +2,22 @@
 {
     public class SpendingRulesetCategoriesModel
     {
-        public int CategoryId { get; set; }
-        public bool AssociationsOrganizationsAllowed { get; set; }
-        public bool AutomotiveDealersAllowed { get; set; }
-        public bool EducationalServicesAllowed { get; set; }
-        public bool EntertainmentAllowed { get; set; }
-        public bool FuelPumpsAllowed { get; set; }
-        public bool GasStationsConvenienceStoresAllowed { get; set; }
-        public bool GroceryStoresAllowed { get; set; }
-        public bool HealthcareChildcareServicesAllowed { get; set; }
-        public bool ProfessionalServicesAllowed { get; set; }
-        public bool RestaurantsAllowed { get; set; }
-        public bool RetailStoresAllowed { get; set; }
-        public bool TravelTransportationAllowed { get; set; }
-        public bool HardwareStoresAllowed { get; set; }
+        public int? CategoryId { get; set; }
+        public bool? AssociationsOrganizationsAllowed { get; set; }
+        public bool? AutomotiveDealersAllowed { get; set; }
+        public bool? EducationalServicesAllowed { get; set; }
+        public bool? EntertainmentAllowed { get; set; }
+        public bool? FuelPumpsAllowed { get; set; }
+        public bool? GasStationsConvenienceStoresAllowed { get; set; }
+        public bool? GroceryStoresAllowed { get; set; }
+        public bool? HealthcareChildcareServicesAllowed { get; set; }
+        public bool? ProfessionalServicesAllowed { get; set; }
+        public bool? RestaurantsAllowed { get; set; }
+        public bool? RetailStoresAllowed { get; set; }
+        public bool? TravelTransportationAllowed { get; set; }
+        public bool? HardwareStoresAllowed { get; set; }
 
-        public void SetCategoryByMccName(string name, bool value)
+        public void SetCategoryByMccName(string name, bool? value)
         {
             switch (name)
             {
