@@ -17,5 +17,5 @@
         public bool UsePexAccountBalanceForAuths { get; set; }
 
         public bool UseCustomerAuthDecision { get; set; }
-    };
+    }
 }
