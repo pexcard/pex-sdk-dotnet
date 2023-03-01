@@ -22,7 +22,7 @@
 
         public bool CardNotPresentAllowed { get; set; }
 
-        public int CardPresence { get; set; }
+        public CardPresence CardPresence { get; set; }
 
         public bool UsePexAccountBalanceForAuths { get; set; }
 

@@ -4,7 +4,7 @@
     {
         public int RulesetId { get; set; }
 
-        public SpendingRulesetCategoriesModel SpendingRulesetCategories { get; set; } = new SpendingRulesetCategoriesModel();
+        public SpendingRulesetCategoriesModel SpendingRulesetCategories { get; set; }
 
         public bool MccRestrictions { get; set; }
     }
