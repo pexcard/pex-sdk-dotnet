@@ -18,7 +18,7 @@
 
         public bool UseCustomerAuthDecision { get; set; }
 
-        public CreateSpendingRulesetRequestModel WithDefaultRules(string name) => new CreateSpendingRulesetRequestModel()
+        public static CreateSpendingRulesetRequestModel WithDefaultRules(string name) => new CreateSpendingRulesetRequestModel()
         {
             Name = name,
             DailySpendLimit = 5_000,
