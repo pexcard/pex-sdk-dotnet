@@ -13,6 +13,7 @@ namespace PexCard.Api.Client.Core.Models
         public bool AllocationTagsEnabled { get; set; }
         public FundingSource FundingSource { get; set; }
         public int? CardLimit { get; set; }
+        public int? VendorLimit { get; set; }
         public decimal? DefaultDailyLimit { get; set; }
     }
 }
