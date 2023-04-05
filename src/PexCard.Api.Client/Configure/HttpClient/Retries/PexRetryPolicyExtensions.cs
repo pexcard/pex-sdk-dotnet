@@ -92,7 +92,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .OrResult(resp => resp.StatusCode >= HttpStatusCode.InternalServerError)
                 .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: options.ServerErrors.Delay, retryCount: options.ServerErrors.Retries), (result, retryDelay, retryNumber, ctx) => LogRetry(logger, options.RetryLogLevel, result, retryDelay, retryNumber));
 
-            return tooManyRequestsPolicy.WrapAsync(timeoutPolicy).WrapAsync(serverErrorPolicy);
+            return serverErrorPolicy.WrapAsync(timeoutPolicy).WrapAsync(tooManyRequestsPolicy);
         }
 
         private static void LogRetry(ILogger logger, LogLevel logLevel, DelegateResult<HttpResponseMessage> result, TimeSpan retryDelay, int retryNumber)
