@@ -80,16 +80,16 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(options));
             }
 
-            var tooManyRequestsPolicy = Policy<HttpResponseMessage>.Handle<HttpRequestException>()
-                .OrResult(resp => (int)resp.StatusCode == 429)
+            var tooManyRequestsPolicy = Policy<HttpResponseMessage>
+                .HandleResult(resp => (int)resp.StatusCode == 429)
                 .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: options.TooManyRequests.Delay, retryCount: options.TooManyRequests.Retries), (result, retryDelay, retryNumber, ctx) => LogRetry(logger, options.RetryLogLevel, result, retryDelay, retryNumber));
 
-            var timeoutPolicy = Policy<HttpResponseMessage>.Handle<HttpRequestException>()
-                .OrResult(resp => resp.RequestMessage?.Method == HttpMethod.Get && (resp.StatusCode == HttpStatusCode.RequestTimeout || resp.StatusCode == HttpStatusCode.GatewayTimeout))
+            var timeoutPolicy = Policy<HttpResponseMessage>
+                .HandleResult(resp => resp.RequestMessage?.Method == HttpMethod.Get && (resp.StatusCode == HttpStatusCode.RequestTimeout || resp.StatusCode == HttpStatusCode.GatewayTimeout))
                 .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: options.Timeouts.Delay, retryCount: options.Timeouts.Retries), (result, retryDelay, retryNumber, ctx) => LogRetry(logger, options.RetryLogLevel, result, retryDelay, retryNumber));
 
-            var serverErrorPolicy = Policy<HttpResponseMessage>.Handle<HttpRequestException>()
-                .OrResult(resp => resp.StatusCode >= HttpStatusCode.InternalServerError)
+            var serverErrorPolicy = Policy<HttpResponseMessage>
+                .HandleResult(resp => resp.StatusCode >= HttpStatusCode.InternalServerError)
                 .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: options.ServerErrors.Delay, retryCount: options.ServerErrors.Retries), (result, retryDelay, retryNumber, ctx) => LogRetry(logger, options.RetryLogLevel, result, retryDelay, retryNumber));
 
             return serverErrorPolicy.WrapAsync(timeoutPolicy).WrapAsync(tooManyRequestsPolicy);
