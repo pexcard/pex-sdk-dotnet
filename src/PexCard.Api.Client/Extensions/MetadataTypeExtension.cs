@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using PexCard.Api.Client.Core.Enums;
 
 namespace PexCard.Api.Client.Extensions
@@ -7,7 +8,7 @@ namespace PexCard.Api.Client.Extensions
     {
         public static bool IsReceipt(this MetadataType _this)
         {
-            var receiptMetadataTypes = new[] {MetadataType.Image, MetadataType.Pdf};
+            var receiptMetadataTypes = new[] { MetadataType.Image, MetadataType.Pdf };
             return receiptMetadataTypes.Contains(_this);
         }
     }
