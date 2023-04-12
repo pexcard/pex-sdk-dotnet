@@ -1,17 +1,12 @@
 using Newtonsoft.Json;
-using PexCard.Api.Client.Const;
 using PexCard.Api.Client.Core;
 using PexCard.Api.Client.Core.Exceptions;
 using PexCard.Api.Client.Core.Models;
 using PexCard.Api.Client.Extensions;
 using PexCard.Api.Client.Models;
 using System;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,23 +14,11 @@ namespace PexCard.Api.Client
 {
     public class PexAuthClient : IPexAuthClient
     {
-        private const string PexJsonMediaType = "application/json";
-        private readonly Encoding PexEncodingType = Encoding.UTF8;
-        private readonly JsonSerializerSettings PexJsonSettings = new JsonSerializerSettings
-        {
-            NullValueHandling = NullValueHandling.Ignore,
-        };
-
         private readonly HttpClient _httpClient;
 
         public PexAuthClient(HttpClient httpClient)
         {
-            if (httpClient is null)
-            {
-                throw new ArgumentNullException(nameof(httpClient));
-            }
-
-            _httpClient = httpClient;
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
         }
 
         public Uri BaseUri => _httpClient.BaseAddress;
