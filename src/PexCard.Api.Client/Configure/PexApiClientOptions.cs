@@ -14,6 +14,7 @@ namespace PexCard.Api.Client
 
         [JsonConverter(typeof(JsonTimeSpanConverter))]
         public TimeSpan Timeout { get; set; } = TimeSpan.FromMinutes(3);
+
         public LogLevel LogLevelSuccess { get; set; } = LogLevel.Debug;
 
         public LogLevel LogLevelFailure { get; set; } = LogLevel.Warning;
