@@ -65,7 +65,7 @@ namespace System.Net.Http
                 throw new ArgumentNullException(nameof(response));
             }
 
-            _logger.Log(logLevel, ex, "HTTP {RequestMethod} {RequestPathAndQuery} responded {StatusCode} in {Elapsed:0.0000} ms", response.RequestMessage?.Method, response.RequestMessage?.RequestUri?.PathAndQuery, (int)response.StatusCode, elapsedMs);
+            _logger.Log(logLevel, ex, "HTTP {RequestMethod} {RequestUri} responded {StatusCode} in {Elapsed:0.0000} ms", response.RequestMessage?.Method, response.RequestMessage?.RequestUri, (int)response.StatusCode, elapsedMs);
         }
     }
 }
