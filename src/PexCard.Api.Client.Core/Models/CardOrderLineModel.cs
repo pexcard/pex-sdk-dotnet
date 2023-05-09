@@ -27,6 +27,10 @@ namespace PexCard.Api.Client.Core.Models
         /// <summary>User defined Id which can be assigned to Card holder profile (alphanumeric up to 50 characters)</summary>
         public string CustomId { get; set; }
 
+        public bool VirtualCard { get; set; }
+
+        public DateTime? ExpirationDate { get; set; }
+
         public string FirstName { get; set; }
 
         public string LastName { get; set; }
@@ -42,6 +46,9 @@ namespace PexCard.Api.Client.Core.Models
 
     public enum ShippingMethod
     {
+        //Invalid
+        Invalid = -1,
+
         // free
         FirstClassMail = 0,
 
@@ -49,6 +56,9 @@ namespace PexCard.Api.Client.Core.Models
         Expedited = 1,
 
         // forty-five
-        Rush = 2
+        Rush = 2,
+
+        // ten
+        PriorityMail = 3,
     }
 }
