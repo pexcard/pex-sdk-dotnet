@@ -352,6 +352,25 @@ namespace PexCard.Api.Client
             return await HandleHttpResponseMessage<CardholderProfileModel>(response);
         }
 
+        public async Task UpdateCardholderCardStatus(string externalToken, int cardholderAccountId, CardStatus status, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Card/Status/{cardholderAccountId}"));
+
+            var requestData = new UpdateCardStatusRequestModel
+            {
+                Status = status
+            };
+
+            var request = new HttpRequestMessage(HttpMethod.Put, requestUriBuilder.Uri);
+            request.Headers.SetPexCorrelationIdHeader();
+            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.Content = requestData.ToPexJsonContent();
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            await HandleHttpResponseMessage(response);
+        }
+
         public async Task<List<TagDetailsModel>> GetTags(string externalToken, CancellationToken cancelToken = default)
         {
             var response = await GetTagsResponse(externalToken, cancelToken);
