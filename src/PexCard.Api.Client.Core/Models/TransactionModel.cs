@@ -22,6 +22,10 @@ namespace PexCard.Api.Client.Core.Models
         public bool IsPending { get; set; }
         public bool IsDecline { get; set; }
         public string MerchantName { get; set; }
+        public string MerchantNameNormalized { get; set; }
+        public string MerchantUrl { get; set; }
+        public string MerchantLogoUrl { get; set; }
+        public string MerchantIconUrl { get; set; }
         public string MerchantCity { get; set; }
         public string MerchantState { get; set; }
         public string MerchantZip { get; set; }
