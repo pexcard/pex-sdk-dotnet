@@ -4,6 +4,7 @@ using Polly.Contrib.WaitAndRetry;
 using System;
 using System.Net;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -80,19 +81,27 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(options));
             }
 
-            var tooManyRequestsPolicy = Policy<HttpResponseMessage>
-                .HandleResult(resp => (int)resp.StatusCode == 429)
-                .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: options.TooManyRequests.Delay, retryCount: options.TooManyRequests.Retries), (result, retryDelay, retryNumber, ctx) => LogRetry(logger, options.RetryLogLevel, result, retryDelay, retryNumber));
+            IAsyncPolicy<HttpResponseMessage> wrappedPollyPolicies = null;
 
-            var timeoutPolicy = Policy<HttpResponseMessage>
-                .HandleResult(resp => resp.RequestMessage?.Method == HttpMethod.Get && (resp.StatusCode == HttpStatusCode.RequestTimeout || resp.StatusCode == HttpStatusCode.GatewayTimeout))
-                .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: options.Timeouts.Delay, retryCount: options.Timeouts.Retries), (result, retryDelay, retryNumber, ctx) => LogRetry(logger, options.RetryLogLevel, result, retryDelay, retryNumber));
+            foreach (var policy in options.Policies)
+            {
+                var pollyPolicy = Policy<HttpResponseMessage>
+                    .HandleResult(resp => new Regex(policy.Regex).IsMatch(((int)resp.StatusCode).ToString()))
+                    .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: policy.Delay, retryCount: policy.Retries), (result, retryDelay, retryNumber, ctx) => LogRetry(logger, policy.RetryLogLevel, result, retryDelay, retryNumber));
 
-            var serverErrorPolicy = Policy<HttpResponseMessage>
-                .HandleResult(resp => resp.StatusCode >= HttpStatusCode.InternalServerError)
-                .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: options.ServerErrors.Delay, retryCount: options.ServerErrors.Retries), (result, retryDelay, retryNumber, ctx) => LogRetry(logger, options.RetryLogLevel, result, retryDelay, retryNumber));
+                if (wrappedPollyPolicies is null)
+                {
+                    wrappedPollyPolicies = pollyPolicy;
+                }
+                else
+                {
+                    wrappedPollyPolicies = wrappedPollyPolicies.WrapAsync(pollyPolicy);
+                }
+            }
 
-            return serverErrorPolicy.WrapAsync(timeoutPolicy).WrapAsync(tooManyRequestsPolicy);
+            return wrappedPollyPolicies ?? Policy<HttpResponseMessage>
+                    .HandleResult(resp => false)
+                    .WaitAndRetryAsync(0, x => TimeSpan.Zero);
         }
 
         private static void LogRetry(ILogger logger, LogLevel logLevel, DelegateResult<HttpResponseMessage> result, TimeSpan retryDelay, int retryNumber)
