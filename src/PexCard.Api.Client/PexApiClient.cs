@@ -104,8 +104,8 @@ namespace PexCard.Api.Client
             var requestUriQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
             requestUriQueryParams.Add("IncludePendings", includePendings.ToString());
             requestUriQueryParams.Add("IncludeDeclines", includeDeclines.ToString());
-            requestUriQueryParams.Add("StartDate", startDate.ToDateTimeString());
-            requestUriQueryParams.Add("EndDate", endDate.ToDateTimeString());
+            requestUriQueryParams.Add("StartDate", startDate.ToEst().ToDateTimeString());
+            requestUriQueryParams.Add("EndDate", endDate.ToEst().ToDateTimeString());
             requestUriBuilder.Query = requestUriQueryParams.ToString();
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
@@ -124,8 +124,8 @@ namespace PexCard.Api.Client
             var requestUriQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
             requestUriQueryParams.Add("IncludePendings", includePendings.ToString());
             requestUriQueryParams.Add("IncludeDeclines", includeDeclines.ToString());
-            requestUriQueryParams.Add("StartDate", startDate.ToDateTimeString());
-            requestUriQueryParams.Add("EndDate", endDate.ToDateTimeString());
+            requestUriQueryParams.Add("StartDate", startDate.ToEst().ToDateTimeString());
+            requestUriQueryParams.Add("EndDate", endDate.ToEst().ToDateTimeString());
             requestUriBuilder.Query = requestUriQueryParams.ToString();
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
@@ -146,8 +146,8 @@ namespace PexCard.Api.Client
             var requestUriQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
             requestUriQueryParams.Add("IncludePendings", includePendings.ToString());
             requestUriQueryParams.Add("IncludeDeclines", includeDeclines.ToString());
-            requestUriQueryParams.Add("StartDate", startDate.ToDateTimeString());
-            requestUriQueryParams.Add("EndDate", endDate.ToDateTimeString());
+            requestUriQueryParams.Add("StartDate", startDate.ToEst().ToDateTimeString());
+            requestUriQueryParams.Add("EndDate", endDate.ToEst().ToDateTimeString());
             requestUriBuilder.Query = requestUriQueryParams.ToString();
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
