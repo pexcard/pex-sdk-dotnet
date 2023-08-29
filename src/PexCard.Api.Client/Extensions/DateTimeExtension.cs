@@ -2,7 +2,7 @@
 {
     internal static class DateTimeExtension
     {
-        public static string ToStringIso8601(this DateTime dateTime)
+        public static string ToStringISO8601(this DateTime dateTime)
         {
             return dateTime.ToString("o");
         }
