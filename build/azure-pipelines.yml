@@ -49,7 +49,8 @@ steps:
     command: 'pack'
     packagesToPack: 'src/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj'
     configuration: $(buildConfiguration)
-    arguments: -p:VersionPrefix=$(versionNumber) -p:VersionPrefix=$(versionTag) -p:SourceRevisionId=$(versionRevision) -p:FileVersion=$(buildDate)
+    versioningScheme: off
+    arguments: -p:VersionPrefix=$(versionNumber) -p:VersionSuffix=$(versionTag) -p:SourceRevisionId=$(versionRevision) -p:FileVersion=$(buildDate)
 
 - task: DotNetCoreCLI@2
   displayName: pack PexCard.Api.Client
@@ -57,7 +58,8 @@ steps:
     command: 'pack'
     packagesToPack: 'src/PexCard.Api.Client/PexCard.Api.Client.csproj'
     configuration: $(buildConfiguration)
-    arguments: -p:VersionPrefix=$(versionNumber) -p:VersionPrefix=$(versionTag) -p:SourceRevisionId=$(versionRevision) -p:FileVersion=$(buildDate)
+    versioningScheme: off
+    arguments: -p:VersionPrefix=$(versionNumber) -p:VersionSuffix=$(versionTag) -p:SourceRevisionId=$(versionRevision) -p:FileVersion=$(buildDate)
 
 - task: SonarCloudAnalyze@1
   displayName: sonar analyze
