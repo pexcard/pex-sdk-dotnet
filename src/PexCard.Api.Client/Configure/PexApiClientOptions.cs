@@ -8,6 +8,10 @@ namespace PexCard.Api.Client
 {
     public class PexApiClientOptions
     {
+        public string AppName { get; set; } = "pex-app";
+
+        public string AppVersion { get; set; } = "0.0.0";
+
 #pragma warning disable S1075 // URIs should not be hardcoded
         public Uri BaseUri { get; set; } = new Uri("https://coreapi.pexcard.com");
 #pragma warning restore S1075 // URIs should not be hardcoded
