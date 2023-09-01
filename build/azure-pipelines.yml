@@ -12,7 +12,7 @@ variables:
   versionNumber: $[format('{0}.{1}.{2}', variables['MajorVersion'], variables['MinorVersion'], variables['version.patch'])]
   versionTag: # beta, alpha, etc..
   versionRevision: # commit number, etc...
-  buildDate: $[format('{0:yyyy-MM-dd}', pipeline.startTime)]
+  buildDate: $[pipeline.startTime]
 
 steps:
 - task: UseDotNet@2
