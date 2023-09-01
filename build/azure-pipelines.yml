@@ -10,8 +10,8 @@ variables:
   buildConfiguration: 'Release'
   version.patch: $[counter(format('{0}.{1}', variables['MajorVersion'], variables['MinorVersion']), 0)]
   versionNumber: $[format('{0}.{1}.{2}', variables['MajorVersion'], variables['MinorVersion'], variables['version.patch'])]
-  versionTag: # beta, alpha, etc..
-  versionRevision: # commit number, etc...
+  versionTag: # dev, beta, alpha, dev
+  versionRevision: # git commit
   buildDate: $[pipeline.startTime]
 
 steps:
@@ -43,10 +43,10 @@ steps:
     projectName: '$(Build.Repository.Name)'
     projectVersion: '$(Build.BuildNumber)'
 
-- script: dotnet pack src/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:PackageVersion=$(versionNumber) -p:VersionPrefix=$(versionNumber) -p:VersionSuffix=$(versionTag) -p:SourceRevisionId=$(versionRevision) -p:FileVersion=$(buildDate)
+- script: dotnet pack src/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:VersionPrefix='$(versionNumber)' -p:VersionSuffix='$(versionTag)' -p:SourceRevisionId='$(versionRevision)' -p:FileVersion='$(buildDate)'
   displayName: pack PexCard.Api.Client.Core
 
-- script: dotnet pack src/PexCard.Api.Client/PexCard.Api.Client.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:PackageVersion=$(versionNumber) -p:VersionPrefix=$(versionNumber) -p:VersionSuffix=$(versionTag) -p:SourceRevisionId=$(versionRevision) -p:FileVersion=$(buildDate)
+- script: dotnet pack src/PexCard.Api.Client/PexCard.Api.Client.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:VersionPrefix='$(versionNumber)' -p:VersionSuffix='$(versionTag)' -p:SourceRevisionId='$(versionRevision)' -p:FileVersion='$(buildDate)'
   displayName: pack PexCard.Api.Client
 
 - task: SonarCloudAnalyze@1
