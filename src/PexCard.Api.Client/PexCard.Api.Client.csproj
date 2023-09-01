@@ -17,7 +17,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<VersinPrefix>0.0.0</VersinPrefix>
+		<VersionPrefix>0.0.0</VersionPrefix>
 		<VersionSuffix>alpha</VersionSuffix>
 		<SourceRevisionId>fakegithash</SourceRevisionId>
 		<FileVersion>$([System.DateTime]::UtcNow.ToString("O"))</FileVersion>
