@@ -1,12 +1,8 @@
-# ASP.NET Core
-# Build and test ASP.NET Core projects targeting .NET Core.
-# Add steps that run tests, create a NuGet package, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
-
 trigger: none
-
 pr:
-- master
+ - master
+
+name: $[format('{0}_{1}', variables['Build.SourceBranchName'], variables['versionNumber'])]
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -25,15 +21,13 @@ steps:
   displayName: 'dotnet restore'
 
 - task: SonarCloudPrepare@1
+  displayName: 'sonar prepare'
   inputs:
     SonarCloud: 'SonarCloud - tbaker'
     organization: 'pex'
     projectKey: 'pex-sdk-dotnet'
     projectName: '$(Build.Repository.Name)'
     projectVersion: '$(Build.BuildNumber)'
-
-- script: dotnet publish --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)
-  displayName: 'dotnet publish $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test $(buildConfiguration)'
@@ -42,12 +36,15 @@ steps:
     arguments: '--configuration $(buildConfiguration)'
 
 - task: SonarCloudAnalyze@1
+  displayName: 'sonar analyze'
 
 - task: SonarCloudPublish@1
+  displayName: 'sonar publish'
   inputs:
     pollingTimeoutSec: '300'
 
 - task: WhiteSource@20
+  displayName: 'whitesource analyze'
   inputs:
     cwd: '$(Build.ArtifactStagingDirectory)'
     extensions: '.dll'
