@@ -10,8 +10,8 @@ variables:
   buildConfiguration: 'Release'
   version.patch: $[counter(format('{0}.{1}', variables['MajorVersion'], variables['MinorVersion']), 0)]
   versionNumber: $[format('{0}.{1}.{2}', variables['MajorVersion'], variables['MinorVersion'], variables['version.patch'])]
-  versionTag: # dev, beta, alpha, dev
-  versionRevision: # git commit
+  versionTag: variables['VersionTag']
+  versionRevision: $(Build.SourceVersion)
   buildDate: $[pipeline.startTime]
 
 steps:
