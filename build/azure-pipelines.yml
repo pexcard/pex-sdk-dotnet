@@ -43,6 +43,22 @@ steps:
     projectName: '$(Build.Repository.Name)'
     projectVersion: '$(Build.BuildNumber)'
 
+- task: DotNetCoreCLI@2
+  displayName: pack PexCard.Api.Client.Core
+  inputs:
+    command: 'pack'
+    packagesToPack: 'src/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj'
+    configuration: $(buildConfiguration)
+    arguments: -p:VersionPrefix=$(versionNumber) -p:VersionPrefix=$(versionTag) -p:SourceRevisionId=$(versionRevision) -p:FileVersion=$(buildDate)
+
+- task: DotNetCoreCLI@2
+  displayName: pack PexCard.Api.Client
+  inputs:
+    command: 'pack'
+    packagesToPack: 'src/PexCard.Api.Client/PexCard.Api.Client.csproj'
+    configuration: $(buildConfiguration)
+    arguments: -p:VersionPrefix=$(versionNumber) -p:VersionPrefix=$(versionTag) -p:SourceRevisionId=$(versionRevision) -p:FileVersion=$(buildDate)
+
 - task: SonarCloudAnalyze@1
   displayName: sonar analyze
 
@@ -63,22 +79,6 @@ steps:
     forceCheckAllDependencies: true
     forceUpdate: true
     WhiteSourceService: 'WhiteSource'
-
-- task: DotNetCoreCLI@2
-  displayName: pack PexCard.Api.Client.Core
-  inputs:
-    command: 'pack'
-    packagesToPack: 'src/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj'
-    configuration: $(buildConfiguration)
-    arguments: -p:VersionPrefix=$(versionNumber) -p:VersionPrefix=$(versionTag) -p:SourceRevisionId=$(versionRevision) -p:FileVersion=$(buildDate)
-
-- task: DotNetCoreCLI@2
-  displayName: pack PexCard.Api.Client
-  inputs:
-    command: 'pack'
-    packagesToPack: 'src/PexCard.Api.Client/PexCard.Api.Client.csproj'
-    configuration: $(buildConfiguration)
-    arguments: -p:VersionPrefix=$(versionNumber) -p:VersionPrefix=$(versionTag) -p:SourceRevisionId=$(versionRevision) -p:FileVersion=$(buildDate)
 
 - task: PublishBuildArtifacts@1
   displayName: 'publish artifacts'
