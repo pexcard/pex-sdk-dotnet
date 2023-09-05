@@ -3,6 +3,8 @@ using Microsoft.Extensions.Options;
 using PexCard.Api.Client;
 using PexCard.Api.Client.Core;
 using System;
+using System.Net.Http.Headers;
+using System.Reflection;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -74,6 +76,17 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 httpClient.BaseAddress = options.BaseUri;
                 httpClient.Timeout = options.Timeout;
+
+                var sdkAssembly = Assembly.GetCallingAssembly();
+                var buildVersion = sdkAssembly.GetInformationalVersion();
+                var buildDate = sdkAssembly.GetFileVersion();
+                var sdkUserAgent = ProductInfoHeaderValue.Parse($"pex-sdk/{buildVersion} ({buildDate})");
+
+                var appAssembly = Assembly.GetEntryAssembly();
+                var appUserAgent = ProductInfoHeaderValue.Parse($"{options.AppName ?? appAssembly.GetName().Name}/{options.AppVersion ?? "0.0.0"}");
+
+                httpClient.DefaultRequestHeaders.UserAgent.Add(sdkUserAgent);
+                httpClient.DefaultRequestHeaders.UserAgent.Add(appUserAgent);
             })
             .UsePexTerseLogging<PexAuthClient>(sp =>
             {

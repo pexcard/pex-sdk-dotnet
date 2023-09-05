@@ -1,21 +1,18 @@
-# ASP.NET Core
-# Build and test ASP.NET Core projects targeting .NET Core.
-# Add steps that run tests, create a NuGet package, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+trigger: none
+pr: none
+
+name: $[format('{0}_{1}', variables['Build.SourceBranchName'], variables['versionNumber'])]
+
+pool:
+  vmImage: 'ubuntu-latest'
 
 variables:
   buildConfiguration: 'Release'
   version.patch: $[counter(format('{0}.{1}', variables['MajorVersion'], variables['MinorVersion']), 0)]
   versionNumber: $[format('{0}.{1}.{2}', variables['MajorVersion'], variables['MinorVersion'], variables['version.patch'])]
-
-name: $[format('{0}_{1}', variables['Build.SourceBranchName'], variables['versionNumber'])]
-
-trigger: none
-
-pr: none
-
-pool:
-  vmImage: 'ubuntu-latest'
+  versionTag: $[variables['VersionTag']]
+  versionRevision: $(Build.SourceVersion)
+  buildDate: $[pipeline.startTime]
 
 steps:
 - task: UseDotNet@2
@@ -30,17 +27,6 @@ steps:
     command: 'restore'
     feedsToUse: 'select'
 
-- task: SonarCloudPrepare@1
-  inputs:
-    SonarCloud: 'SonarCloud - tbaker'
-    organization: 'pex'
-    projectKey: 'pex-sdk-dotnet'
-    projectName: '$(Build.Repository.Name)'
-    projectVersion: '$(Build.BuildNumber)'
-
-- script: dotnet publish --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)
-  displayName: 'dotnet publish $(buildConfiguration)'
-
 - task: DotNetCoreCLI@2
   displayName: 'dotnet test'
   inputs:
@@ -48,13 +34,31 @@ steps:
     projects: 'tests/**/*.csproj'
     arguments: '--configuration $(buildConfiguration)'
 
+- task: SonarCloudPrepare@1
+  displayName: sonar prepare
+  inputs:
+    SonarCloud: 'SonarCloud - tbaker'
+    organization: 'pex'
+    projectKey: 'pex-sdk-dotnet'
+    projectName: '$(Build.Repository.Name)'
+    projectVersion: '$(Build.BuildNumber)'
+
+- script: dotnet pack src/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:VersionPrefix='$(versionNumber)' -p:VersionSuffix='$(versionTag)' -p:SourceRevisionId='$(versionRevision)' -p:FileVersion='$(buildDate)'
+  displayName: pack PexCard.Api.Client.Core
+
+- script: dotnet pack src/PexCard.Api.Client/PexCard.Api.Client.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:VersionPrefix='$(versionNumber)' -p:VersionSuffix='$(versionTag)' -p:SourceRevisionId='$(versionRevision)' -p:FileVersion='$(buildDate)'
+  displayName: pack PexCard.Api.Client
+
 - task: SonarCloudAnalyze@1
+  displayName: sonar analyze
 
 - task: SonarCloudPublish@1
+  displayName: sonar publish
   inputs:
     pollingTimeoutSec: '300'
 
 - task: WhiteSource@20
+  displayName: whitesource scan
   inputs:
     cwd: '$(Build.ArtifactStagingDirectory)'
     extensions: '.dll'
@@ -66,22 +70,8 @@ steps:
     forceUpdate: true
     WhiteSourceService: 'WhiteSource'
 
-- task: DeleteFiles@1
-  displayName: 'Clean Staging Directory'
-  inputs:
-    SourceFolder: $(Build.ArtifactStagingDirectory)
-    Contents: |
-      **/**
-      .*/**
-
-- script: dotnet pack src/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:PackageVersion=$(versionNumber) -p:Version=$(versionNumber).0
-  displayName: 'dotnet pack PexCard.Api.Client.Core.csproj'
-
-- script: dotnet pack src/PexCard.Api.Client/PexCard.Api.Client.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:PackageVersion=$(versionNumber) -p:Version=$(versionNumber).0
-  displayName: 'dotnet pack PexCard.Api.Client.csproj'
-
 - task: PublishBuildArtifacts@1
-  displayName: 'Publish artifacts'
+  displayName: 'publish artifacts'
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'drop'
