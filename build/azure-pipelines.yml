@@ -1,7 +1,7 @@
 trigger: none
 pr: none
 
-name: $[format('{0}_{1}', variables['Build.SourceBranchName'], variables['versionNumber'])]
+name: $[format('{0}_{1}', variables['Build.SourceBranchName'], variables['versionPrefix'])]
 
 pool:
   vmImage: 'ubuntu-latest'
