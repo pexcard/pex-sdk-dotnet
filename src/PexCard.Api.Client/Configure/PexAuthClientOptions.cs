@@ -8,9 +8,9 @@ namespace PexCard.Api.Client
 {
     public class PexAuthClientOptions
     {
-        public string AppName { get; set; } = "pex-app";
+        public string AppName { get; set; }
 
-        public string AppVersion { get; set; } = "0.0.0";
+        public string AppVersion { get; set; }
 
 #pragma warning disable S1075 // URIs should not be hardcoded
         public Uri BaseUri { get; set; } = new Uri("https://oauth.pexcard.com");
