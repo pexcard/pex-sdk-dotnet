@@ -84,7 +84,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 var sdkUserAgent = new ProductInfoHeaderValue("pex-sdk", buildVersion);
 
                 var appAssembly = Assembly.GetEntryAssembly();
-                var appUserAgent = new ProductInfoHeaderValue(options.AppName ?? appAssembly.GetName().Name, options.AppVersion ?? appAssembly.GetVersion() ?? "0.0.0");
+                var appUserAgent = new ProductInfoHeaderValue(options.AppName ?? appAssembly.GetName().Name, options.AppVersion ?? appAssembly.GetInformationalVersion() ?? appAssembly.GetVersion() ?? "0.0.0");
 
                 httpClient.DefaultRequestHeaders.UserAgent.Add(sdkUserAgent);
                 httpClient.DefaultRequestHeaders.UserAgent.Add(appUserAgent);
