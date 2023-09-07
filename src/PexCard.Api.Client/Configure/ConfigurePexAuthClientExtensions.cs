@@ -10,6 +10,8 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ConfigurePexAuthClientExtensions
     {
+        public static IServiceCollection AddPexAuthClient(this IServiceCollection services) => AddPexAuthClient(services, new PexAuthClientOptions());
+
         public static IServiceCollection AddPexAuthClient(this IServiceCollection services, IConfiguration configSection)
         {
             if (services is null)
@@ -77,12 +79,12 @@ namespace Microsoft.Extensions.DependencyInjection
                 httpClient.BaseAddress = options.BaseUri;
                 httpClient.Timeout = options.Timeout;
 
-                var sdkAssembly = Assembly.GetCallingAssembly();
-                var buildVersion = sdkAssembly.GetInformationalVersion();
+                var sdkAssembly = typeof(PexApiClient).Assembly;
+                var buildVersion = sdkAssembly.GetInformationalVersion() ?? sdkAssembly.GetVersion();
                 var sdkUserAgent = new ProductInfoHeaderValue("pex-sdk", buildVersion);
 
                 var appAssembly = Assembly.GetEntryAssembly();
-                var appUserAgent = new ProductInfoHeaderValue(options.AppName ?? appAssembly.GetName().Name, options.AppVersion ?? "0.0.0");
+                var appUserAgent = new ProductInfoHeaderValue(options.AppName ?? appAssembly.GetName().Name, options.AppVersion ?? appAssembly.GetVersion() ?? "0.0.0");
 
                 httpClient.DefaultRequestHeaders.UserAgent.Add(sdkUserAgent);
                 httpClient.DefaultRequestHeaders.UserAgent.Add(appUserAgent);
