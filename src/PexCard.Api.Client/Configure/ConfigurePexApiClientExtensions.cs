@@ -80,7 +80,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 httpClient.Timeout = options.Timeout;
 
                 var sdkAssembly = typeof(PexApiClient).Assembly;
-                var buildVersion = sdkAssembly.GetInformationalVersion() ?? sdkAssembly.GetVersion();
+                var buildVersion = sdkAssembly.GetVersion();
                 var sdkUserAgent = new ProductInfoHeaderValue("pex-sdk", buildVersion);
 
                 var appAssembly = Assembly.GetEntryAssembly();
