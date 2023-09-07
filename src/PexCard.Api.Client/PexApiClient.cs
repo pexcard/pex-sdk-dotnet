@@ -232,7 +232,7 @@ namespace PexCard.Api.Client
             return responseData.Any(x => x.Type == fieldType);
         }
 
-        public async Task<GetAdminProfileModel> GetMyAdminProfile(string externalToken, CancellationToken cancelToken = default)
+        public async Task<BusinessAdminReponseModel> GetMyAdminProfile(string externalToken, CancellationToken cancelToken = default)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Business/MyProfile"));
 
@@ -242,7 +242,78 @@ namespace PexCard.Api.Client
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
-            return await HandleHttpResponseMessage<GetAdminProfileModel>(response);
+            return await HandleHttpResponseMessage<BusinessAdminReponseModel>(response);
+        }
+
+        public async Task<BusinessAdminsReponseModel> GetBusinessAdmins(string externalToken, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Business/Admin"));
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.SetPexCorrelationIdHeader();
+            request.Headers.SetPexAuthorizationHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<BusinessAdminsReponseModel>(response);
+        }
+
+        public async Task<BusinessAdminReponseModel> GetBusinessAdmin(string externalToken, long adminId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Business/Admin/{adminId}"));
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.SetPexCorrelationIdHeader();
+            request.Headers.SetPexAuthorizationHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<BusinessAdminReponseModel>(response);
+        }
+
+        public async Task<BusinessAdminReponseModel> CreateBusinessAdmin(string externalToken, UpsertBusinessAdminModel newAdmin, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Business/Admin"));
+
+            var requestData = newAdmin;
+
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.Headers.SetPexCorrelationIdHeader();
+            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.Content = requestData.ToPexJsonContent();
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<BusinessAdminReponseModel>(response);
+        }
+
+        public async Task<BusinessAdminReponseModel> UpdateBusinessAdmin(string externalToken, long adminId, UpsertBusinessAdminModel updateAdmin, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Business/Admin/{adminId}"));
+
+            var requestData = updateAdmin;
+
+            var request = new HttpRequestMessage(HttpMethod.Put, requestUriBuilder.Uri);
+            request.Headers.SetPexCorrelationIdHeader();
+            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.Content = requestData.ToPexJsonContent();
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<BusinessAdminReponseModel>(response);
+        }
+
+        public async Task DeleteBusinessAdmin(string externalToken, long adminId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Business/Admin/{adminId}"));
+
+            var request = new HttpRequestMessage(HttpMethod.Delete, requestUriBuilder.Uri);
+            request.Headers.SetPexCorrelationIdHeader();
+            request.Headers.SetPexAuthorizationHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            await HandleHttpResponseMessage(response);
         }
 
         public async Task<BusinessDetailsModel> GetBusinessDetails(string externalToken, CancellationToken cancelToken = default)
