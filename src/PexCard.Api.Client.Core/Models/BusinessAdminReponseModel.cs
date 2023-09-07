@@ -1,6 +1,6 @@
 ﻿namespace PexCard.Api.Client.Core.Models
 {
-    public class GetAdminProfileModel
+    public class BusinessAdminReponseModel
     {
         public BusinessAdminModel Admin { get; set; }
     }

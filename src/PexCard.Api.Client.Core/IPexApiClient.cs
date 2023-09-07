@@ -25,7 +25,7 @@ namespace PexCard.Api.Client.Core
 
         Task<string> ExchangeJwtForApiToken(string jwt, ExchangeTokenRequestModel exchangeTokenRequest, CancellationToken cancelToken = default);
 
-        Task<GetAdminProfileModel> GetMyAdminProfile(string externalToken, CancellationToken cancelToken = default);
+        Task<BusinessAdminReponseModel> GetMyAdminProfile(string externalToken, CancellationToken cancelToken = default);
 
         Task<BusinessDetailsModel> GetBusinessDetails(string externalToken, CancellationToken cancelToken = default);
 

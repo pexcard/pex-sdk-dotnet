@@ -232,7 +232,7 @@ namespace PexCard.Api.Client
             return responseData.Any(x => x.Type == fieldType);
         }
 
-        public async Task<GetAdminProfileModel> GetMyAdminProfile(string externalToken, CancellationToken cancelToken = default)
+        public async Task<BusinessAdminReponseModel> GetMyAdminProfile(string externalToken, CancellationToken cancelToken = default)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Business/MyProfile"));
 
@@ -242,7 +242,7 @@ namespace PexCard.Api.Client
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
-            return await HandleHttpResponseMessage<GetAdminProfileModel>(response);
+            return await HandleHttpResponseMessage<BusinessAdminReponseModel>(response);
         }
 
         public async Task<BusinessDetailsModel> GetBusinessDetails(string externalToken, CancellationToken cancelToken = default)

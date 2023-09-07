@@ -12,6 +12,8 @@ namespace PexCard.Api.Client.Core.Models
 
         public string LastName { get; set; }
 
+        public string UserName { get; set; }
+
         public AddressContactModel ProfileAddress { get; set; }
 
         public string Phone { get; set; }
