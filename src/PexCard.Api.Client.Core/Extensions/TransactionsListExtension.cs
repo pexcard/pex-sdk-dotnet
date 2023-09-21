@@ -1,8 +1,8 @@
-﻿using System;
+﻿using PexCard.Api.Client.Core.Enums;
+using PexCard.Api.Client.Core.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using PexCard.Api.Client.Core.Enums;
-using PexCard.Api.Client.Core.Models;
 
 namespace PexCard.Api.Client.Core.Extensions
 {
