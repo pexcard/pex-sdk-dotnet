@@ -24,10 +24,10 @@ steps:
     inputs:
       targetType: "inline"
       script: |
-        if ( $(versionSuffix) -eq $null ) {
-          Write-Host "##vso[build.updatebuildnumber]$(versionPrefix)";
-        } else {
+        if ($(versionSuffix)) {
           Write-Host "##vso[build.updatebuildnumber]$(versionPrefix)-$(versionSuffix)";
+        } else {
+          Write-Host "##vso[build.updatebuildnumber]$(versionPrefix)";
         }
       failOnStderr: true
       pwsh: true
