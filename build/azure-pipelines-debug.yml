@@ -2,8 +2,6 @@ trigger: none
 pr:
  - master
 
-name: $[format('{0}_{1}', variables['Build.SourceBranchName'], variables['versionNumber'])]
-
 pool:
   vmImage: 'ubuntu-latest'
 
