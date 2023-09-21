@@ -100,6 +100,6 @@ steps:
       targetType: "inline"
       script: |
         Write-Host "##vso[task.setvariable variable=MajorVersion;]$(MajorVersion)";
-        Write-Host "##vso[task.setvariable variable=MinorVersion;]$(MinorVersion)++";
+        Write-Host "##vso[task.setvariable variable=MinorVersion;]++$(MinorVersion)";
       failOnStderr: true
       pwsh: true
