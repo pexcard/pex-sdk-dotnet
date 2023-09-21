@@ -1,7 +1,7 @@
 trigger: none
 pr: none
 
-name: $(Build.BuildNumber)
+name: $(versionPrefix)
 
 pool:
   vmImage: 'ubuntu-latest'
