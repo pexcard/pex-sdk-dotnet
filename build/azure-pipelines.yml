@@ -25,9 +25,9 @@ steps:
       targetType: "inline"
       script: |
         if ( $(versionSuffix) -eq $null ) {
-          Write-Host "##vso[build.updatebuildnumber]$(versionPrefix)"
+          Write-Host "##vso[build.updatebuildnumber]$(versionPrefix)";
         } else {
-          Write-Host "##vso[build.updatebuildnumber]$(versionPrefix)-$(versionSuffix)"
+          Write-Host "##vso[build.updatebuildnumber]$(versionPrefix)-$(versionSuffix)";
         }
       failOnStderr: true
       pwsh: true
