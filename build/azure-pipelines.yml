@@ -1,11 +1,11 @@
+pool:
+  vmImage: "ubuntu-latest"
+
 trigger: none
 pr: none
 
-pool:
-  vmImage: 'ubuntu-latest'
-
 variables:
-  buildConfiguration: 'Release'
+  buildConfiguration: "Release"
   version.patch: $[counter(format('{0}.{1}', variables['MajorVersion'], variables['MinorVersion']), 0)]
   versionPrefix: $[format('{0}.{1}.{2}', variables['MajorVersion'], variables['MinorVersion'], variables['version.patch'])]
   versionSuffix: $(VersionTag)
@@ -13,64 +13,64 @@ variables:
   fileVersion: $[pipeline.startTime]
 
 steps:
-- task: UseDotNet@2
-  displayName: 'use dotnet (global.json)'
-  inputs:
-    packageType: 'sdk'
-    useGlobalJson: true
-    
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet restore'
-  inputs:
-    command: 'restore'
-    feedsToUse: 'select'
+  - task: UseDotNet@2
+    displayName: "use dotnet (global.json)"
+    inputs:
+      packageType: "sdk"
+      useGlobalJson: true
 
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet test'
-  inputs:
-    command: test
-    projects: 'tests/**/*.csproj'
-    arguments: '--configuration $(buildConfiguration)'
+  - task: DotNetCoreCLI@2
+    displayName: "dotnet restore"
+    inputs:
+      command: "restore"
+      feedsToUse: "select"
 
-- task: SonarCloudPrepare@1
-  displayName: sonar prepare
-  inputs:
-    SonarCloud: 'SonarCloud - tbaker'
-    organization: 'pex'
-    projectKey: 'pex-sdk-dotnet'
-    projectName: '$(Build.Repository.Name)'
-    projectVersion: '$(Build.BuildNumber)'
+  - task: DotNetCoreCLI@2
+    displayName: "dotnet test"
+    inputs:
+      command: test
+      projects: "tests/**/*.csproj"
+      arguments: "--configuration $(buildConfiguration)"
 
-- script: dotnet pack src/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:VersionPrefix='$(versionPrefix)' -p:VersionSuffix='$(versionSuffix)' -p:SourceRevisionId='$(sourceRevisionId)' -p:FileVersion='$(fileVersion)'
-  displayName: pack PexCard.Api.Client.Core
+  - task: SonarCloudPrepare@1
+    displayName: sonar prepare
+    inputs:
+      SonarCloud: "SonarCloud - tbaker"
+      organization: "pex"
+      projectKey: "pex-sdk-dotnet"
+      projectName: "$(Build.Repository.Name)"
+      projectVersion: "$(Build.BuildNumber)"
 
-- script: dotnet pack src/PexCard.Api.Client/PexCard.Api.Client.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:VersionPrefix='$(versionPrefix)' -p:VersionSuffix='$(versionSuffix)' -p:SourceRevisionId='$(sourceRevisionId)' -p:FileVersion='$(fileVersion)'
-  displayName: pack PexCard.Api.Client
+  - script: dotnet pack src/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:VersionPrefix='$(versionPrefix)' -p:VersionSuffix='$(versionSuffix)' -p:SourceRevisionId='$(sourceRevisionId)' -p:FileVersion='$(fileVersion)'
+    displayName: pack PexCard.Api.Client.Core
 
-- task: SonarCloudAnalyze@1
-  displayName: sonar analyze
+  - script: dotnet pack src/PexCard.Api.Client/PexCard.Api.Client.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:VersionPrefix='$(versionPrefix)' -p:VersionSuffix='$(versionSuffix)' -p:SourceRevisionId='$(sourceRevisionId)' -p:FileVersion='$(fileVersion)'
+    displayName: pack PexCard.Api.Client
 
-- task: SonarCloudPublish@1
-  displayName: sonar publish
-  inputs:
-    pollingTimeoutSec: '300'
+  - task: SonarCloudAnalyze@1
+    displayName: sonar analyze
 
-- task: WhiteSource@20
-  displayName: whitesource scan
-  inputs:
-    cwd: '$(Build.ArtifactStagingDirectory)'
-    extensions: '.dll'
-    checkPolicies: 'FAIL_ON_BUILD'
-    productName: '$(System.TeamProject)'
-    projectRule: 'projectName'
-    projectName: '$(Build.Repository.Name)'
-    forceCheckAllDependencies: true
-    forceUpdate: true
-    WhiteSourceService: 'WhiteSource'
+  - task: SonarCloudPublish@1
+    displayName: sonar publish
+    inputs:
+      pollingTimeoutSec: "300"
 
-- task: PublishBuildArtifacts@1
-  displayName: 'publish artifacts'
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'drop'
-    publishLocation: 'Container'
+  - task: WhiteSource@20
+    displayName: whitesource scan
+    inputs:
+      cwd: "$(Build.ArtifactStagingDirectory)"
+      extensions: ".dll"
+      checkPolicies: "FAIL_ON_BUILD"
+      productName: "$(System.TeamProject)"
+      projectRule: "projectName"
+      projectName: "$(Build.Repository.Name)"
+      forceCheckAllDependencies: true
+      forceUpdate: true
+      WhiteSourceService: "WhiteSource"
+
+  - task: PublishBuildArtifacts@1
+    displayName: "publish artifacts"
+    inputs:
+      PathtoPublish: "$(Build.ArtifactStagingDirectory)"
+      ArtifactName: "drop"
+      publishLocation: "Container"

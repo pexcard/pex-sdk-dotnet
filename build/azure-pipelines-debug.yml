@@ -1,57 +1,55 @@
+pool:
+  vmImage: "ubuntu-latest"
+
 trigger: none
 pr:
- - master
- 
-name: $[format('{0}_{1}', variables['Build.SourceBranchName'], variables['versionNumber'])]
-
-pool:
-  vmImage: 'ubuntu-latest'
+  - master
 
 variables:
-  buildConfiguration: 'Release'
+  buildConfiguration: "Release"
 
 steps:
-- task: UseDotNet@2
-  displayName: 'use dotnet (global.json)'
-  inputs:
-    packageType: 'sdk'
-    useGlobalJson: true
+  - task: UseDotNet@2
+    displayName: "use dotnet (global.json)"
+    inputs:
+      packageType: "sdk"
+      useGlobalJson: true
 
-- script: dotnet restore
-  displayName: 'dotnet restore'
+  - script: dotnet restore
+    displayName: "dotnet restore"
 
-- task: SonarCloudPrepare@1
-  displayName: 'sonar prepare'
-  inputs:
-    SonarCloud: 'SonarCloud - tbaker'
-    organization: 'pex'
-    projectKey: 'pex-sdk-dotnet'
-    projectName: '$(Build.Repository.Name)'
-    projectVersion: '$(Build.BuildNumber)'
+  - task: SonarCloudPrepare@1
+    displayName: "sonar prepare"
+    inputs:
+      SonarCloud: "SonarCloud - tbaker"
+      organization: "pex"
+      projectKey: "pex-sdk-dotnet"
+      projectName: "$(Build.Repository.Name)"
+      projectVersion: "$(Build.BuildNumber)"
 
-- task: DotNetCoreCLI@2
-  displayName: 'dotnet test $(buildConfiguration)'
-  inputs:
-    command: test
-    arguments: '--configuration $(buildConfiguration)'
+  - task: DotNetCoreCLI@2
+    displayName: "dotnet test $(buildConfiguration)"
+    inputs:
+      command: test
+      arguments: "--configuration $(buildConfiguration)"
 
-- task: SonarCloudAnalyze@1
-  displayName: 'sonar analyze'
+  - task: SonarCloudAnalyze@1
+    displayName: "sonar analyze"
 
-- task: SonarCloudPublish@1
-  displayName: 'sonar publish'
-  inputs:
-    pollingTimeoutSec: '300'
+  - task: SonarCloudPublish@1
+    displayName: "sonar publish"
+    inputs:
+      pollingTimeoutSec: "300"
 
-- task: WhiteSource@20
-  displayName: 'whitesource analyze'
-  inputs:
-    cwd: '$(Build.ArtifactStagingDirectory)'
-    extensions: '.dll'
-    checkPolicies: 'FAIL_ON_BUILD'
-    productName: '$(System.TeamProject)'
-    projectRule: 'projectName'
-    projectName: '$(Build.Repository.Name)'
-    forceCheckAllDependencies: true
-    forceUpdate: true
-    WhiteSourceService: 'WhiteSource'
+  - task: WhiteSource@20
+    displayName: "whitesource analyze"
+    inputs:
+      cwd: "$(Build.ArtifactStagingDirectory)"
+      extensions: ".dll"
+      checkPolicies: "FAIL_ON_BUILD"
+      productName: "$(System.TeamProject)"
+      projectRule: "projectName"
+      projectName: "$(Build.Repository.Name)"
+      forceCheckAllDependencies: true
+      forceUpdate: true
+      WhiteSourceService: "WhiteSource"
