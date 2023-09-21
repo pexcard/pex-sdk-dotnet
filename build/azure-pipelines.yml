@@ -17,7 +17,7 @@ steps:
     displayName: "Set build number/name"
     inputs:
       targetType: "inline"
-      script: |
+      script: |    
         if ("$(versionSuffix)") {
           Write-Host "##vso[build.updatebuildnumber]$(versionPrefix)-$(versionSuffix)";
         } else {
