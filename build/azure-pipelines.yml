@@ -24,7 +24,7 @@ steps:
     inputs:
       targetType: "inline"
       script: |
-        if ($(versionSuffix)) {
+        if ("$(versionSuffix)") {
           Write-Host "##vso[build.updatebuildnumber]$(versionPrefix)-$(versionSuffix)";
         } else {
           Write-Host "##vso[build.updatebuildnumber]$(versionPrefix)";
