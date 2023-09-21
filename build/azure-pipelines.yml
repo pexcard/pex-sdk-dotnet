@@ -23,14 +23,17 @@ variables:
     ${{ else }}:
       value: none
 
-name: $(VersionTag)
-
 steps:
   - task: PowerShell@2
+    displayName: "update build number/name"
     inputs:
-      targetType: 'inline'
-      script: |       
-        Write-Host "##vso[build.updatebuildnumber]$(versionPrefix)-$(versionSuffix)"
+      targetType: "inline"
+      script: |
+        if ([string]::IsNullOrWhiteSpace($versionSuffix)) {
+          Write-Host "##vso[build.updatebuildnumber]$(versionPrefix)"
+        } else {
+          Write-Host "##vso[build.updatebuildnumber]$(versionPrefix)-$(versionSuffix)"
+        }
       failOnStderr: true
       pwsh: true
 
