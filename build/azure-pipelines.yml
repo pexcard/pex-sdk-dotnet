@@ -12,7 +12,7 @@ variables:
   - name: versionPrefix
     value: $[format('{0}.{1}.{2}', variables['MajorVersion'], variables['MinorVersion'], variables['version.patch'])]
   - name: versionSuffix
-    value: $[variables['VersionTag']]
+    value: $(VersionTag)
   - name: sourceRevisionId
     value: $(Build.SourceVersion)
   - name: fileVersion
@@ -49,7 +49,7 @@ steps:
     inputs:
       command: test
       projects: "tests/**/*.csproj"
-      arguments: "--configuration $(buildConfiguration)"
+      arguments: "--no-restore --configuration $(buildConfiguration)"
 
   - task: SonarCloudPrepare@1
     displayName: sonar prepare
@@ -60,10 +60,10 @@ steps:
       projectName: "$(Build.Repository.Name)"
       projectVersion: "$(Build.BuildNumber)"
 
-  - script: dotnet pack src/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:VersionPrefix='$(versionPrefix)' -p:VersionSuffix='$(versionSuffix)' -p:SourceRevisionId='$(sourceRevisionId)' -p:FileVersion='$(fileVersion)'
+  - script: dotnet pack src/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj --no-restore --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:VersionPrefix='$(versionPrefix)' -p:VersionSuffix='$(versionSuffix)' -p:SourceRevisionId='$(sourceRevisionId)' -p:FileVersion='$(fileVersion)'
     displayName: pack PexCard.Api.Client.Core
 
-  - script: dotnet pack src/PexCard.Api.Client/PexCard.Api.Client.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:VersionPrefix='$(versionPrefix)' -p:VersionSuffix='$(versionSuffix)' -p:SourceRevisionId='$(sourceRevisionId)' -p:FileVersion='$(fileVersion)'
+  - script: dotnet pack src/PexCard.Api.Client/PexCard.Api.Client.csproj --no-restore --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:VersionPrefix='$(versionPrefix)' -p:VersionSuffix='$(versionSuffix)' -p:SourceRevisionId='$(sourceRevisionId)' -p:FileVersion='$(fileVersion)'
     displayName: pack PexCard.Api.Client
 
   - task: SonarCloudAnalyze@1
