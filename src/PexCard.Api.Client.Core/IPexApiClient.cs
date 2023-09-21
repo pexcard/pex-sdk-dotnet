@@ -31,9 +31,9 @@ namespace PexCard.Api.Client.Core
 
         Task<BusinessAdminReponseModel> GetBusinessAdmin(string externalToken, long adminId, CancellationToken cancelToken = default);
 
-        Task<BusinessAdminReponseModel> CreateBusinessAdmin(string externalToken, UpsertBusinessAdminModel newAdmin, CancellationToken cancelToken = default);
+        Task<BusinessAdminReponseModel> CreateBusinessAdmin(string externalToken, CreateBusinessAdminModel newAdmin, CancellationToken cancelToken = default);
 
-        Task<BusinessAdminReponseModel> UpdateBusinessAdmin(string externalToken, long adminId, UpsertBusinessAdminModel updateAdmin, CancellationToken cancelToken = default);
+        Task<BusinessAdminReponseModel> UpdateBusinessAdmin(string externalToken, long adminId, UpdateBusinessAdminModel updateAdmin, CancellationToken cancelToken = default);
 
         Task DeleteBusinessAdmin(string externalToken, long adminId, CancellationToken cancelToken = default);
 
