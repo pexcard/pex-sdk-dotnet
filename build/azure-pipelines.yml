@@ -5,22 +5,27 @@ trigger: none
 pr: none
 
 variables:
-  buildConfiguration: "Release"
-  version.patch: $[counter(format('{0}.{1}', variables['MajorVersion'], variables['MinorVersion']), 0)]
-  versionPrefix: $[format('{0}.{1}.{2}', variables['MajorVersion'], variables['MinorVersion'], variables['version.patch'])]
-  versionSuffix: $(VersionTag)
-  sourceRevisionId: $(Build.SourceVersion)
-  fileVersion: $[pipeline.startTime]
+  - name: buildConfiguration
+    value: "Release"
+  - name: version.patch
+    value: $[counter(format('{0}.{1}', variables['MajorVersion'], variables['MinorVersion']), 0)]
+  - name: versionPrefix
+    value: $[format('{0}.{1}.{2}', variables['MajorVersion'], variables['MinorVersion'], variables['version.patch'])]
+  - name: versionSuffix
+    value: $(VersionTag)
+  - name: sourceRevisionId
+    value: $(Build.SourceVersion)
+  - name: fileVersion
+    value: $[pipeline.startTime]
+  - name: releaseName
+    ${{ if neq(variables['versionSuffix'], '') }}:
+      value: $(versionPrefix)-$(versionSuffix)
+    ${{ else }}:
+      value: $(versionPrefix)
+
+name: $(releaseName)
 
 steps:
-  - task: PowerShell@2
-    displayName: set build name/number
-    inputs:
-      targetType: "inline"
-      script: |
-          echo $env:versionPrefix
-      failOnStderr: true
-
   - task: UseDotNet@2
     displayName: "use dotnet (global.json)"
     inputs:
