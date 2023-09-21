@@ -1,8 +1,6 @@
 pool:
   vmImage: "ubuntu-latest"
 
-name: $(buildName)
-
 trigger: none
 pr: none
 
@@ -13,12 +11,20 @@ variables:
   versionSuffix: $(VersionTag)
   sourceRevisionId: $(Build.SourceVersion)
   fileVersion: $[pipeline.startTime]
-  ${{if eq(variables.VersionTag, '')}}:
-    buildName: $(versionPrefix)
-  ${{else}}:
-    buildName: $(versionPrefix)-$(VersionTag)
 
 steps:
+  - task: PowerShell@2
+    displayName: set build name/number
+    inputs:
+      targetType: "inline"
+      script: |
+        if ($env:versionSuffix) {
+          Write-Host "##vso[build.updatebuildnumber]$env:versionPrefix-$env:versionSuffix"
+        } else {
+          Write-Host "##vso[build.updatebuildnumber]$env:versionPrefix"
+        }
+      failOnStderr: true
+
   - task: UseDotNet@2
     displayName: "use dotnet (global.json)"
     inputs:
