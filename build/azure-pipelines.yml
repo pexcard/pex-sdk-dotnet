@@ -25,7 +25,7 @@ steps:
       targetType: "inline"
       script: |
         if ([string]::IsNullOrWhiteSpace($versionSuffix)) {
-          Write-Host "##vso[build.updatebuildnumber]$(versionPrefix)"
+          Write-Host "##vso[build.updatebuildnumber]$(versionSuffix)"
         } else {
           Write-Host "##vso[build.updatebuildnumber]$(versionPrefix)-$(versionSuffix)"
         }
