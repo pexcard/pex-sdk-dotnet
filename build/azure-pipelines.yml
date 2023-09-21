@@ -20,7 +20,7 @@ variables:
 
 steps:
   - task: PowerShell@2
-    displayName: "update build number/name"
+    displayName: "set build number/name"
     inputs:
       targetType: "inline"
       script: |
@@ -93,3 +93,13 @@ steps:
       PathtoPublish: "$(Build.ArtifactStagingDirectory)"
       ArtifactName: "drop"
       publishLocation: "Container"
+
+  - task: PowerShell@2
+    displayName: "update pipeline version numbers"
+    inputs:
+      targetType: "inline"
+      script: |
+        Write-Host "##vso[task.setvariable variable=MajorVersion;]$(MajorVersion)";
+        Write-Host "##vso[task.setvariable variable=MinorVersion;]$(MinorVersion)++";
+      failOnStderr: true
+      pwsh: true
