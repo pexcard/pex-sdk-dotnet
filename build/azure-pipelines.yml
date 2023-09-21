@@ -8,7 +8,7 @@ variables:
   - name: buildConfiguration
     value: "Release"
   - name: patchVersion
-    value: $[counter(format('{0}.{1}.{3}', variables['majorVersion'], variables['minorVersion'], variables['versionTag']), 0)]
+    value: $[counter(format('{0}.{1}.{2}', variables['majorVersion'], variables['minorVersion'], variables['versionTag']), 0)]
   - name: versionPrefix
     value: $[format('{0}.{1}.{2}', variables['majorVersion'], variables['minorVersion'], variables['patchVersion'])]
   - name: versionSuffix
