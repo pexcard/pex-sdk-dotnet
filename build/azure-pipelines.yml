@@ -1,6 +1,8 @@
 pool:
   vmImage: "ubuntu-latest"
 
+name: $(versionPrefix)
+
 trigger: none
 pr: none
 
