@@ -7,14 +7,14 @@ pr: none
 variables:
   - name: buildConfiguration
     value: "Release"
-  - name: version.patch
-    value: $[counter(format('{0}.{1}', variables['MajorVersion'], variables['MinorVersion']), 0)]
+  - name: patchVersion
+    value: $[counter(format('{0}.{1}.{3}', variables['majorVersion'], variables['minorVersion'], variables['versionTag']), 0)]
   - name: versionPrefix
-    value: $[format('{0}.{1}.{2}', variables['MajorVersion'], variables['MinorVersion'], variables['version.patch'])]
+    value: $[format('{0}.{1}.{2}', variables['majorVersion'], variables['minorVersion'], variables['patchVersion'])]
   - name: versionSuffix
-    value: $(VersionTag)
+    value: $(versionTag)
   - name: sourceRevisionId
-    value: $(Build.SourceVersion)
+    value: $(build.sourceVersion)
   - name: fileVersion
     value: $[pipeline.startTime]
 
@@ -57,8 +57,8 @@ steps:
       SonarCloud: "SonarCloud - tbaker"
       organization: "pex"
       projectKey: "pex-sdk-dotnet"
-      projectName: "$(Build.Repository.Name)"
-      projectVersion: "$(Build.BuildNumber)"
+      projectName: "$(build.repository.name)"
+      projectVersion: "$(build.buildNumber)"
 
   - script: dotnet pack src/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj --no-restore --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:VersionPrefix='$(versionPrefix)' -p:VersionSuffix='$(versionSuffix)' -p:SourceRevisionId='$(sourceRevisionId)' -p:FileVersion='$(fileVersion)'
     displayName: pack PexCard.Api.Client.Core
@@ -77,12 +77,12 @@ steps:
   - task: WhiteSource@20
     displayName: whitesource scan
     inputs:
-      cwd: "$(Build.ArtifactStagingDirectory)"
+      cwd: "$(build.artifactStagingDirectory)"
       extensions: ".dll"
       checkPolicies: "FAIL_ON_BUILD"
-      productName: "$(System.TeamProject)"
+      productName: "$(system.teamProject)"
       projectRule: "projectName"
-      projectName: "$(Build.Repository.Name)"
+      projectName: "$(build.repository.name)"
       forceCheckAllDependencies: true
       forceUpdate: true
       WhiteSourceService: "WhiteSource"
@@ -90,16 +90,6 @@ steps:
   - task: PublishBuildArtifacts@1
     displayName: "publish artifacts"
     inputs:
-      PathtoPublish: "$(Build.ArtifactStagingDirectory)"
+      PathtoPublish: "$(build.artifactStagingDirectory)"
       ArtifactName: "drop"
       publishLocation: "Container"
-
-  - task: PowerShell@2
-    displayName: "update pipeline version numbers"
-    inputs:
-      targetType: "inline"
-      script: |
-        Write-Host "##vso[task.setvariable variable=MajorVersion;]$(MajorVersion)";
-        Write-Host "##vso[task.setvariable variable=MinorVersion;]$(MinorVersion)";
-      failOnStderr: true
-      pwsh: true

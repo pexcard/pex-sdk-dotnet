@@ -24,8 +24,8 @@ steps:
       SonarCloud: "SonarCloud - tbaker"
       organization: "pex"
       projectKey: "pex-sdk-dotnet"
-      projectName: "$(Build.Repository.Name)"
-      projectVersion: "$(Build.BuildNumber)"
+      projectName: "$(build.repository.name)"
+      projectVersion: "$(build.buildNumber)"
 
   - task: DotNetCoreCLI@2
     displayName: "dotnet test $(buildConfiguration)"
@@ -44,12 +44,12 @@ steps:
   - task: WhiteSource@20
     displayName: "whitesource analyze"
     inputs:
-      cwd: "$(Build.ArtifactStagingDirectory)"
+      cwd: "$(build.artifactStagingDirectory)"
       extensions: ".dll"
       checkPolicies: "FAIL_ON_BUILD"
-      productName: "$(System.TeamProject)"
+      productName: "$(system.teamProject)"
       projectRule: "projectName"
-      projectName: "$(Build.Repository.Name)"
+      projectName: "$(build.repository.name)"
       forceCheckAllDependencies: true
       forceUpdate: true
       WhiteSourceService: "WhiteSource"
