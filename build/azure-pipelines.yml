@@ -19,6 +19,7 @@ steps:
       targetType: "inline"
       script: |
         if ($env:versionSuffix) {
+          Write_Host "$($env:versionPrefix)"
           Write-Host "##vso[build.updatebuildnumber]$($env:versionPrefix)-$($env:versionSuffix)"
         } else {
           Write-Host "##vso[build.updatebuildnumber]$($env:versionPrefix)"
