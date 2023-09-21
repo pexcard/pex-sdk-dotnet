@@ -12,7 +12,7 @@ variables:
   - name: versionPrefix
     value: $[format('{0}.{1}.{2}', variables['MajorVersion'], variables['MinorVersion'], variables['version.patch'])]
   - name: versionSuffix
-    value: $(VersionTag)
+    value: $[variables['VersionTag']]
   - name: sourceRevisionId
     value: $(Build.SourceVersion)
   - name: fileVersion
