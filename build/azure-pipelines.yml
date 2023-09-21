@@ -13,10 +13,10 @@ variables:
   versionSuffix: $(VersionTag)
   sourceRevisionId: $(Build.SourceVersion)
   fileVersion: $[pipeline.startTime]
-  ${{if eq(variables.versionSuffix, '')}}:
+  ${{if eq(variables.VersionTag, '')}}:
     buildName: $(versionPrefix)
   ${{else}}:
-    buildName: $(versionPrefix)-$(versionSuffix)
+    buildName: $(versionPrefix)-$(VersionTag)
 
 steps:
   - task: UseDotNet@2
