@@ -18,10 +18,7 @@ variables:
   - name: fileVersion
     value: $[pipeline.startTime]
   - name: releaseName
-    ${{ if eq(variables['VersionTag'], 'beta') }}:
-      value: $[format('{0}-{1}', variables['versionPrefix'], length(variables['VersionTag']))]
-    ${{ else }}:
-      value: $[format('{0}', variables['versionPrefix'])]
+    value: $[ if eq(variables['VersionTag'], 'beta') format('{0}-{1}', variables['versionPrefix'], length(variables['VersionTag'])) else format('{0}', variables['versionPrefix'])]
 
 name: $(releaseName)
 
