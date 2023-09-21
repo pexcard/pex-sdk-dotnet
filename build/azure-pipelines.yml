@@ -1,7 +1,7 @@
 pool:
   vmImage: "ubuntu-latest"
 
-name: $(buildName)
+name: $[variables['buildName']]
 
 trigger: none
 pr: none
@@ -13,10 +13,10 @@ variables:
   versionSuffix: $(VersionTag)
   sourceRevisionId: $(Build.SourceVersion)
   fileVersion: $[pipeline.startTime]
-  ${{ if eq(variables['versionSuffix'], '') }}:
-    buildName: $(versionPrefix)
-  ${{ else }}:
-    buildName: $(versionPrefix)-$(versionSuffix)
+  $[if eq(variables['versionSuffix'], '')]:
+    buildName: $[variables['versionPrefix']]
+  $[else]:
+    buildName: $[format('{0}-{1}', variables['versionPrefix'], variables['versionSuffix']]
 
 steps:
   - task: UseDotNet@2
