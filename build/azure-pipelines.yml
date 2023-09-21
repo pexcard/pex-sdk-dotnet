@@ -12,16 +12,11 @@ variables:
   - name: versionPrefix
     value: $[format('{0}.{1}.{2}', variables['MajorVersion'], variables['MinorVersion'], variables['version.patch'])]
   - name: versionSuffix
-    value: $[variables['VersionTag']]
+    value: $(VersionTag)
   - name: sourceRevisionId
     value: $(Build.SourceVersion)
   - name: fileVersion
     value: $[pipeline.startTime]
-  - name: releaseName
-    ${{ if eq(variables['VersionTag'], 'beta') }}:
-      value: beta
-    ${{ else }}:
-      value: none
 
 steps:
   - task: PowerShell@2
