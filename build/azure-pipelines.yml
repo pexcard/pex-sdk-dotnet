@@ -18,6 +18,7 @@ variables:
   - name: fileVersion
     value: $[pipeline.startTime]
   - name: releaseName
+    ${{ if eq(variables['VersionTag'], 'beta') }}:
       value: beta
     ${{ else }}:
       value: none
