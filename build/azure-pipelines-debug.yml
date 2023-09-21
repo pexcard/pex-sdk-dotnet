@@ -31,7 +31,7 @@ steps:
     displayName: "dotnet test $(buildConfiguration)"
     inputs:
       command: test
-      arguments: "--configuration $(buildConfiguration)"
+      arguments: "--no-restore --configuration $(buildConfiguration)"
 
   - task: SonarCloudAnalyze@1
     displayName: "sonar analyze"
