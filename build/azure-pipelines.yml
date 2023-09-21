@@ -23,7 +23,7 @@ variables:
     ${{ else }}:
       value: none
 
-name: $(releaseName)
+name: $(VersionTag)
 
 steps:
   - task: UseDotNet@2
