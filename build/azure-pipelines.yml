@@ -19,9 +19,9 @@ variables:
     value: $[pipeline.startTime]
   - name: releaseName
     ${{ if ne(variables['versionSuffix'], '') }}:
-      value: $(versionPrefix)-$(versionSuffix)
+      value: $[format('{0}-{1}', variables['versionPrefix'], variables['versionSuffix'])]
     ${{ else }}:
-      value: $(versionPrefix)
+      value: $[format('{0}', variables['versionPrefix'])]
 
 name: $(releaseName)
 
