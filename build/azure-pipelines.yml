@@ -18,7 +18,7 @@ variables:
   - name: fileVersion
     value: $[pipeline.startTime]
   - name: releaseName
-    ${{ if neq(variables['versionSuffix'], '') }}:
+    ${{ if ne(variables['versionSuffix'], '') }}:
       value: $(versionPrefix)-$(versionSuffix)
     ${{ else }}:
       value: $(versionPrefix)
