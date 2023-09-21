@@ -2,15 +2,13 @@
 
 namespace PexCard.Api.Client.Core.Models
 {
-    public class UpsertBusinessAdminModel
+    public class UpdateBusinessAdminModel
     {
         public string FirstName { get; set; }
 
         public string MiddleName { get; set; }
 
         public string LastName { get; set; }
-
-        public string UserName { get; set; }
 
         public bool NormalizeAddress { get; set; }
 
