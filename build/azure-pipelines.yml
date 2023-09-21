@@ -21,7 +21,7 @@ steps:
         if ($env:versionSuffix) {
           Write-Host "##vso[build.updatebuildnumber]$env:versionPrefix-$env:versionSuffix"
         } else {
-          Write-Host "##vso[build.updatebuildnumber]$env:versionPrefix"
+          Write-Host "##vso[build.updatebuildnumber]1.55.0-beta"
         }
       failOnStderr: true
 
