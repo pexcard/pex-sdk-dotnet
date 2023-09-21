@@ -13,10 +13,10 @@ variables:
   versionSuffix: $(VersionTag)
   sourceRevisionId: $(Build.SourceVersion)
   fileVersion: $[pipeline.startTime]
-  $[if eq(variables['versionSuffix'], '')]:
-    buildName: $[variables.versionPrefix]
-  $[else]:
-    buildName: $[format('{0}-{1}', variables,versionPrefi, variables,versionSuffix)]
+  ${{if eq(variables.versionSuffix, '')}}:
+    buildName: ${{variables.versionPrefix}}
+  ${{else}}:
+    buildName: ${{format('{0}-{1}', variables,versionPrefix, variables,versionSuffix)}}
 
 steps:
   - task: UseDotNet@2
