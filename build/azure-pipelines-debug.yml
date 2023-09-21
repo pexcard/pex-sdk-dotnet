@@ -10,16 +10,16 @@ variables:
 
 steps:
   - task: UseDotNet@2
-    displayName: "use dotnet (global.json)"
+    displayName: "Use DotNet (global.json)"
     inputs:
       packageType: "sdk"
       useGlobalJson: true
 
   - script: dotnet restore
-    displayName: "dotnet restore"
+    displayName: "DotNet restore"
 
   - task: SonarCloudPrepare@1
-    displayName: "sonar prepare"
+    displayName: "SonarCloud prepare"
     inputs:
       SonarCloud: "SonarCloud - tbaker"
       organization: "pex"
@@ -28,21 +28,21 @@ steps:
       projectVersion: "$(build.buildNumber)"
 
   - task: DotNetCoreCLI@2
-    displayName: "dotnet test $(buildConfiguration)"
+    displayName: "DotNet test $(buildConfiguration)"
     inputs:
       command: test
       arguments: "--no-restore --configuration $(buildConfiguration)"
 
   - task: SonarCloudAnalyze@1
-    displayName: "sonar analyze"
+    displayName: "SonarCloud analyze"
 
   - task: SonarCloudPublish@1
-    displayName: "sonar publish"
+    displayName: "SonarCloud publish"
     inputs:
       pollingTimeoutSec: "300"
 
   - task: WhiteSource@20
-    displayName: "whitesource analyze"
+    displayName: "WhiteSource analyze"
     inputs:
       cwd: "$(build.artifactStagingDirectory)"
       extensions: ".dll"

@@ -20,7 +20,7 @@ variables:
 
 steps:
   - task: PowerShell@2
-    displayName: "set build number/name"
+    displayName: "Set build number/name"
     inputs:
       targetType: "inline"
       script: |
@@ -33,26 +33,26 @@ steps:
       pwsh: true
 
   - task: UseDotNet@2
-    displayName: "use dotnet (global.json)"
+    displayName: "Use DotNet (global.json)"
     inputs:
       packageType: "sdk"
       useGlobalJson: true
 
   - task: DotNetCoreCLI@2
-    displayName: "dotnet restore"
+    displayName: "DotNet restore"
     inputs:
       command: "restore"
       feedsToUse: "select"
 
   - task: DotNetCoreCLI@2
-    displayName: "dotnet test"
+    displayName: "DotNet test"
     inputs:
       command: test
       projects: "tests/**/*.csproj"
       arguments: "--no-restore --configuration $(buildConfiguration)"
 
   - task: SonarCloudPrepare@1
-    displayName: sonar prepare
+    displayName: SonarCloud prepare
     inputs:
       SonarCloud: "SonarCloud - tbaker"
       organization: "pex"
@@ -61,21 +61,21 @@ steps:
       projectVersion: "$(build.buildNumber)"
 
   - script: dotnet pack src/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj --no-restore --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:VersionPrefix='$(versionPrefix)' -p:VersionSuffix='$(versionSuffix)' -p:SourceRevisionId='$(sourceRevisionId)' -p:FileVersion='$(fileVersion)'
-    displayName: pack PexCard.Api.Client.Core
+    displayName: Pack PexCard.Api.Client.Core
 
   - script: dotnet pack src/PexCard.Api.Client/PexCard.Api.Client.csproj --no-restore --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:VersionPrefix='$(versionPrefix)' -p:VersionSuffix='$(versionSuffix)' -p:SourceRevisionId='$(sourceRevisionId)' -p:FileVersion='$(fileVersion)'
-    displayName: pack PexCard.Api.Client
+    displayName: Pack PexCard.Api.Client
 
   - task: SonarCloudAnalyze@1
-    displayName: sonar analyze
+    displayName: SonarCloud analyze
 
   - task: SonarCloudPublish@1
-    displayName: sonar publish
+    displayName: SonarCloud publish
     inputs:
       pollingTimeoutSec: "300"
 
   - task: WhiteSource@20
-    displayName: whitesource scan
+    displayName: WhiteSource scan
     inputs:
       cwd: "$(build.artifactStagingDirectory)"
       extensions: ".dll"
@@ -88,7 +88,7 @@ steps:
       WhiteSourceService: "WhiteSource"
 
   - task: PublishBuildArtifacts@1
-    displayName: "publish artifacts"
+    displayName: "Publish artifacts"
     inputs:
       PathtoPublish: "$(build.artifactStagingDirectory)"
       ArtifactName: "drop"
