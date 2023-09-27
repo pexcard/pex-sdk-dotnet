@@ -23,5 +23,9 @@ namespace PexCard.Api.Client.Core.Models
         public string Email { get; set; }
 
         public AdminPermissionsModel Permissions { get; set; }
+
+        public string PasswordQuestion { get; set; }
+
+        public string PasswordAnswer { get; set; }
     }
 }
