@@ -25,6 +25,12 @@ namespace PexCard.Api.Client.Core
 
         Task<string> ExchangeJwtForApiToken(string jwt, ExchangeTokenRequestModel exchangeTokenRequest, CancellationToken cancelToken = default);
 
+        Task<BusinessDetailsModel> GetBusinessDetails(string externalToken, CancellationToken cancelToken = default);
+
+        Task<BusinessProfileModel> GetBusinessProfile(string externalToken, CancellationToken cancelToken = default);
+
+        Task<BusinessSettingsModel> GetBusinessSettings(string externalToken, CancellationToken cancelToken = default);
+
         Task<BusinessAdminReponseModel> GetMyAdminProfile(string externalToken, CancellationToken cancelToken = default);
 
         Task<BusinessAdminsReponseModel> GetBusinessAdmins(string externalToken, CancellationToken cancelToken = default);
@@ -36,10 +42,6 @@ namespace PexCard.Api.Client.Core
         Task<BusinessAdminReponseModel> UpdateBusinessAdmin(string externalToken, long adminId, UpdateBusinessAdminModel updateAdmin, CancellationToken cancelToken = default);
 
         Task DeleteBusinessAdmin(string externalToken, long adminId, CancellationToken cancelToken = default);
-
-        Task<BusinessDetailsModel> GetBusinessDetails(string externalToken, CancellationToken cancelToken = default);
-
-        Task<BusinessSettingsModel> GetBusinessSettings(string externalToken, CancellationToken cancelToken = default);
 
         Task<decimal> GetPexAccountBalance(string externalToken, CancellationToken cancelToken = default);
 
