@@ -18,7 +18,7 @@ namespace PexCard.Api.Client.Extensions
 
         private static readonly JsonSerializerSettings PexJsonSettings = new JsonSerializerSettings
         {
-            NullValueHandling = NullValueHandling.Ignore,            
+            NullValueHandling = NullValueHandling.Ignore,
         };
 
         public static string GetPexCorrelationId(this HttpResponseMessage response)
