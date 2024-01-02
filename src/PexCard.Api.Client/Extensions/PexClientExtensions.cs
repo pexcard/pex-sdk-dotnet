@@ -11,12 +11,12 @@ namespace PexCard.Api.Client.Extensions
 {
     internal static class PexClientExtensions
     {
-        public const string PexCorrelationIdHeaderName = "X-CORRELATION-ID";
-        public const string PexJsonMediaType = "application/json";
+        private const string PexCorrelationIdHeaderName = "X-CORRELATION-ID";
+        private const string PexJsonMediaType = "application/json";
 
-        public static readonly Encoding PexEncodingType = Encoding.UTF8;
+        private static readonly Encoding PexEncodingType = Encoding.UTF8;
 
-        public static readonly JsonSerializerSettings PexJsonSettings = new JsonSerializerSettings
+        private static readonly JsonSerializerSettings PexJsonSettings = new JsonSerializerSettings
         {
             NullValueHandling = NullValueHandling.Ignore,
         };

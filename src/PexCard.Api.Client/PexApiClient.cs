@@ -1023,7 +1023,7 @@ namespace PexCard.Api.Client
 
                     var correlationId = response.GetPexCorrelationId();
 
-                    if (response.Headers.IsPexJsonContent())
+                    if (response.IsPexJsonContent())
                     {
                         var errorModel = JsonConvert.DeserializeObject<ErrorMessageModel>(responseData);
 
