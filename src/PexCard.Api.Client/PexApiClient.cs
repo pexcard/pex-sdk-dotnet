@@ -1021,11 +1021,20 @@ namespace PexCard.Api.Client
                         return default;
                     }
 
-                    var errorModel = JsonConvert.DeserializeObject<ErrorMessageModel>(responseData);
                     var correlationId = response.GetPexCorrelationId();
 
-                    throw new PexApiClientException(response.StatusCode, errorModel.Message, correlationId);
+                    if (response.IsPexJsonContent())
+                    {
+                        var errorModel = JsonConvert.DeserializeObject<ErrorMessageModel>(responseData);
+
+                        throw new PexApiClientException(response.StatusCode, errorModel?.Message ?? response.ReasonPhrase, correlationId);
+                    }
+                    else
+                    {
+                        throw new PexApiClientException(response.StatusCode, response.ReasonPhrase ?? $"Error {response.StatusCode}", correlationId);
+                    }
                 }
+
                 return responseData.FromPexJson<TData>();
             }
             catch (Exception ex)

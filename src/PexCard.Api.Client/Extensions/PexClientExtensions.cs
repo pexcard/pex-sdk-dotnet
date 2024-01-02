@@ -155,6 +155,16 @@ namespace PexCard.Api.Client.Extensions
             return headers;
         }
 
+        public static bool IsPexJsonContent(this HttpResponseMessage response)
+        {
+            return response.Headers.IsPexJsonContent();
+        }
+
+        public static bool IsPexJsonContent(this HttpHeaders headers)
+        {
+            return headers.TryGetValues("Content-Type", out var contentTypes) && contentTypes.Contains(PexJsonMediaType);
+        }
+
         public static HttpContent ToPexJsonContent<TData>(this TData bodyData)
         {
             return new StringContent(ToPexJson(bodyData), PexEncodingType, PexJsonMediaType);
