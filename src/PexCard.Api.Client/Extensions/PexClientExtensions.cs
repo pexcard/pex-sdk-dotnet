@@ -11,12 +11,12 @@ namespace PexCard.Api.Client.Extensions
 {
     internal static class PexClientExtensions
     {
-        private const string PexCorrelationIdHeaderName = "X-CORRELATION-ID";
-        private const string PexJsonMediaType = "application/json";
+        public const string PexCorrelationIdHeaderName = "X-CORRELATION-ID";
+        public const string PexJsonMediaType = "application/json";
 
-        private static readonly Encoding PexEncodingType = Encoding.UTF8;
+        public static readonly Encoding PexEncodingType = Encoding.UTF8;
 
-        private static readonly JsonSerializerSettings PexJsonSettings = new JsonSerializerSettings
+        public static readonly JsonSerializerSettings PexJsonSettings = new JsonSerializerSettings
         {
             NullValueHandling = NullValueHandling.Ignore,
         };
@@ -153,6 +153,16 @@ namespace PexCard.Api.Client.Extensions
             headers.Accept.Add(new MediaTypeWithQualityHeaderValue(PexJsonMediaType));
 
             return headers;
+        }
+
+        public static bool IsPexJsonContent(this HttpResponseMessage response)
+        {
+            return response.Headers.IsPexJsonContent();
+        }
+
+        public static bool IsPexJsonContent(this HttpHeaders headers)
+        {
+            return headers.TryGetValues("Content-Type", out var contentTypes) && contentTypes.Contains(PexJsonMediaType);
         }
 
         public static HttpContent ToPexJsonContent<TData>(this TData bodyData)
