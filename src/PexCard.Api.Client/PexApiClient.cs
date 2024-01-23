@@ -183,9 +183,14 @@ namespace PexCard.Api.Client
             return responseData?.Attachments;
         }
 
-        public async Task<AttachmentModel> GetTransactionAttachment(string externalToken, long transactionId, string attachmentId, CancellationToken cancelToken = default)
+        public async Task<AttachmentModel> GetTransactionAttachment(string externalToken, long transactionId, string attachmentId,
+            AttachmentLinkType attachmentLinkType = AttachmentLinkType.LinkUrl,  CancellationToken cancelToken = default)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Transactions/{transactionId}/Attachment/{attachmentId}"));
+
+            var requestUriQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
+            requestUriQueryParams.Add("AttachmentLinkType", attachmentLinkType.ToString());
+            requestUriBuilder.Query = requestUriQueryParams.ToString();
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
             request.Headers.SetPexCorrelationIdHeader();

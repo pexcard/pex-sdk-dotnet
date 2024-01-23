@@ -57,7 +57,7 @@ namespace PexCard.Api.Client.Core
 
         Task<List<AttachmentLinkModel>> GetTransactionAttachments(string externalToken, long transactionId, CancellationToken cancelToken = default);
 
-        Task<AttachmentModel> GetTransactionAttachment(string externalToken, long transactionId, string attachmentId, CancellationToken cancelToken = default);
+        Task<AttachmentModel> GetTransactionAttachment(string externalToken, long transactionId, string attachmentId, AttachmentLinkType attachmentLinkType = AttachmentLinkType.LinkUrl, CancellationToken cancelToken = default);
 
         Task<TagsModel> GetTransactionTags(string externalToken, long transactionId, CancellationToken cancelToken = default);
 
