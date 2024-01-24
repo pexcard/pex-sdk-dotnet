@@ -3,7 +3,6 @@ using Microsoft.Extensions.Options;
 using PexCard.Api.Client;
 using PexCard.Api.Client.Core;
 using System;
-using System.ComponentModel.DataAnnotations;
 using System.Net.Http.Headers;
 using System.Reflection;
 
