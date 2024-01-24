@@ -80,11 +80,14 @@ namespace Microsoft.Extensions.DependencyInjection
                 httpClient.Timeout = options.Timeout;
 
                 var sdkAssembly = typeof(PexApiClient).Assembly;
-                var buildVersion = sdkAssembly.GetInformationalVersion() ?? sdkAssembly.GetVersion();
-                var sdkUserAgent = new ProductInfoHeaderValue("pex-sdk", buildVersion);
+                var sdkUserAgentName = "pex-sdk";
+                var sdkUserAgentVersion = FixUserAgentString(sdkAssembly.GetInformationalVersion() ?? sdkAssembly.GetVersion() ?? "0.0.0");
+                var sdkUserAgent = new ProductInfoHeaderValue(sdkUserAgentName, sdkUserAgentVersion);
 
                 var appAssembly = Assembly.GetEntryAssembly();
-                var appUserAgent = new ProductInfoHeaderValue(options.AppName ?? appAssembly.GetName().Name, options.AppVersion ?? appAssembly.GetInformationalVersion() ?? appAssembly.GetVersion() ?? "0.0.0");
+                var appUserAgentName = FixUserAgentString(options.AppName ?? appAssembly.GetName().Name);
+                var appUserAgentVersion = FixUserAgentString(options.AppVersion ?? appAssembly.GetInformationalVersion() ?? appAssembly.GetVersion() ?? "0.0.0");
+                var appUserAgent = new ProductInfoHeaderValue(appUserAgentName, appUserAgentVersion);
 
                 httpClient.DefaultRequestHeaders.UserAgent.Add(sdkUserAgent);
                 httpClient.DefaultRequestHeaders.UserAgent.Add(appUserAgent);
@@ -103,6 +106,12 @@ namespace Microsoft.Extensions.DependencyInjection
             });
 
             return services;
+        }
+
+        private static string FixUserAgentString(string userAgentVersion)
+        {
+            // remove prohibited characters
+            return userAgentVersion?.Replace(":", "");
         }
     }
 }
