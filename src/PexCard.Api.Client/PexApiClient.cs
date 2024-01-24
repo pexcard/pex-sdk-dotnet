@@ -183,8 +183,7 @@ namespace PexCard.Api.Client
             return responseData?.Attachments;
         }
 
-        public async Task<AttachmentModel> GetTransactionAttachment(string externalToken, long transactionId, string attachmentId,
-            AttachmentLinkType attachmentLinkType = AttachmentLinkType.LinkUrl,  CancellationToken cancelToken = default)
+        public async Task<AttachmentModel> GetTransactionAttachment(string externalToken, long transactionId, string attachmentId, AttachmentLinkType attachmentLinkType = AttachmentLinkType.LinkUrl, CancellationToken cancelToken = default)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Transactions/{transactionId}/Attachment/{attachmentId}"));
 
@@ -983,6 +982,20 @@ namespace PexCard.Api.Client
             var response = await _httpClient.SendAsync(request, cancelToken);
 
             return await HandleHttpResponseMessage<List<CardholderDetailsModel>>(response);
+        }
+
+        public async Task<List<MerchantCategoryModel>> GetMerchantCategories(string externalToken, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/SpendingRuleset/MccCategories"));
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.SetPexCorrelationIdHeader();
+            request.Headers.SetPexAcceptJsonHeader();
+            request.Headers.SetPexAuthorizationHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<List<MerchantCategoryModel>>(response);
         }
 
         #region Private methods
