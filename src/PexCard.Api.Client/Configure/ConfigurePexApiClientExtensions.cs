@@ -109,10 +109,10 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
-        private static string FixUserAgentString(string userAgentVersion)
+        private static string FixUserAgentString(string? userAgentVersion)
         {
             // remove prohibited characters
-            return userAgentVersion.Replace(":", "");
+            return userAgentVersion?.Replace(":", "");
         }
     }
 }
