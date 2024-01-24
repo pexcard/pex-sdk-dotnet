@@ -81,7 +81,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 var sdkAssembly = typeof(PexApiClient).Assembly;
                 var sdkUserAgentName = "pex-sdk";
-                var sdkUserAgentVersion = FixUserAgentString(sdkAssembly.GetInformationalVersion() ?? sdkAssembly.GetVersion());
+                var sdkUserAgentVersion = FixUserAgentString(sdkAssembly.GetInformationalVersion() ?? sdkAssembly.GetVersion() ?? "0.0.0");
                 var sdkUserAgent = new ProductInfoHeaderValue(sdkUserAgentName, sdkUserAgentVersion);
 
                 var appAssembly = Assembly.GetEntryAssembly();
