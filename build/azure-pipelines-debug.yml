@@ -1,4 +1,4 @@
-pool:
+﻿pool:
   vmImage: "ubuntu-latest"
 
 trigger: none
@@ -6,7 +6,9 @@ pr:
   - master
 
 variables:
-  buildConfiguration: "Release"
+- group: mend-variables
+- name: buildConfiguration
+  value: "Release"
 
 steps:
   - task: UseDotNet@2
@@ -41,15 +43,36 @@ steps:
     inputs:
       pollingTimeoutSec: "300"
 
-  - task: WhiteSource@20
-    displayName: "WhiteSource analyze"
+  - task: Bash@3
+    displayName: "Mend"
+    continueOnError: true
+    env:
+      MEND_URL: $(MEND-URL)
+      MEND_EMAIL: $(MEND-EMAIL)
+      MEND_USER_KEY: $(MEND-USER-KEY)
+      MEND_LOG_LEVEL: DEBUG
     inputs:
-      cwd: "$(build.artifactStagingDirectory)"
-      extensions: ".dll"
-      checkPolicies: "FAIL_ON_BUILD"
-      productName: "$(system.teamProject)"
-      projectRule: "projectName"
-      projectName: "$(build.repository.name)"
-      forceCheckAllDependencies: true
-      forceUpdate: true
-      WhiteSourceService: "WhiteSource"
+      targetType: "inline"
+      failOnStderr: true
+      script: |
+        # https://github.com/mend-toolkit/mend-examples/blob/main/CI-CD/AzureDevOps/Mend%20CLI/AzureDevOps-linux.yaml
+        
+        # https://curl.se/docs/optionswhen.html
+        echo Downloading mend cli...
+        curl https://downloads.mend.io/cli/linux_amd64/mend -sS -o /usr/local/bin/mend && chmod +x /usr/local/bin/mend
+        
+        # https://docs.mend.io/bundle/integrations/page/configure_the_mend_cli_for_sca.html#Mend-CLI-SCA-parameters
+        mend dependencies --dir '$(System.DefaultWorkingDirectory)' --scope 'PEX//$(system.teamProject)//$(build.repository.name)' --non-interactive --update --fail-policy
+        
+        # https://docs.mend.io/bundle/integrations/page/mend_cli_exit_codes.html
+        export dep_exit=$?
+        
+        if [[ "$dep_exit" == "9" ]]; then
+            echo "##vso[task.logissue type=warning;] 🚨 Dependency scan policy violation."
+            echo "##vso[task.complete result=SucceededWithIssues;]"
+        elif [[ "$dep_exit" != "0" ]]; then
+            echo "##vso[task.logissue type=error;] ⚠️ Dependency scan failed. Exit code $dep_exit https://docs.mend.io/bundle/integrations/page/mend_cli_exit_codes.html"
+            echo "##vso[task.complete result=SucceededWithIssues;]"
+        else
+            echo "✅ No policy violations or failures occurred in dependencies scan"
+        fi
