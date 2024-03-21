@@ -16,6 +16,7 @@ namespace PexCard.Api.Client.Core.Models
         public DateTime DateOfBirth { get; set; }
         public string Email { get; set; }
         public bool IsVirtual { get; set; }
+        public CardholderType CardholderType { get; set; }
         public string CustomId { get; set; }
     }
 }
