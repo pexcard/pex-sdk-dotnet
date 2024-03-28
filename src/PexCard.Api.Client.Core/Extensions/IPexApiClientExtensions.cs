@@ -79,6 +79,13 @@ namespace PexCard.Api.Client.Core.Extensions
 
             foreach (TransactionModel transaction in transactions)
             {
+                if (result.ContainsKey(transaction.TransactionId))
+                {
+                    //Skip transactions that have already been processed
+                    //Assumption: If a transaction is passed in multiple times each one will have the same tags
+                    continue;
+                }
+
                 var allocations = new List<AllocationTagValue>();
 
                 var defaultAllocation = new AllocationTagValue { TagId = null, Allocation = new List<TagValueItem>(), Amount = Math.Abs(transaction.TransactionAmount), };
@@ -88,7 +95,7 @@ namespace PexCard.Api.Client.Core.Extensions
                     {
                         if (!hashedTagDefinitions.TryGetValue(tag.FieldId, out TagDetailsModel tagDefinition))
                         {
-                            throw new KeyNotFoundException($"Unable to find tag defintion for {nameof(TagDetailsModel.Id)} '{tag.FieldId}'.");
+                            throw new KeyNotFoundException($"Unable to find tag definition for {nameof(TagDetailsModel.Id)} '{tag.FieldId}'.");
                         }
 
                         if (tagDefinition.Type == CustomFieldType.Allocation)
