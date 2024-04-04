@@ -47,6 +47,11 @@ namespace PexCard.Api.Client.Core.Models
         public bool? IsVirtual { get; set; }
 
         /// <summary>
+        /// The type of cardholder
+        /// </summary>
+        public string CardholderType { get; set; }
+
+        /// <summary>
         /// User defined Id which can be assigned to Card holder profile
         /// (alphanumeric up to 50 characters)
         /// </summary>

@@ -40,20 +40,6 @@ namespace PexCard.Api.Client
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<RenewTokenResponseModel> RenewExternalToken(string externalToken, CancellationToken cancelToken = default)
-        {
-            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Token/Renew"));
-
-            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
-
-            var response = await _httpClient.SendAsync(request, cancelToken);
-
-            return await HandleHttpResponseMessage<RenewTokenResponseModel>(response);
-        }
-
         public async Task<string> ExchangeJwtForApiToken(string jwt, ExchangeTokenRequestModel exchangeTokenRequest, CancellationToken cancelToken = default)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "Internal/V4/Account/Token/Exchange"));
@@ -71,6 +57,48 @@ namespace PexCard.Api.Client
             return await HandleHttpResponseMessage<string>(response);
         }
 
+        public async Task<TokenDataModel> GetToken(string externalToken, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Token/Current"));
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.SetPexCorrelationIdHeader();
+            request.Headers.SetPexAcceptJsonHeader();
+            request.Headers.SetPexAuthorizationHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<TokenDataModel>(response);
+        }
+
+        public async Task<TokenResponseModel> GetTokens(string externalToken, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Token"));
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.SetPexCorrelationIdHeader();
+            request.Headers.SetPexAcceptJsonHeader();
+            request.Headers.SetPexAuthorizationHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<TokenResponseModel>(response);
+        }
+
+        public async Task<RenewTokenResponseModel> RenewExternalToken(string externalToken, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Token/Renew"));
+
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.Headers.SetPexCorrelationIdHeader();
+            request.Headers.SetPexAcceptJsonHeader();
+            request.Headers.SetPexAuthorizationHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<RenewTokenResponseModel>(response);
+        }
+
         public async Task DeleteExternalToken(string externalToken, CancellationToken cancelToken = default)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Token"));
@@ -83,6 +111,21 @@ namespace PexCard.Api.Client
 
             await HandleHttpResponseMessage(response);
         }
+
+        public async Task<PartnerModel> GetPartner(string externalToken, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Partner"));
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.SetPexCorrelationIdHeader();
+            request.Headers.SetPexAcceptJsonHeader();
+            request.Headers.SetPexAuthorizationHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<PartnerModel>(response);
+        }
+
 
         public async Task<decimal> GetPexAccountBalance(string externalToken, CancellationToken cancelToken = default)
         {
@@ -546,27 +589,6 @@ namespace PexCard.Api.Client
             return await HandleHttpResponseMessage<TagDropdownDetailsModel>(response);
         }
 
-        public async Task<TokenResponseModel> GetTokens(string externalToken, CancellationToken cancelToken = default)
-        {
-            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Token"));
-
-            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
-
-            var response = await _httpClient.SendAsync(request, cancelToken);
-
-            return await HandleHttpResponseMessage<TokenResponseModel>(response);
-        }
-
-        public async Task<TokenDataModel> GetToken(string externalToken, CancellationToken cancelToken = default)
-        {
-            var tokens = await GetTokens(externalToken, cancelToken);
-
-            return tokens.Tokens.FirstOrDefault(pt => pt.Token == externalToken);
-        }
-
         public async Task<int> CreateCardOrder(string externalToken, CardOrderModel cardOrder, CancellationToken cancelToken = default)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Card/CreateAsync"));
@@ -584,20 +606,6 @@ namespace PexCard.Api.Client
             var responseData = await HandleHttpResponseMessage<CardOrderIdModel>(response);
 
             return responseData.CardOrderId;
-        }
-
-        public async Task<PartnerModel> GetPartner(string externalToken, CancellationToken cancelToken = default)
-        {
-            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Partner"));
-
-            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
-
-            var response = await _httpClient.SendAsync(request, cancelToken);
-
-            return await HandleHttpResponseMessage<PartnerModel>(response);
         }
 
         public async Task<CardholderGroupsResponseModel> GetCardholderGroups(string externalToken, CancellationToken cancelToken = default)

@@ -4,8 +4,10 @@ namespace PexCard.Api.Client.Core.Models
     public class CardholderProfileModel
     {
         public int AccountId { get; set; }
+        public long? UserId { get; set; }
         public string AccountStatus { get; set; }
         public string FirstName { get; set; }
+        public string MiddleName { get; set; }
         public string LastName { get; set; }
         public int CardholderGroupId { get; set; }
         public int SpendRulesetId { get; set; }
@@ -14,6 +16,7 @@ namespace PexCard.Api.Client.Core.Models
         public AddressContactModel ShippingAddress { get; set; }
         public string ShippingPhone { get; set; }
         public DateTime DateOfBirth { get; set; }
+        public string UserName { get; set; }
         public string Email { get; set; }
         public bool IsVirtual { get; set; }
         public CardholderType CardholderType { get; set; }

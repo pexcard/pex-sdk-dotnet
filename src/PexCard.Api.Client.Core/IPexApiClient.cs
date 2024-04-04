@@ -13,7 +13,7 @@ namespace PexCard.Api.Client.Core
 
         Task<bool> Ping(CancellationToken cancelToken = default);
 
-        Task<PartnerModel> GetPartner(string externalToken, CancellationToken cancelToken = default);
+        Task<string> ExchangeJwtForApiToken(string jwt, ExchangeTokenRequestModel exchangeTokenRequest, CancellationToken cancelToken = default);
 
         Task<TokenDataModel> GetToken(string externalToken, CancellationToken cancelToken = default);
 
@@ -23,7 +23,7 @@ namespace PexCard.Api.Client.Core
 
         Task DeleteExternalToken(string externalToken, CancellationToken cancelToken = default);
 
-        Task<string> ExchangeJwtForApiToken(string jwt, ExchangeTokenRequestModel exchangeTokenRequest, CancellationToken cancelToken = default);
+        Task<PartnerModel> GetPartner(string externalToken, CancellationToken cancelToken = default);
 
         Task<BusinessDetailsModel> GetBusinessDetails(string externalToken, CancellationToken cancelToken = default);
 
