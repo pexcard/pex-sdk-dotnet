@@ -12,7 +12,7 @@ namespace PexCard.Api.Client.Core.Models
         public int BusinessAccountId { get; set; }
 
         /// <summary>UserId associated with the token</summary>
-        public long UserId { get; set; }
+        public int? CardholderAccountId { get; set; }
 
         /// <summary>UserType associated with the token</summary>
         public UserType UserType { get; set; }
