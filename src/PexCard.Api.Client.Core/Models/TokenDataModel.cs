@@ -11,6 +11,9 @@ namespace PexCard.Api.Client.Core.Models
         /// <summary>BusinessAccountId associated with the token</summary>
         public int BusinessAccountId { get; set; }
 
+        /// <summary>BusinessAccountName associated with the token</summary>
+        public string BusinessAccountName { get; set; }
+
         /// <summary>UserId associated with the token</summary>
         public int? CardholderAccountId { get; set; }
 
