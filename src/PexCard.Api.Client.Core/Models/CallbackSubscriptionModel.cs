@@ -8,7 +8,7 @@ namespace PexCard.Api.Client.Core.Models
         {
         }
 
-        public CallbackSubscriptionModel(int id, int businessAccountId, CallbackType callbackType, CallbackStatus status, Uri url, string username, DateTime createdDate)
+        public CallbackSubscriptionModel(int id, int businessAccountId, CallbackType callbackType, CallbackStatus status, Uri url, string username, DateTime createdDate, string name = null, string description = null)
         {
             Id = id;
             BusinessAccountId = businessAccountId;
@@ -17,6 +17,8 @@ namespace PexCard.Api.Client.Core.Models
             Url = url;
             Username = username;
             CreatedDate = createdDate;
+            Name = name;
+            Description = description;
         }
 
         public int Id { get; set; }
@@ -32,5 +34,9 @@ namespace PexCard.Api.Client.Core.Models
         public string Username { get; set; }
 
         public DateTime CreatedDate { get; set; }
+
+        public string Name { get; set; }
+
+        public string Description { get; set; }
     }
 }
