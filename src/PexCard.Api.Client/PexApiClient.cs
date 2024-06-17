@@ -244,7 +244,7 @@ namespace PexCard.Api.Client
             return await HandleHttpResponseMessage<AttachmentModel>(response, true);
         }
 
-        public async Task AddTransactionNote(string externalToken, TransactionModel transaction, string noteText, CancellationToken cancelToken = default)
+        public async Task AddTransactionNote(string externalToken, TransactionModel transaction, string noteText, bool visibleToCardholder = false, CancellationToken cancelToken = default)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Note"));
 
@@ -252,7 +252,8 @@ namespace PexCard.Api.Client
             {
                 NoteText = noteText,
                 Pending = transaction.IsPending,
-                TransactionId = transaction.TransactionId
+                TransactionId = transaction.TransactionId,
+                VisibleToCardholder = visibleToCardholder
             };
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
