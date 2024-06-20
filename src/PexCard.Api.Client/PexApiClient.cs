@@ -14,6 +14,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 using System.Web;
 
 namespace PexCard.Api.Client
@@ -1006,6 +1007,52 @@ namespace PexCard.Api.Client
 
             return await HandleHttpResponseMessage<List<MerchantCategoryModel>>(response);
         }
+
+        public async Task<StateModel> ApproveTransaction(string externalToken, long transactionId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Approval/{transactionId}/Approve"));
+
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.Headers.SetPexCorrelationIdHeader();
+            request.Headers.SetPexAcceptJsonHeader();
+            request.Headers.SetPexAuthorizationHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<StateModel>(response);
+        }
+
+        public async Task<StateModel> RejectTransaction(string externalToken, long transactionId, string reason, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Approval/{transactionId}/Reset"));
+
+            var requestData = new RejectRequestModel { Reason = reason };
+
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.Headers.SetPexCorrelationIdHeader();
+            request.Headers.SetPexAcceptJsonHeader();
+            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.Content = requestData.ToPexJsonContent();
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<StateModel>(response);
+        }
+
+        public async Task<StateModel> ResetTransaction(string externalToken, long transactionId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Approval/{transactionId}/Reset"));
+
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.Headers.SetPexCorrelationIdHeader();
+            request.Headers.SetPexAcceptJsonHeader();
+            request.Headers.SetPexAuthorizationHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<StateModel>(response);
+        }
+
 
         #region Private methods
 

@@ -136,5 +136,11 @@ namespace PexCard.Api.Client.Core
         Task<List<CardholderDetailsModel>> GetSpendingRulesetCards(string externalToken, int rulesetId, CancellationToken cancelToken = default);
 
         Task<List<MerchantCategoryModel>> GetMerchantCategories(string externalToken, CancellationToken cancelToken = default);
+
+        Task<StateModel> ApproveTransaction(string externalToken, long transactionId, CancellationToken cancelToken = default);
+
+        Task<StateModel> RejectTransaction(string externalToken, long transactionId, string reason, CancellationToken cancelToken = default);
+
+        Task<StateModel> ResetTransaction(string externalToken, long transactionId, CancellationToken cancelToken = default);
     }
 }
