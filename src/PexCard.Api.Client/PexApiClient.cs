@@ -1024,7 +1024,7 @@ namespace PexCard.Api.Client
 
         public async Task<StateModel> RejectTransaction(string externalToken, long transactionId, string reason, CancellationToken cancelToken = default)
         {
-            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Approval/{transactionId}/Reset"));
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Approval/{transactionId}/Reject"));
 
             var requestData = new RejectRequestModel { Reason = reason };
 
