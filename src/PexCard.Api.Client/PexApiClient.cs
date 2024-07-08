@@ -746,9 +746,16 @@ namespace PexCard.Api.Client
             await HandleHttpResponseMessage(response);
         }
 
-        public async Task<List<CallbackSubscriptionModel>> GetCallbackSubscriptions(string externalToken, CancellationToken cancelToken = default)
+        public async Task<List<CallbackSubscriptionModel>> GetCallbackSubscriptions(string externalToken, CallbackType? type = default, CancellationToken cancelToken = default)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Callback-Subscription"));
+
+            var requestUriQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
+            if (type.HasValue)
+            {
+                requestUriQueryParams.Add("type", type.ToString());
+            }
+            requestUriBuilder.Query = requestUriQueryParams.ToString();
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
             request.Headers.SetPexCorrelationIdHeader();
@@ -774,11 +781,11 @@ namespace PexCard.Api.Client
             return await HandleHttpResponseMessage<CallbackSubscriptionModel>(response);
         }
 
-        public async Task AddCallbackSubscription(string externalToken, CallbackType callbackType, Uri callbackUri, CallbackStatus callbackStatus = CallbackStatus.Active, CancellationToken cancelToken = default)
+        public async Task AddCallbackSubscription(string externalToken, CallbackType callbackType, Uri callbackUri, CallbackStatus callbackStatus = CallbackStatus.Active, string name = default, string description = default, CancellationToken cancelToken = default)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Callback-Subscription"));
 
-            var requestData = new UpsertCallbackSubscriptionModel(callbackType, callbackStatus, callbackUri);
+            var requestData = new UpsertCallbackSubscriptionModel(callbackType, callbackStatus, callbackUri, name, description);
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
             request.Headers.SetPexCorrelationIdHeader();
@@ -791,17 +798,31 @@ namespace PexCard.Api.Client
             await HandleHttpResponseMessage(response);
         }
 
-        public async Task UpdateCallbackSubscription(string externalToken, int callbackId, CallbackType callbackType, Uri callbackUri, CallbackStatus callbackStatus, CancellationToken cancelToken = default)
+        public async Task UpdateCallbackSubscription(string externalToken, int callbackId, CallbackType callbackType, Uri callbackUri, CallbackStatus callbackStatus, string name = default, string description = default, CancellationToken cancelToken = default)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Callback-Subscription/{callbackId}"));
 
-            var requestData = new UpsertCallbackSubscriptionModel(callbackType, callbackStatus, callbackUri);
+            var requestData = new UpsertCallbackSubscriptionModel(callbackType, callbackStatus, callbackUri, name, description);
 
             var request = new HttpRequestMessage(HttpMethod.Put, requestUriBuilder.Uri);
             request.Headers.SetPexCorrelationIdHeader();
             request.Headers.SetPexAcceptJsonHeader();
             request.Headers.SetPexAuthorizationHeader(externalToken);
             request.Content = requestData.ToPexJsonContent();
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            await HandleHttpResponseMessage(response);
+        }
+
+        public async Task DeleteCallbackSubscription(string externalToken, int callbackId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Callback-Subscription/{callbackId}"));
+
+            var request = new HttpRequestMessage(HttpMethod.Delete, requestUriBuilder.Uri);
+            request.Headers.SetPexCorrelationIdHeader();
+            request.Headers.SetPexAcceptJsonHeader();
+            request.Headers.SetPexAuthorizationHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
