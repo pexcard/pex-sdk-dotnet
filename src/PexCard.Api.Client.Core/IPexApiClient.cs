@@ -53,7 +53,7 @@ namespace PexCard.Api.Client.Core
 
         Task<CardholderTransactions> GetCardholderTransactions(string externalToken, int cardholderAccountId, DateTime startDate, DateTime endDate, bool includePending = false, bool includeDeclines = false, CancellationToken cancelToken = default);
 
-        Task AddTransactionNote(string externalToken, TransactionModel transaction, string noteText, CancellationToken cancelToken = default);
+        Task AddTransactionNote(string externalToken, TransactionModel transaction, string noteText, bool visibleToCardholder = false, CancellationToken cancelToken = default);
 
         Task<List<AttachmentLinkModel>> GetTransactionAttachments(string externalToken, long transactionId, CancellationToken cancelToken = default);
 
@@ -138,5 +138,11 @@ namespace PexCard.Api.Client.Core
         Task<List<CardholderDetailsModel>> GetSpendingRulesetCards(string externalToken, int rulesetId, CancellationToken cancelToken = default);
 
         Task<List<MerchantCategoryModel>> GetMerchantCategories(string externalToken, CancellationToken cancelToken = default);
+
+        Task<StateModel> ApproveTransaction(string externalToken, long transactionId, CancellationToken cancelToken = default);
+
+        Task<StateModel> RejectTransaction(string externalToken, long transactionId, string reason, CancellationToken cancelToken = default);
+
+        Task<StateModel> ResetTransaction(string externalToken, long transactionId, CancellationToken cancelToken = default);
     }
 }
