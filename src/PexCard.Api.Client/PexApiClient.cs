@@ -267,6 +267,45 @@ namespace PexCard.Api.Client
             await HandleHttpResponseMessage(response);
         }
 
+        public async Task UpdateTransactionNote(string externalToken, long noteId, string noteText, bool isPending, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Note/{noteId}"));
+
+            var requestData = new NoteRequestModel
+            {
+                NoteText = noteText,
+                Pending = isPending
+            };
+
+            var request = new HttpRequestMessage(HttpMethod.Put, requestUriBuilder.Uri);
+            request.Headers.SetPexCorrelationIdHeader();
+            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.Content = requestData.ToPexJsonContent();
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            await HandleHttpResponseMessage(response);
+        }
+
+        public async Task DeleteTransactionNote(string externalToken, long noteId, bool isPending, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Note/{noteId}"));
+
+            var requestData = new NoteRequestModel
+            {
+                Pending = isPending
+            };
+
+            var request = new HttpRequestMessage(HttpMethod.Delete, requestUriBuilder.Uri);
+            request.Headers.SetPexCorrelationIdHeader();
+            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.Content = requestData.ToPexJsonContent();
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            await HandleHttpResponseMessage(response);
+        }
+
         public async Task<bool> IsTagsEnabled(string externalToken, CancellationToken cancelToken = default)
         {
             var response = await GetTagsResponse(externalToken, cancelToken);
