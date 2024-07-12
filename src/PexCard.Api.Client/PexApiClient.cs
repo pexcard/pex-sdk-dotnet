@@ -289,7 +289,7 @@ namespace PexCard.Api.Client
 
         public async Task DeleteTransactionNote(string externalToken, long noteId, bool isPending, CancellationToken cancelToken = default)
         {
-            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Note/{noteId}"));
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Note/{noteId}"));
 
             var requestData = new NoteRequestModel
             {
