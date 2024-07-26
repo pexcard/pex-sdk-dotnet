@@ -14,7 +14,6 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Transactions;
 using System.Web;
 
 namespace PexCard.Api.Client
@@ -368,6 +367,20 @@ namespace PexCard.Api.Client
             var response = await _httpClient.SendAsync(request, cancelToken);
 
             return await HandleHttpResponseMessage<BusinessSettingsModel>(response);
+        }
+
+        public async Task<List<LinkedBusinessModel>> GetLinkedBusinesses(string externalToken, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Business/Linked"));
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.SetPexCorrelationIdHeader();
+            request.Headers.SetPexAcceptJsonHeader();
+            request.Headers.SetPexAuthorizationHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<List<LinkedBusinessModel>>(response);
         }
 
         public async Task<BusinessAdminReponseModel> GetMyAdminProfile(string externalToken, CancellationToken cancelToken = default)

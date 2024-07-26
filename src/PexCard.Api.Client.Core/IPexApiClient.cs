@@ -31,6 +31,8 @@ namespace PexCard.Api.Client.Core
 
         Task<BusinessSettingsModel> GetBusinessSettings(string externalToken, CancellationToken cancelToken = default);
 
+        Task<List<LinkedBusinessModel>> GetLinkedBusinesses(string externalToken, CancellationToken cancelToken = default);
+
         Task<BusinessAdminReponseModel> GetMyAdminProfile(string externalToken, CancellationToken cancelToken = default);
 
         Task<BusinessAdminsReponseModel> GetBusinessAdmins(string externalToken, CancellationToken cancelToken = default);
