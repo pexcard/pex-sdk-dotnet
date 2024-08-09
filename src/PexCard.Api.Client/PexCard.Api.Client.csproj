@@ -18,10 +18,9 @@
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<VersionPrefix>0.0.0</VersionPrefix>
+		<VersionPrefix>4.2.0</VersionPrefix>
 		<VersionSuffix></VersionSuffix>
 		<SourceRevisionId></SourceRevisionId>
-		<FileVersion>$([System.DateTime]::UtcNow.ToString("O"))</FileVersion>
 	</PropertyGroup>
 
 	<ItemGroup>
