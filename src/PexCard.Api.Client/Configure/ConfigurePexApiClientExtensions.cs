@@ -88,7 +88,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 var sdkUserAgent = new ProductInfoHeaderValue(sdkUserAgentName, sdkUserAgentVersion);
 
                 var appAssembly = Assembly.GetEntryAssembly();
-                var appUserAgentName = options.AppName ?? appAssembly.GetName().Name;
+                var appUserAgentName = FixUserAgentString(options.AppName ?? appAssembly.GetName().Name);
                 var appUserAgentVersion = FixUserAgentString(options.AppVersion ?? appAssembly.GetVersion() ?? "0.0.0");
                 var appUserAgent = new ProductInfoHeaderValue(appUserAgentName, appUserAgentVersion);
 
