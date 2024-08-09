@@ -9,7 +9,7 @@
                 throw new ArgumentNullException(nameof(assembly));
             }
 
-            return assembly.GetCustomAttribute<AssemblyVersionAttribute>()?.Version;
+            return assembly.GetName().Version.ToString();
         }
 
         public static string GetInformationalVersion(this Assembly assembly)

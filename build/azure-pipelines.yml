@@ -5,26 +5,24 @@ trigger: none
 pr: none
 
 variables:
-- group: mend-variables
-- name: buildConfiguration
-  value: "Release"
-- name: patchVersion
-  value: $[counter(format('{0}.{1}', variables['majorVersion'], variables['minorVersion']), 0)]
-- name: versionPrefix
-  value: $[format('{0}.{1}.{2}', variables['majorVersion'], variables['minorVersion'], variables['patchVersion'])]
-- name: versionSuffix
-  value: $(versionTag)
-- name: sourceRevisionId
-  value: $(build.sourceVersion)
-- name: fileVersion
-  value: $[pipeline.startTime]
+  - group: mend-variables
+  - name: buildConfiguration
+    value: "Release"
+  - name: patchVersion
+    value: $[counter(format('{0}.{1}', variables['majorVersion'], variables['minorVersion']), 0)]
+  - name: versionPrefix
+    value: $[format('{0}.{1}.{2}', variables['majorVersion'], variables['minorVersion'], variables['patchVersion'])]
+  - name: versionSuffix
+    value: $(versionTag)
+  - name: sourceRevisionId
+    value: $(build.sourceVersion)
 
 steps:
   - task: PowerShell@2
     displayName: "Set build number/name"
     inputs:
       targetType: "inline"
-      script: |    
+      script: |
         if ("$(versionSuffix)") {
           Write-Host "##vso[build.updatebuildnumber]$(versionPrefix)-$(versionSuffix)";
         } else {
@@ -61,10 +59,10 @@ steps:
       projectName: "$(build.repository.name)"
       projectVersion: "$(build.buildNumber)"
 
-  - script: dotnet pack src/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj --no-restore --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:VersionPrefix='$(versionPrefix)' -p:VersionSuffix='$(versionSuffix)' -p:SourceRevisionId='$(sourceRevisionId)' -p:FileVersion='$(fileVersion)'
+  - script: dotnet pack src/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj --no-restore --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:VersionPrefix='$(versionPrefix)' -p:VersionSuffix='$(versionSuffix)' -p:SourceRevisionId='$(sourceRevisionId)'
     displayName: Pack PexCard.Api.Client.Core
 
-  - script: dotnet pack src/PexCard.Api.Client/PexCard.Api.Client.csproj --no-restore --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:VersionPrefix='$(versionPrefix)' -p:VersionSuffix='$(versionSuffix)' -p:SourceRevisionId='$(sourceRevisionId)' -p:FileVersion='$(fileVersion)'
+  - script: dotnet pack src/PexCard.Api.Client/PexCard.Api.Client.csproj --no-restore --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:VersionPrefix='$(versionPrefix)' -p:VersionSuffix='$(versionSuffix)' -p:SourceRevisionId='$(sourceRevisionId)'
     displayName: Pack PexCard.Api.Client
 
   - task: SonarCloudAnalyze@1
@@ -88,17 +86,17 @@ steps:
       failOnStderr: true
       script: |
         # https://github.com/mend-toolkit/mend-examples/blob/main/CI-CD/AzureDevOps/Mend%20CLI/AzureDevOps-linux.yaml
-        
+
         # https://curl.se/docs/optionswhen.html
         echo Downloading mend cli...
         curl https://downloads.mend.io/cli/linux_amd64/mend -sS -o /usr/local/bin/mend && chmod +x /usr/local/bin/mend
-        
+
         # https://docs.mend.io/bundle/integrations/page/configure_the_mend_cli_for_sca.html#Mend-CLI-SCA-parameters
         mend dependencies --dir '$(System.DefaultWorkingDirectory)' --scope 'PEX//$(system.teamProject)//$(build.repository.name)' --non-interactive --update --fail-policy
-        
+
         # https://docs.mend.io/bundle/integrations/page/mend_cli_exit_codes.html
         export dep_exit=$?
-        
+
         if [[ "$dep_exit" == "9" ]]; then
             echo "##vso[task.logissue type=warning;] 🚨 Dependency scan policy violation."
             echo "##vso[task.complete result=SucceededWithIssues;]"
