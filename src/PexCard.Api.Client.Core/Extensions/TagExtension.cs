@@ -91,7 +91,7 @@ namespace PexCard.Api.Client.Core.Extensions
                     foreach (var option in tag.Options)
                     {
                         var entity = entitiesList.Find(item => string.Equals(item.EntityId, option.Value, StringComparison.InvariantCultureIgnoreCase));
-                        if (entity == null)
+                        if (entity == null && option.IsEnabled)
                         {
                             option.IsEnabled = false;
 
@@ -108,6 +108,7 @@ namespace PexCard.Api.Client.Core.Extensions
                 if (firstOption != null)
                 {
                     firstOption.IsEnabled = true;
+
                     updateCounts[firstOption.Value] = true;
                 }
             }
