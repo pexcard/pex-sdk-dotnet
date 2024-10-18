@@ -595,6 +595,11 @@ namespace PexCard.Api.Client
             return await GetTag<TagDropdownDetailsModel>(externalToken, tagId, cancelToken);
         }
 
+        public async Task<TagDropdownDetailsModel> GetDropdownTag(string externalToken, string tagId, bool overrideRestrictions, CancellationToken cancelToken = default)
+        {
+            return await GetTag<TagDropdownDetailsModel>(externalToken, tagId, overrideRestrictions, cancelToken);
+        }
+
         public async Task<TagDropdownDetailsModel> CreateDropdownTag(string externalToken, TagDropdownDataModel tag, CancellationToken cancelToken = default)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Business/Configuration/Tag/Dropdown"));
@@ -1144,6 +1149,20 @@ namespace PexCard.Api.Client
         private async Task<TTagModel> GetTag<TTagModel>(string externalToken, string tagId, CancellationToken cancelToken) where TTagModel : TagDataModel
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Business/Configuration/Tag/{tagId}"));
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.Headers.SetPexCorrelationIdHeader();
+            request.Headers.SetPexAcceptJsonHeader();
+            request.Headers.SetPexAuthorizationHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<TTagModel>(response);
+        }
+
+        private async Task<TTagModel> GetTag<TTagModel>(string externalToken, string tagId, bool overrideRestrictions, CancellationToken cancelToken) where TTagModel : TagDataModel
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Business/Configuration/Tag/{tagId}?OverrideRestrictions={overrideRestrictions.ToString().ToLower()}"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
             request.Headers.SetPexCorrelationIdHeader();
