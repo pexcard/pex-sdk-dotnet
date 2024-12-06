@@ -72,7 +72,7 @@ namespace PexCard.Api.Client.Core.Tests.Serialization
             //Assert
             Assert.True(tagsFromJson.Count == tags.Count);
             Assert.Contains(tagsFromJson, x => x.Type == Enums.CustomFieldType.Text && x is TagTextDataModel t && t.Id == textTag.Id && t.Length == textTag.Length && t.ValidationType == textTag.ValidationType);
-            Assert.Contains(tagsFromJson, x => x.Type == Enums.CustomFieldType.Dropdown && x is TagDropdownDataModel t && t.Id == dropdownTag.Id && t.Options.Any());
+            Assert.Contains(tagsFromJson, x => x.Type == Enums.CustomFieldType.Dropdown && x is TagDropdownDataModel t && t.Id == dropdownTag.Id && dropdownTag.Options.All(y => t.Options.Any(z => z.Value == y.Value)));
             Assert.Contains(tagsFromJson, x => x.Type == Enums.CustomFieldType.Decimal && x is TagDetailsModel t && t.Id == decimalTag.Id);
             Assert.Contains(tagsFromJson, x => x.Type == Enums.CustomFieldType.YesNo && x is TagDetailsModel t && t.Id == yesNoTag.Id);
         }
