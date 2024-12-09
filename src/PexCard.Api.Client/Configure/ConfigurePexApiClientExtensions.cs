@@ -3,11 +3,8 @@ using Microsoft.Extensions.Options;
 using PexCard.Api.Client;
 using PexCard.Api.Client.Core;
 using System;
-using System.Net;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
-using System.Web;
 
 namespace Microsoft.Extensions.DependencyInjection
 {

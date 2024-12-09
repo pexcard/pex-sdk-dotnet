@@ -2,7 +2,7 @@
 
 namespace PexCard.Api.Client.Core.Models
 {
-    public class TagDropdownDataModel : TagDetailsModel
+    public class TagDropdownDataModel : TagDataModel
     {
         public List<TagOptionModel> Options { get; set; }
     }
