@@ -1,14 +1,7 @@
-﻿using JsonSubTypes;
-using Newtonsoft.Json;
-using PexCard.Api.Client.Core.Enums;
+﻿using PexCard.Api.Client.Core.Enums;
 
 namespace PexCard.Api.Client.Core.Models
 {
-    // dynamic deserialization into proper tag sub type classes based on 'CustomFieldType'
-    [JsonConverter(typeof(JsonSubtypes), nameof(Type))]
-    [JsonSubtypes.KnownSubType(typeof(TagTextDetailsModel), CustomFieldType.Text)]
-    [JsonSubtypes.KnownSubType(typeof(TagDropdownDetailsModel), CustomFieldType.Dropdown)]
-    [JsonSubtypes.FallBackSubType(typeof(TagDetailsModel))]
     public class TagDataModel
     {
         public string Name { get; set; }
