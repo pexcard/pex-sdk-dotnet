@@ -8,7 +8,6 @@
         Decimal = 3,
         PercentageTax = 4,
         AbsoluteTax = 5,
-        MerchantAddress = 6,
         Allocation = 10
     }
 }
