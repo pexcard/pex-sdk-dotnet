@@ -617,7 +617,7 @@ namespace PexCard.Api.Client
             return await HandleHttpResponseMessage<TagDropdownDetailsModel>(response);
         }
 
-        public async Task<TagDropdownDetailsModel> UpdateDropdownTag(string externalToken, string tagId, TagDropdownDataModel tag, CancellationToken cancelToken = default)
+        public async Task<TagDropdownDetailsModel> UpdateDropdownTag(string externalToken, string tagId, TagDropdownDetailsModel tag, CancellationToken cancelToken = default)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Business/Configuration/Tag/Dropdown/{tagId}"));
 
