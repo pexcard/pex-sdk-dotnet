@@ -29,8 +29,37 @@ namespace PexCard.Api.Client.Core.Extensions
             return result;
         }
 
-        public static void UpdateTagOptions(this TagDropdownDataModel tag, IEnumerable<IMatchableEntity> entities, out int countUpdated, bool updateNames = false, bool disableDeleted = true, bool handleDuplicates = true)
+        public static void UpdateTagOptions(this TagDropdownDataModel dropdownTag, IEnumerable<IMatchableEntity> entities, out int countUpdated, bool updateNames = false, bool disableDeleted = true, bool handleDuplicates = true)
         {
+            if (dropdownTag is null)
+            {
+                throw new ArgumentNullException(nameof(dropdownTag));
+            }
+
+            dropdownTag.Options.UpdateTagOptions(entities, out countUpdated, updateNames, disableDeleted, handleDuplicates);
+
+            dropdownTag.ValidateDropdownTag();
+        }
+
+        public static void UpdateTagOptions(this TagDropdownDetailsModel dropdownTag, IEnumerable<IMatchableEntity> entities, out int countUpdated, bool updateNames = false, bool disableDeleted = true, bool handleDuplicates = true)
+        {
+            if (dropdownTag is null)
+            {
+                throw new ArgumentNullException(nameof(dropdownTag));
+            }
+
+            dropdownTag.Options.UpdateTagOptions(entities, out countUpdated, updateNames, disableDeleted, handleDuplicates);
+
+            dropdownTag.ValidateDropdownTag();
+        }
+
+        private static void UpdateTagOptions(this IList<TagOptionModel> tagOptions, IEnumerable<IMatchableEntity> entities, out int countUpdated, bool updateNames = false, bool disableDeleted = true, bool handleDuplicates = true)
+        {
+            if (tagOptions is null)
+            {
+                throw new ArgumentNullException(nameof(tagOptions));
+            }
+
             var updateCounts = new Dictionary<string, bool>();
 
             countUpdated = 0;
@@ -43,7 +72,7 @@ namespace PexCard.Api.Client.Core.Extensions
                 // upsert tag options
                 foreach (var entity in entitiesList)
                 {
-                    var existingOption = tag.Options.Find(item => string.Equals(item.Value, entity.EntityId, StringComparison.InvariantCultureIgnoreCase));
+                    var existingOption = tagOptions.FirstOrDefault(item => string.Equals(item.Value, entity.EntityId, StringComparison.InvariantCultureIgnoreCase));
                     if (existingOption != null)
                     {
                         // existing entity
@@ -59,7 +88,7 @@ namespace PexCard.Api.Client.Core.Extensions
                         // append asterisks to duplicates to prevent not syncing
                         if (handleDuplicates)
                         {
-                            AppendAsterisksToDuplicates(tag, existingOption);
+                            AppendAsterisksToDuplicates(tagOptions, existingOption);
                         }
                     }
                     else
@@ -73,14 +102,14 @@ namespace PexCard.Api.Client.Core.Extensions
                             Name = entity.EntityName,
                             Value = entity.EntityId
                         };
-                        tag.Options.Add(newOption);
+                        tagOptions.Add(newOption);
 
                         updateCounts[newOption.Value] = true;
 
                         // append asterisks to duplicates to prevent not syncing
                         if (handleDuplicates)
                         {
-                            AppendAsterisksToDuplicates(tag, newOption);
+                            AppendAsterisksToDuplicates(tagOptions, newOption);
                         }
                     }
                 }
@@ -88,7 +117,7 @@ namespace PexCard.Api.Client.Core.Extensions
                 // disable deleted tag options
                 if (disableDeleted)
                 {
-                    foreach (var option in tag.Options)
+                    foreach (var option in tagOptions)
                     {
                         var entity = entitiesList.Find(item => string.Equals(item.EntityId, option.Value, StringComparison.InvariantCultureIgnoreCase));
                         if (entity == null && option.IsEnabled)
@@ -102,9 +131,9 @@ namespace PexCard.Api.Client.Core.Extensions
             }
 
             // at least one option must be enabled.
-            if (tag.Options.All(o => !o.IsEnabled))
+            if (tagOptions.All(o => !o.IsEnabled))
             {
-                var firstOption = tag.Options.FirstOrDefault();
+                var firstOption = tagOptions.FirstOrDefault();
                 if (firstOption != null)
                 {
                     firstOption.IsEnabled = true;
@@ -112,8 +141,6 @@ namespace PexCard.Api.Client.Core.Extensions
                     updateCounts[firstOption.Value] = true;
                 }
             }
-
-            ValidateDropdownTag(tag);
 
             countUpdated = updateCounts.Count;
         }
@@ -129,6 +156,25 @@ namespace PexCard.Api.Client.Core.Extensions
             if (duplicateTagOptionNamesOrValues.Any())
             {
                 throw new DataException($"Duplicate input entity names and/or ids: {string.Join(", ", duplicateTagOptionNamesOrValues.Select(x => $"[EntityName: '{x.EntityName}', EntityId: '{x.EntityId}']"))}.");
+            }
+        }
+
+        public static void ValidateDropdownTag(this TagDropdownDetailsModel tag)
+        {
+            if (tag is null)
+            {
+                throw new ArgumentNullException(nameof(tag));
+            }
+
+            var duplicateTagOptionNamesOrValues = tag.Options.Where(x => tag.Options.Count(y => string.Equals(y.Name, x.Name, StringComparison.InvariantCultureIgnoreCase)) > 1 || tag.Options.Count(y => string.Equals(y.Value, x.Value, StringComparison.InvariantCultureIgnoreCase)) > 1).ToList();
+            if (duplicateTagOptionNamesOrValues.Any())
+            {
+                throw new DataException($"Tag '{tag.Name}' has duplicate tag option names and/or values: {string.Join(", ", duplicateTagOptionNamesOrValues.Select(x => $"[Name: '{x.Name}', Value: '{x.Value}']"))}.");
+            }
+
+            if (!tag.Options.Any(x => x.IsEnabled))
+            {
+                throw new DataException($"Tag '{tag.Name}' has no options enabled. At least one option must be enabled.");
             }
         }
 
@@ -151,13 +197,13 @@ namespace PexCard.Api.Client.Core.Extensions
             }
         }
 
-        private static void AppendAsterisksToDuplicates(TagDropdownDataModel tag, TagOptionModel newOption)
+        private static void AppendAsterisksToDuplicates(IList<TagOptionModel> tagOptions, TagOptionModel newOption)
         {
-            var duplicate = tag.Options.FirstOrDefault(existingOption => existingOption.Value != newOption.Value && existingOption.Name.Equals(newOption.Name, StringComparison.InvariantCultureIgnoreCase));
+            var duplicate = tagOptions.FirstOrDefault(existingOption => existingOption.Value != newOption.Value && existingOption.Name.Equals(newOption.Name, StringComparison.InvariantCultureIgnoreCase));
             if (duplicate != null)
             {
                 duplicate.Name = $"{duplicate.Name}*";
-                AppendAsterisksToDuplicates(tag, newOption);
+                AppendAsterisksToDuplicates(tagOptions, newOption);
             }
         }
     }
