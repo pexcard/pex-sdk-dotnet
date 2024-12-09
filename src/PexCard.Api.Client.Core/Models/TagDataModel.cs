@@ -4,11 +4,12 @@ using PexCard.Api.Client.Core.Enums;
 
 namespace PexCard.Api.Client.Core.Models
 {
+    // dynamic deserialization into proper tag sub type classes based on 'CustomFieldType'
     [JsonConverter(typeof(JsonSubtypes), nameof(Type))]
-    [JsonSubtypes.KnownSubType(typeof(TagTextDataModel), CustomFieldType.Text)]
-    [JsonSubtypes.KnownSubType(typeof(TagDropdownDataModel), CustomFieldType.Dropdown)]
+    [JsonSubtypes.KnownSubType(typeof(TagTextDetailsModel), CustomFieldType.Text)]
+    [JsonSubtypes.KnownSubType(typeof(TagDropdownDetailsModel), CustomFieldType.Dropdown)]
     [JsonSubtypes.FallBackSubType(typeof(TagDetailsModel))]
-    public abstract class TagDataModel
+    public class TagDataModel
     {
         public string Name { get; set; }
         public CustomFieldType Type { get; set; }
