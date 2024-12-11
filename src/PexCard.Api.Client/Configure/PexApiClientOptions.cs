@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 
 namespace PexCard.Api.Client
 {
-    public class PexApiClientOptions
+    public record PexApiClientOptions
     {
         public string AppName { get; set; }
 
@@ -23,6 +23,6 @@ namespace PexCard.Api.Client
 
         public LogLevel LogLevelFailure { get; set; } = LogLevel.Warning;
 
-        public PexRetryPolicyOptions Retries { get; set; } = new PexRetryPolicyOptions();
+        public PexRetryPolicyOptions Retries { get; set; } = PexRetryPolicyOptions.Default;
     }
 }

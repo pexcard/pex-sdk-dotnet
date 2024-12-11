@@ -23,6 +23,6 @@ namespace PexCard.Api.Client
 
         public LogLevel LogLevelFailure { get; set; } = LogLevel.Warning;
 
-        public PexRetryPolicyOptions Retries { get; set; } = new PexRetryPolicyOptions();
+        public PexRetryPolicyOptions Retries { get; set; } = PexRetryPolicyOptions.Default;
     }
 }
