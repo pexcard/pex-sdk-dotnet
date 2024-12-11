@@ -7,7 +7,7 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static PexRetryPolicyOptions None => new PexRetryPolicyOptions
         {
-            RetryLogLevel = LogLevel.None,
+            RetryLogLevel = LogLevel.Warning,
             TooManyRequests = BackoffRetryPolicy.None,
             Timeouts = BackoffRetryPolicy.None,
             ServerErrors = BackoffRetryPolicy.None,
