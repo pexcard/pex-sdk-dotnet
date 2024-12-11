@@ -3,14 +3,30 @@ using System;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public class PexRetryPolicyOptions
+    public record PexRetryPolicyOptions
     {
+        public static readonly PexRetryPolicyOptions None = new PexRetryPolicyOptions
+        {
+            RetryLogLevel = LogLevel.Warning,
+            TooManyRequests = BackoffRetryPolicy.None,
+            Timeouts = BackoffRetryPolicy.None,
+            ServerErrors = BackoffRetryPolicy.None,
+        };
+
+        public static readonly PexRetryPolicyOptions Default = new PexRetryPolicyOptions
+        {
+            RetryLogLevel = LogLevel.Warning,
+            TooManyRequests = new BackoffRetryPolicy(TimeSpan.FromSeconds(5), 7),
+            Timeouts = new BackoffRetryPolicy(TimeSpan.FromSeconds(1), 2),
+            ServerErrors = new BackoffRetryPolicy(TimeSpan.FromMilliseconds(100), 1),
+        };
+
         public LogLevel RetryLogLevel { get; set; } = LogLevel.Warning;
 
-        public BackoffRetryPolicy TooManyRequests { get; set; } = new BackoffRetryPolicy(TimeSpan.FromSeconds(5), 7);
+        public BackoffRetryPolicy TooManyRequests { get; set; } = new BackoffRetryPolicy();
 
-        public BackoffRetryPolicy Timeouts { get; set; } = new BackoffRetryPolicy(TimeSpan.FromSeconds(1), 2);
+        public BackoffRetryPolicy Timeouts { get; set; } = new BackoffRetryPolicy();
 
-        public BackoffRetryPolicy ServerErrors { get; set; } = new BackoffRetryPolicy(TimeSpan.FromMilliseconds(100), 1);
+        public BackoffRetryPolicy ServerErrors { get; set; } = new BackoffRetryPolicy();
     }
 }

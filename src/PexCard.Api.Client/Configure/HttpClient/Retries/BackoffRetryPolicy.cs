@@ -4,10 +4,18 @@ using System.Text.Json.Serialization;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public class BackoffRetryPolicy
+    public record BackoffRetryPolicy
     {
+        public static readonly BackoffRetryPolicy None = new BackoffRetryPolicy(TimeSpan.MinValue, 0);
+
         public BackoffRetryPolicy()
         {
+        }
+
+        public BackoffRetryPolicy(BackoffRetryPolicy other)
+        {
+            Delay = other.Delay;
+            Retries = other.Retries;
         }
 
         public BackoffRetryPolicy(TimeSpan delay, int retries)
@@ -17,8 +25,8 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         [JsonConverter(typeof(JsonTimeSpanConverter))]
-        public TimeSpan Delay { get; set; } = TimeSpan.FromMilliseconds(100);
+        public TimeSpan Delay { get; set; } = TimeSpan.MinValue;
 
-        public int Retries { get; set; } = 1;
+        public int Retries { get; set; } = 0;
     }
 }
