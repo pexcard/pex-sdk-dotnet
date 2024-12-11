@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using PexCard.Api.Client.Const;
 using PexCard.Api.Client.Core;
 using PexCard.Api.Client.Core.Enums;
@@ -483,6 +484,7 @@ namespace PexCard.Api.Client
             };
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.DontRetryRequest();
             request.Headers.SetPexCorrelationIdHeader();
             request.Headers.SetPexAcceptJsonHeader();
             request.Headers.SetPexAuthorizationHeader(externalToken);

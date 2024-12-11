@@ -9,6 +9,11 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class PexRetryPolicyExtensions
     {
+        internal static class HttpRequestOptionsKeys
+        {
+            public static readonly string DontRetryRequest = nameof(DontRetryRequest);
+        }
+
         public static IHttpClientBuilder UsePexRetryPolicies<TClient>(this IHttpClientBuilder builder)
         {
             if (builder is null)
@@ -65,6 +70,23 @@ namespace Microsoft.Extensions.DependencyInjection
             return builder.AddPolicyHandler((sp, req) => GetRetryPolicy(sp, sp.GetRequiredService<ILoggerFactory>().CreateLogger<TClient>(), options));
         }
 
+        internal static HttpRequestMessage DontRetryRequest(this HttpRequestMessage request)
+        {
+            if (request is null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            request.Properties[HttpRequestOptionsKeys.DontRetryRequest] = false;
+
+            return request;
+        }
+
+        private static bool CanRetryRequest(this HttpRequestMessage request)
+        {
+            return request?.Properties.TryGetValue(HttpRequestOptionsKeys.DontRetryRequest, out var dontRetryRequest) != true || Equals(dontRetryRequest, false);
+        }
+
         private static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy(IServiceProvider serviceProvider, ILogger logger, PexRetryPolicyOptions options)
         {
             if (serviceProvider is null)
@@ -81,15 +103,15 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             var tooManyRequestsPolicy = Policy<HttpResponseMessage>
-                .HandleResult(resp => (int)resp.StatusCode == 429)
+                .HandleResult(resp => resp.RequestMessage.CanRetryRequest() && (int)resp.StatusCode == 429)
                 .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: options.TooManyRequests.Delay, retryCount: options.TooManyRequests.Retries), (result, retryDelay, retryNumber, ctx) => LogRetry(logger, options.RetryLogLevel, result, retryDelay, retryNumber));
 
             var timeoutPolicy = Policy<HttpResponseMessage>
-                .HandleResult(resp => resp.RequestMessage?.Method == HttpMethod.Get && (resp.StatusCode == HttpStatusCode.RequestTimeout || resp.StatusCode == HttpStatusCode.GatewayTimeout))
+                .HandleResult(resp => resp.RequestMessage.CanRetryRequest() && resp.RequestMessage?.Method == HttpMethod.Get && (resp.StatusCode == HttpStatusCode.RequestTimeout || resp.StatusCode == HttpStatusCode.GatewayTimeout))
                 .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: options.Timeouts.Delay, retryCount: options.Timeouts.Retries), (result, retryDelay, retryNumber, ctx) => LogRetry(logger, options.RetryLogLevel, result, retryDelay, retryNumber));
 
             var serverErrorPolicy = Policy<HttpResponseMessage>
-                .HandleResult(resp => resp.StatusCode >= HttpStatusCode.InternalServerError)
+                .HandleResult(resp => resp.RequestMessage.CanRetryRequest() && resp.StatusCode >= HttpStatusCode.InternalServerError && resp.StatusCode != HttpStatusCode.GatewayTimeout)
                 .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: options.ServerErrors.Delay, retryCount: options.ServerErrors.Retries), (result, retryDelay, retryNumber, ctx) => LogRetry(logger, options.RetryLogLevel, result, retryDelay, retryNumber));
 
             return serverErrorPolicy.WrapAsync(timeoutPolicy).WrapAsync(tooManyRequestsPolicy);

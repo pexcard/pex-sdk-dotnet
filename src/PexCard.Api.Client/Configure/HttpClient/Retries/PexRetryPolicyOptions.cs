@@ -5,7 +5,7 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public record PexRetryPolicyOptions
     {
-        public static readonly PexRetryPolicyOptions None = new PexRetryPolicyOptions
+        public static PexRetryPolicyOptions None => new PexRetryPolicyOptions
         {
             RetryLogLevel = LogLevel.Warning,
             TooManyRequests = BackoffRetryPolicy.None,
@@ -13,7 +13,7 @@ namespace Microsoft.Extensions.DependencyInjection
             ServerErrors = BackoffRetryPolicy.None,
         };
 
-        public static readonly PexRetryPolicyOptions Default = new PexRetryPolicyOptions
+        public static PexRetryPolicyOptions Default => new PexRetryPolicyOptions
         {
             RetryLogLevel = LogLevel.Warning,
             TooManyRequests = new BackoffRetryPolicy(TimeSpan.FromSeconds(5), 7),

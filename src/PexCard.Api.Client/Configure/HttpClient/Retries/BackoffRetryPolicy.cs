@@ -4,9 +4,9 @@ using System.Text.Json.Serialization;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public record BackoffRetryPolicy
+    public record struct BackoffRetryPolicy
     {
-        public static readonly BackoffRetryPolicy None = new BackoffRetryPolicy(TimeSpan.MinValue, 0);
+        public static BackoffRetryPolicy None => new BackoffRetryPolicy(TimeSpan.MinValue, 0);
 
         public BackoffRetryPolicy()
         {
