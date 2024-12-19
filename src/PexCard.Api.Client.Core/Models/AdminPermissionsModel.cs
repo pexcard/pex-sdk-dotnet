@@ -16,8 +16,6 @@
 
         public bool ManageCardholder { get; set; }
 
-        public bool ViewCardUsage { get; set; }
-
         public bool ViewCardNumbers { get; set; }
 
         public bool ViewCardTransactions { get; set; }
