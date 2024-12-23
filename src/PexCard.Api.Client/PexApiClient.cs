@@ -48,10 +48,10 @@ namespace PexCard.Api.Client
             var requestData = exchangeTokenRequest;
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Bearer, jwt);
-            request.Content = requestData.ToPexJsonContent();
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationBearerHeader(jwt);
+            request.SetPexJsonContent(requestData);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -63,9 +63,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Token/Current"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -77,9 +77,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Token"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -91,9 +91,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Token/Renew"));
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -105,8 +105,8 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Token"));
 
             var request = new HttpRequestMessage(HttpMethod.Delete, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -118,9 +118,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Partner"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -133,9 +133,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Business/Balance"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -156,9 +156,9 @@ namespace PexCard.Api.Client
             requestUriBuilder.Query = requestUriQueryParams.ToString();
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -177,9 +177,9 @@ namespace PexCard.Api.Client
             requestUriBuilder.Query = requestUriQueryParams.ToString();
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -200,9 +200,9 @@ namespace PexCard.Api.Client
             requestUriBuilder.Query = requestUriQueryParams.ToString();
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -216,9 +216,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Transactions/{transactionId}/Attachments"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -236,9 +236,9 @@ namespace PexCard.Api.Client
             requestUriBuilder.Query = requestUriQueryParams.ToString();
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -258,9 +258,9 @@ namespace PexCard.Api.Client
             };
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
-            request.Content = requestData.ToPexJsonContent();
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.SetPexJsonContent(requestData);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -278,9 +278,9 @@ namespace PexCard.Api.Client
             };
 
             var request = new HttpRequestMessage(HttpMethod.Put, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
-            request.Content = requestData.ToPexJsonContent();
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.SetPexJsonContent(requestData);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -297,9 +297,9 @@ namespace PexCard.Api.Client
             };
 
             var request = new HttpRequestMessage(HttpMethod.Delete, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
-            request.Content = requestData.ToPexJsonContent();
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.SetPexJsonContent(requestData);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -333,9 +333,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Details/AccountDetails"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -347,9 +347,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Business/Profile"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -361,9 +361,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Business/Settings"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -375,9 +375,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Business/Linked"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -389,9 +389,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Business/MyProfile"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -403,9 +403,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Business/Admin"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -417,9 +417,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Business/Admin/{adminId}"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -433,10 +433,10 @@ namespace PexCard.Api.Client
             var requestData = newAdmin;
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
-            request.Content = requestData.ToPexJsonContent();
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.SetPexJsonContent(requestData);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -450,10 +450,10 @@ namespace PexCard.Api.Client
             var requestData = updateAdmin;
 
             var request = new HttpRequestMessage(HttpMethod.Put, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
-            request.Content = requestData.ToPexJsonContent();
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.SetPexJsonContent(requestData);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -465,8 +465,8 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Business/Admin/{adminId}"));
 
             var request = new HttpRequestMessage(HttpMethod.Delete, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -485,10 +485,10 @@ namespace PexCard.Api.Client
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
             request.DontRetryRequest();
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
-            request.Content = requestData.ToPexJsonContent();
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.SetPexJsonContent(requestData);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -500,9 +500,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Card/Zero/{cardholderAccountId}"));
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -521,9 +521,9 @@ namespace PexCard.Api.Client
             requestUriBuilder.Query = requestUriQueryParams.ToString();
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -537,9 +537,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Details/AccountDetails/{cardholderAccountId}"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -551,9 +551,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Card/Profile/{cardholderAccountId}"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -570,10 +570,10 @@ namespace PexCard.Api.Client
             };
 
             var request = new HttpRequestMessage(HttpMethod.Put, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
-            request.Content = requestData.ToPexJsonContent();
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.SetPexJsonContent(requestData);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -609,10 +609,10 @@ namespace PexCard.Api.Client
             var requestData = tag;
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
-            request.Content = requestData.ToPexJsonContent();
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.SetPexJsonContent(requestData);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -626,10 +626,10 @@ namespace PexCard.Api.Client
             var requestData = tag;
 
             var request = new HttpRequestMessage(HttpMethod.Put, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
-            request.Content = requestData.ToPexJsonContent();
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.SetPexJsonContent(requestData);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -641,9 +641,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Business/Configuration/Tag/Dropdown/{tagId}"));
 
             var request = new HttpRequestMessage(HttpMethod.Delete, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -657,10 +657,10 @@ namespace PexCard.Api.Client
             var requestData = cardOrder;
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
-            request.Content = requestData.ToPexJsonContent();
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.SetPexJsonContent(requestData);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -674,9 +674,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Group"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -688,9 +688,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Group/{groupId}"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -704,10 +704,10 @@ namespace PexCard.Api.Client
             var requestData = new UpsertCardholderGroupModel { Name = groupName };
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
-            request.Content = requestData.ToPexJsonContent();
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.SetPexJsonContent(requestData);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -721,10 +721,10 @@ namespace PexCard.Api.Client
             var requestData = new UpsertCardholderGroupModel { Name = groupName };
 
             var request = new HttpRequestMessage(HttpMethod.Put, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
-            request.Content = requestData.ToPexJsonContent();
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.SetPexJsonContent(requestData);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -736,8 +736,8 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Group/{groupId}"));
 
             var request = new HttpRequestMessage(HttpMethod.Delete, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -749,9 +749,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Transactions/{transactionId}/Tags"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -772,9 +772,9 @@ namespace PexCard.Api.Client
             var requestData = transactionTags;
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
-            request.Content = requestData.ToPexJsonContent();
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.SetPexJsonContent(requestData);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -795,10 +795,10 @@ namespace PexCard.Api.Client
             var requestData = transactionTags;
 
             var request = new HttpRequestMessage(HttpMethod.Put, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
-            request.Content = requestData.ToPexJsonContent();
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.SetPexJsonContent(requestData);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -817,9 +817,9 @@ namespace PexCard.Api.Client
             requestUriBuilder.Query = requestUriQueryParams.ToString();
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -831,9 +831,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Callback-Subscription/{callbackId}"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -847,10 +847,10 @@ namespace PexCard.Api.Client
             var requestData = new UpsertCallbackSubscriptionModel(callbackType, callbackStatus, callbackUri, name, description);
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
-            request.Content = requestData.ToPexJsonContent();
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.SetPexJsonContent(requestData);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -864,10 +864,10 @@ namespace PexCard.Api.Client
             var requestData = new UpsertCallbackSubscriptionModel(callbackType, callbackStatus, callbackUri, name, description);
 
             var request = new HttpRequestMessage(HttpMethod.Put, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
-            request.Content = requestData.ToPexJsonContent();
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.SetPexJsonContent(requestData);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -879,9 +879,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Callback-Subscription/{callbackId}"));
 
             var request = new HttpRequestMessage(HttpMethod.Delete, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -893,9 +893,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Invoices?startDate={starDate}"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -907,9 +907,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Invoice/{invoiceId}/allocations"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -921,9 +921,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Invoice/{invoiceId}/payments"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -935,9 +935,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/VendorCard/Order/{orderId}"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -951,10 +951,10 @@ namespace PexCard.Api.Client
             var requestData = createOrder;
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
-            request.Content = requestData.ToPexJsonContent();
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.SetPexJsonContent(requestData);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -968,10 +968,10 @@ namespace PexCard.Api.Client
             var requestData = data;
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
-            request.Content = requestData.ToPexJsonContent();
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.SetPexJsonContent(requestData);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -983,9 +983,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/SpendingRuleset"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -997,9 +997,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/SpendingRuleset/{rulesetId}"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -1013,10 +1013,10 @@ namespace PexCard.Api.Client
             var requestData = createRuleset;
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
-            request.Content = requestData.ToPexJsonContent();
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.SetPexJsonContent(requestData);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -1030,10 +1030,10 @@ namespace PexCard.Api.Client
             var requestData = updateRuleset;
 
             var request = new HttpRequestMessage(HttpMethod.Put, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
-            request.Content = requestData.ToPexJsonContent();
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.SetPexJsonContent(requestData);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -1050,10 +1050,10 @@ namespace PexCard.Api.Client
             };
 
             var request = new HttpRequestMessage(HttpMethod.Delete, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
-            request.Content = requestData.ToPexJsonContent();
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.SetPexJsonContent(requestData);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -1065,9 +1065,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/SpendingRuleset/{rulesetId}/Cards"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -1079,9 +1079,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/SpendingRuleset/MccCategories"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -1093,9 +1093,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Approval/{transactionId}/Approve"));
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -1109,10 +1109,10 @@ namespace PexCard.Api.Client
             var requestData = new RejectRequestModel { Reason = reason };
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
-            request.Content = requestData.ToPexJsonContent();
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.SetPexJsonContent(requestData);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -1124,9 +1124,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Approval/{transactionId}/Reset"));
 
             var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -1141,9 +1141,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Business/Configuration/Tags"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             return await _httpClient.SendAsync(request, cancelToken);
         }
@@ -1153,9 +1153,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Business/Configuration/Tag/{tagId}"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -1167,9 +1167,9 @@ namespace PexCard.Api.Client
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Business/Configuration/Tag/{tagId}?OverrideRestrictions={overrideRestrictions.ToString().ToLower()}"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.Headers.SetPexCorrelationIdHeader();
-            request.Headers.SetPexAcceptJsonHeader();
-            request.Headers.SetPexAuthorizationHeader(externalToken);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
