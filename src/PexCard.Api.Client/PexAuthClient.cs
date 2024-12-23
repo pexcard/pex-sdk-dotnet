@@ -49,8 +49,8 @@ namespace PexCard.Api.Client
                 var requestData = new AuthPartnerRequestModel(appId, appSecret, serverCallbackUri, browserClosingUri);
 
                 var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
-                request.Headers.SetPexCorrelationIdHeader();
-                request.Content = requestData.ToPexJsonContent();
+                request.SetPexCorrelationIdHeader();
+                request.SetPexJsonContent(requestData);
 
                 var response = await _httpClient.SendAsync(request, cancelToken);
 
@@ -82,8 +82,8 @@ namespace PexCard.Api.Client
                 var requestData = new AuthRevokeTokenRequestModel(appId, appSecret, token);
 
                 var request = new HttpRequestMessage(HttpMethod.Delete, requestUriBuilder.Uri);
-                request.Headers.SetPexCorrelationIdHeader();
-                request.Content = requestData.ToPexJsonContent();
+                request.SetPexCorrelationIdHeader();
+                request.SetPexJsonContent(requestData);
 
                 var response = await _httpClient.SendAsync(request, cancelToken);
 
