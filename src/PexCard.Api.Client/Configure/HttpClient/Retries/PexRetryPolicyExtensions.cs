@@ -77,7 +77,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(request));
             }
 
-            request.Properties[HttpRequestOptionsKeys.DontRetryRequest] = false;
+            request.Properties[HttpRequestOptionsKeys.DontRetryRequest] = true;
 
             return request;
         }
@@ -111,7 +111,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: options.Timeouts.Delay, retryCount: options.Timeouts.Retries), (result, retryDelay, retryNumber, ctx) => LogRetry(logger, options.RetryLogLevel, result, retryDelay, retryNumber));
 
             var serverErrorPolicy = Policy<HttpResponseMessage>
-                .HandleResult(resp => resp.RequestMessage.CanRetryRequest() && resp.StatusCode >= HttpStatusCode.InternalServerError && resp.StatusCode != HttpStatusCode.GatewayTimeout)
+                .HandleResult(resp => resp.RequestMessage.CanRetryRequest() && resp.StatusCode == HttpStatusCode.InternalServerError)
                 .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(medianFirstRetryDelay: options.ServerErrors.Delay, retryCount: options.ServerErrors.Retries), (result, retryDelay, retryNumber, ctx) => LogRetry(logger, options.RetryLogLevel, result, retryDelay, retryNumber));
 
             return serverErrorPolicy.WrapAsync(timeoutPolicy).WrapAsync(tooManyRequestsPolicy);
