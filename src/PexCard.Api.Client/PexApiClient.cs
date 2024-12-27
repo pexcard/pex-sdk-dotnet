@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using PexCard.Api.Client.Const;
 using PexCard.Api.Client.Core;
 using PexCard.Api.Client.Core.Enums;
 using PexCard.Api.Client.Core.Exceptions;
@@ -12,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
@@ -1133,6 +1131,72 @@ namespace PexCard.Api.Client
             return await HandleHttpResponseMessage<StateModel>(response);
         }
 
+        public async Task<PaymentListResponseModel> GetPayments(string externalToken, PaymentListRequestModel model, int page = 1, int size = 15, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Payments"));
+
+            var requestUriQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
+
+            if (model != null)
+            {
+                if (model.PaymentStatuses != null && model.PaymentStatuses.Any())
+                {
+                    foreach (var paymentStatus in model.PaymentStatuses)
+                    {
+                        requestUriQueryParams.Add("PaymentStatuses", paymentStatus.ToString());
+                    }
+                }
+                if (model.PaymentStatusTriggers != null && model.PaymentStatusTriggers.Any())
+                {
+                    foreach (var paymentStatusTrigger in model.PaymentStatusTriggers)
+                    {
+                        requestUriQueryParams.Add("PaymentStatusTriggers", paymentStatusTrigger.ToString());
+                    }
+                }
+
+                requestUriQueryParams.Add("Page", page.ToString());
+                requestUriQueryParams.Add("Size", size.ToString());
+                requestUriBuilder.Query = requestUriQueryParams.ToString();
+            }
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<PaymentListResponseModel>(response);
+        }
+
+        public async Task<PaymentTransferModel> GetPaymentTransfer(string externalToken, int paymentTransferId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/PaymentTransfers/{paymentTransferId}"));
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<PaymentTransferModel>(response);
+        }
+
+        public async Task<PaymentRequestModel> GetPaymentRequest(string externalToken, int paymentRequestId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/PaymentRequests/{paymentRequestId}"));
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader();
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<PaymentRequestModel>(response);
+        }
 
         #region Private methods
 
