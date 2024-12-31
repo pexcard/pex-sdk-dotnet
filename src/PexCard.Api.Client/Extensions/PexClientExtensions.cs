@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Linq;
-using System.Net.Http.Headers;
 using System.Net.Http;
-using PexCard.Api.Client.Const;
-using Newtonsoft.Json;
+using System.Net.Http.Headers;
 using System.Text;
-using System.Diagnostics;
+using Newtonsoft.Json;
+using PexCard.Api.Client.Const;
 
 namespace PexCard.Api.Client.Extensions
 {
@@ -29,6 +28,16 @@ namespace PexCard.Api.Client.Extensions
             request.Content = contentData.ToPexJsonContent();
 
             return request;
+        }
+
+        public static void SetPexCorrelationIdHeader(this HttpRequestMessage request, string correlationId)
+        {
+            if (request is null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            request.Headers.TryAddWithoutValidation(PexCorrelationIdHeaderName, correlationId);
         }
 
         public static string GetPexCorrelationId(this HttpResponseMessage response)
@@ -65,57 +74,6 @@ namespace PexCard.Api.Client.Extensions
             return correlationId;
         }
 
-        public static HttpRequestMessage SetPexCorrelationIdHeader(this HttpRequestMessage request)
-        {
-            if (request is null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
-            request.Headers.SetPexCorrelationIdHeader();
-
-            return request;
-        }
-
-        public static HttpRequestMessage SetPexCorrelationIdHeader(this HttpRequestMessage request, string correlationId)
-        {
-            if (request is null)
-            {
-                throw new ArgumentNullException(nameof(request));
-            }
-
-            request.Headers.SetPexCorrelationIdHeader(correlationId);
-
-            return request;
-        }
-
-        private static HttpRequestHeaders SetPexCorrelationIdHeader(this HttpRequestHeaders headers)
-        {
-            if (headers is null)
-            {
-                throw new ArgumentNullException(nameof(headers));
-            }
-
-            Activity.Current ??= new Activity("PEX CLIENT").Start();
-            var correlationId = $"ext-{Activity.Current.TraceId}";
-
-            headers.SetPexCorrelationIdHeader(correlationId);
-
-            return headers;
-        }
-
-        private static HttpRequestHeaders SetPexCorrelationIdHeader(this HttpRequestHeaders headers, string correlationId)
-        {
-            if (headers is null)
-            {
-                throw new ArgumentNullException(nameof(headers));
-            }
-
-            headers.TryAddWithoutValidation(PexCorrelationIdHeaderName, correlationId);
-
-            return headers;
-        }
-
         public static HttpRequestMessage SetPexAuthorizationBearerHeader(this HttpRequestMessage request, string bearerToken)
         {
             if (request is null)
@@ -126,18 +84,6 @@ namespace PexCard.Api.Client.Extensions
             request.Headers.SetPexAuthorizationBearerHeader(bearerToken);
 
             return request;
-        }
-
-        private static HttpRequestHeaders SetPexAuthorizationBearerHeader(this HttpRequestHeaders headers, string bearerToken)
-        {
-            if (headers is null)
-            {
-                throw new ArgumentNullException(nameof(headers));
-            }
-
-            headers.Authorization = new AuthenticationHeaderValue(TokenType.Bearer, bearerToken);
-
-            return headers;
         }
 
         public static HttpRequestMessage SetPexAuthorizationTokenHeader(this HttpRequestMessage request, string externalToken)
@@ -152,18 +98,6 @@ namespace PexCard.Api.Client.Extensions
             return request;
         }
 
-        private static HttpRequestHeaders SetPexAuthorizationTokenHeader(this HttpRequestHeaders headers, string externalToken)
-        {
-            if (headers is null)
-            {
-                throw new ArgumentNullException(nameof(headers));
-            }
-
-            headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
-
-            return headers;
-        }
-
         public static HttpRequestMessage SetPexAcceptJsonHeader(this HttpRequestMessage request)
         {
             if (request is null)
@@ -174,19 +108,6 @@ namespace PexCard.Api.Client.Extensions
             request.Headers.SetPexAcceptJsonHeader();
 
             return request;
-        }
-
-        private static HttpRequestHeaders SetPexAcceptJsonHeader(this HttpRequestHeaders headers)
-        {
-            if (headers is null)
-            {
-                throw new ArgumentNullException(nameof(headers));
-            }
-
-            headers.Accept.Clear();
-            headers.Accept.Add(new MediaTypeWithQualityHeaderValue(PexJsonMediaType));
-
-            return headers;
         }
 
         public static bool IsPexJsonContent(this HttpResponseMessage response)
@@ -213,5 +134,46 @@ namespace PexCard.Api.Client.Extensions
         {
             return JsonConvert.DeserializeObject<TData>(json, PexJsonSettings);
         }
+
+        #region Private Methods
+
+        private static HttpRequestHeaders SetPexAuthorizationBearerHeader(this HttpRequestHeaders headers, string bearerToken)
+        {
+            if (headers is null)
+            {
+                throw new ArgumentNullException(nameof(headers));
+            }
+
+            headers.Authorization = new AuthenticationHeaderValue(TokenType.Bearer, bearerToken);
+
+            return headers;
+        }
+
+        private static HttpRequestHeaders SetPexAuthorizationTokenHeader(this HttpRequestHeaders headers, string externalToken)
+        {
+            if (headers is null)
+            {
+                throw new ArgumentNullException(nameof(headers));
+            }
+
+            headers.Authorization = new AuthenticationHeaderValue(TokenType.Token, externalToken);
+
+            return headers;
+        }
+
+        private static HttpRequestHeaders SetPexAcceptJsonHeader(this HttpRequestHeaders headers)
+        {
+            if (headers is null)
+            {
+                throw new ArgumentNullException(nameof(headers));
+            }
+
+            headers.Accept.Clear();
+            headers.Accept.Add(new MediaTypeWithQualityHeaderValue(PexJsonMediaType));
+
+            return headers;
+        }
+
+        #endregion
     }
 }

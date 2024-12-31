@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using PexCard.Api.Client.Core.Enums;
 
 namespace PexCard.Api.Client.Extensions
