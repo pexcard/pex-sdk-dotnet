@@ -1,7 +1,9 @@
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
+using PexCard.Api.Client.Extensions;
 
 namespace System.Net.Http
 {
@@ -65,7 +67,23 @@ namespace System.Net.Http
                 throw new ArgumentNullException(nameof(response));
             }
 
-            _logger.Log(logLevel, ex, "HTTP {RequestMethod} {RequestUri} responded {StatusCode} in {Elapsed:0.0000} ms", response.RequestMessage?.Method, response.RequestMessage?.RequestUri, (int)response.StatusCode, elapsedMs);
+            using (_logger.BeginScope(GetLoggerScope(response)))
+            {
+                _logger.Log(logLevel, ex, "HTTP {RequestMethod} {RequestUri} responded {StatusCode} in {Elapsed:0.0000} ms", response.RequestMessage?.Method, response.RequestMessage?.RequestUri, (int)response.StatusCode, elapsedMs);
+            }
+        }
+
+        private static IDictionary<string, object> GetLoggerScope(HttpResponseMessage response)
+        {
+            if (response is null)
+            {
+                throw new ArgumentNullException(nameof(response));
+            }
+
+            return new Dictionary<string, object>
+            {
+                ["PexCorrelationId"] = response.RequestMessage.Headers.GetPexCorrelationId() // ideally external api responds with the correlation id
+            };
         }
     }
 }

@@ -1,6 +1,8 @@
 using Newtonsoft.Json;
+using PexCard.Api.Client.Configure;
 using PexCard.Api.Client.Core;
 using PexCard.Api.Client.Core.Exceptions;
+using PexCard.Api.Client.Core.Interfaces;
 using PexCard.Api.Client.Core.Models;
 using PexCard.Api.Client.Extensions;
 using PexCard.Api.Client.Models;
@@ -15,10 +17,12 @@ namespace PexCard.Api.Client
     public class PexAuthClient : IPexAuthClient
     {
         private readonly HttpClient _httpClient;
+        private readonly ICorrelationIdResolver _correlationIdResolver;
 
-        public PexAuthClient(HttpClient httpClient)
+        public PexAuthClient(HttpClient httpClient, ICorrelationIdResolver correlationIdResolver = null)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            _correlationIdResolver = correlationIdResolver ?? new DefaultCorrelationIdResolver();
         }
 
         public Uri BaseUri => _httpClient.BaseAddress;
@@ -49,7 +53,7 @@ namespace PexCard.Api.Client
                 var requestData = new AuthPartnerRequestModel(appId, appSecret, serverCallbackUri, browserClosingUri);
 
                 var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
-                request.SetPexCorrelationIdHeader();
+                request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
                 request.SetPexJsonContent(requestData);
 
                 var response = await _httpClient.SendAsync(request, cancelToken);
@@ -82,7 +86,7 @@ namespace PexCard.Api.Client
                 var requestData = new AuthRevokeTokenRequestModel(appId, appSecret, token);
 
                 var request = new HttpRequestMessage(HttpMethod.Delete, requestUriBuilder.Uri);
-                request.SetPexCorrelationIdHeader();
+                request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
                 request.SetPexJsonContent(requestData);
 
                 var response = await _httpClient.SendAsync(request, cancelToken);
