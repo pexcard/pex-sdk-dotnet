@@ -15,5 +15,6 @@ namespace PexCard.Api.Client.Core.Models
         public int? CardLimit { get; set; }
         public int? VendorLimit { get; set; }
         public decimal? DefaultDailyLimit { get; set; }
+        public bool UseReimbursements { get; set; }
     }
 }
