@@ -26,6 +26,8 @@ namespace PexCard.Api.Client.Core.Models
 
         public long? MetadataRelationId { get; set; }
 
+        public PaymentRequestMetadataModel Metadata { get; set; } = new PaymentRequestMetadataModel();
+
         public long? ApprovalId { get; set; }
 
         public PaymentRequestStatus PaymentRequestStatus { get; set; }
