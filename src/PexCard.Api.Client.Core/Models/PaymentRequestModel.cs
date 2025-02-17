@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System;
+﻿using System;
 using PexCard.Api.Client.Core.Enums;
 
 namespace PexCard.Api.Client.Core.Models
@@ -35,8 +34,6 @@ namespace PexCard.Api.Client.Core.Models
         public PaymentRequestStatusTrigger PaymentRequestStatusTrigger { get; set; }
 
         public int? PaymentId { get; set; }
-
-        public List<PaymentRequestReceiptModel> PaymentRequestReceipts { get; set; }
 
         public DateTimeOffset? PayoutDate { get; set; }
 
