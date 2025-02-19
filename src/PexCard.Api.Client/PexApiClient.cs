@@ -270,6 +270,26 @@ namespace PexCard.Api.Client
             await HandleHttpResponseMessage(response);
         }
 
+        public async Task AddTransactionRelationshipNote(string externalToken, long transactionRelationshipId, string noteText, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Note/TransactionRelationshipNote"));
+
+            var requestData = new 
+            {
+                NoteText = noteText,
+                TransactionRelationshipId = transactionRelationshipId
+            };
+
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.SetPexJsonContent(requestData);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            await HandleHttpResponseMessage(response);
+        }
+
         public async Task UpdateTransactionNote(string externalToken, long noteId, string noteText, bool isPending, CancellationToken cancelToken = default)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Note/{noteId}"));
