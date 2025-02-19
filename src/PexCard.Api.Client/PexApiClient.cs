@@ -1158,6 +1158,22 @@ namespace PexCard.Api.Client
                         requestUriQueryParams.Add("PaymentStatusTriggers", paymentStatusTrigger.ToString());
                     }
                 }
+                if (model.OutboundAchCreationStartDate.HasValue)
+                {
+                    requestUriQueryParams.Add("OutboundAchCreationStartDate", model.OutboundAchCreationStartDate.Value.ToEst().ToDateTimeString());
+                }
+                if (model.OutboundAchCreationEndDate.HasValue)
+                {
+                    requestUriQueryParams.Add("OutboundAchCreationEndDate", model.OutboundAchCreationEndDate.Value.ToEst().ToDateTimeString());
+                }
+                if (model.ExpectedPaymentStartDate.HasValue)
+                {
+                    requestUriQueryParams.Add("ExpectedPaymentStartDate", model.ExpectedPaymentStartDate.Value.ToEst().ToDateTimeString());
+                }
+                if (model.ExpectedPaymentEndDate.HasValue)
+                {
+                    requestUriQueryParams.Add("ExpectedPaymentEndDate", model.ExpectedPaymentEndDate.Value.ToEst().ToDateTimeString());
+                }
 
                 requestUriQueryParams.Add("Page", page.ToString());
                 requestUriQueryParams.Add("Size", size.ToString());
