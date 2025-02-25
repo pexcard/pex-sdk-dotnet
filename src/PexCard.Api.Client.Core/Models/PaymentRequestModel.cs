@@ -17,6 +17,10 @@ namespace PexCard.Api.Client.Core.Models
 
         public DateTimeOffset PurchaseDate { get; set; }
 
+        public string UserFirstName { get; set; }
+
+        public string UserLastName { get; set; }
+
         public string Note { get; set; }
 
         public long PayeeBankAccountId { get; set; }
