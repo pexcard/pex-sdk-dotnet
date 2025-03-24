@@ -225,9 +225,9 @@ namespace PexCard.Api.Client
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
-            var responseData = await HandleHttpResponseMessage<AttachmentsModel>(response, returnValueForNotFound: true, notFoundValue: new AttachmentsModel());
+            var responseData = await HandleHttpResponseMessage<AttachmentsModel>(response, returnValueForNotFound: true);
 
-            return responseData?.Attachments;
+            return responseData?.Attachments ?? new List<AttachmentLinkModel>();
         }
 
         public async Task<AttachmentModel> GetTransactionAttachment(string externalToken, long transactionId, string attachmentId, AttachmentLinkType attachmentLinkType = AttachmentLinkType.LinkUrl, CancellationToken cancelToken = default)
@@ -245,7 +245,7 @@ namespace PexCard.Api.Client
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
-            return await HandleHttpResponseMessage<AttachmentModel>(response, returnValueForNotFound: true, notFoundValue: null);
+            return await HandleHttpResponseMessage<AttachmentModel>(response, returnValueForNotFound: true);
         }
 
         public async Task AddTransactionNote(string externalToken, TransactionModel transaction, string noteText, bool visibleToCardholder = false, CancellationToken cancelToken = default)
