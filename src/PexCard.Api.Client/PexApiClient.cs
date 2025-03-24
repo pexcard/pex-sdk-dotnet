@@ -225,7 +225,7 @@ namespace PexCard.Api.Client
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
-            var responseData = await HandleHttpResponseMessage<AttachmentsModel>(response, true);
+            var responseData = await HandleHttpResponseMessage<AttachmentsModel>(response, returnValueForNotFound: true, notFoundValue: new AttachmentsModel());
 
             return responseData?.Attachments;
         }
@@ -245,7 +245,7 @@ namespace PexCard.Api.Client
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
-            return await HandleHttpResponseMessage<AttachmentModel>(response, true);
+            return await HandleHttpResponseMessage<AttachmentModel>(response, returnValueForNotFound: true, notFoundValue: null);
         }
 
         public async Task AddTransactionNote(string externalToken, TransactionModel transaction, string noteText, bool visibleToCardholder = false, CancellationToken cancelToken = default)
@@ -274,7 +274,7 @@ namespace PexCard.Api.Client
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Note/TransactionRelationshipNote"));
 
-            var requestData = new 
+            var requestData = new
             {
                 NoteText = noteText,
                 TransactionRelationshipId = transactionRelationshipId
@@ -1281,7 +1281,7 @@ namespace PexCard.Api.Client
             return await HandleHttpResponseMessage<TTagModel>(response);
         }
 
-        private async Task<TData> HandleHttpResponseMessage<TData>(HttpResponseMessage response, bool notFoundAsDefault = false)
+        private async Task<TData> HandleHttpResponseMessage<TData>(HttpResponseMessage response, bool returnValueForNotFound = false, TData notFoundValue = default)
         {
             var responseData = await response.Content.ReadAsStringAsync();
 
@@ -1289,9 +1289,9 @@ namespace PexCard.Api.Client
             {
                 if (!response.IsSuccessStatusCode)
                 {
-                    if (response.StatusCode == HttpStatusCode.NotFound && notFoundAsDefault)
+                    if (response.StatusCode == HttpStatusCode.NotFound && returnValueForNotFound)
                     {
-                        return default;
+                        return notFoundValue;
                     }
 
                     var correlationId = response.GetPexCorrelationId();
