@@ -24,5 +24,9 @@ namespace PexCard.Api.Client.Core.Models
         public int? ProcessorRequestId { get; set; }
 
         public DateTimeOffset? PayoutDate { get; set; }
+
+        public DateTimeOffset? OutboundAchCreationDate { get; set; }
+
+        public DateTimeOffset? ExpectedPaymentDate { get; set; }
     }
 }
