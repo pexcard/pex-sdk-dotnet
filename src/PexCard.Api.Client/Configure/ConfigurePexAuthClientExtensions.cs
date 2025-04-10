@@ -27,8 +27,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(configSection));
             }
 
-            RegisterIpResolver(services);
-
             services.Configure<PexAuthClientOptions>(configSection);
 
             return services.RegisterPexAuthClient();
@@ -44,8 +42,6 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 throw new ArgumentNullException(nameof(options));
             }
-
-            RegisterIpResolver(services);
 
             return services.AddPexAuthClient((x) =>
             {
@@ -68,8 +64,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(configure));
             }
 
-            RegisterIpResolver(services);
-
             services.Configure(configure);
 
             return services.RegisterPexAuthClient();
@@ -81,6 +75,8 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 throw new ArgumentNullException(nameof(services));
             }
+
+            RegisterIpResolver(services);
 
             services.AddHttpClient<IPexAuthClient, PexAuthClient>((sp, httpClient) =>
             {

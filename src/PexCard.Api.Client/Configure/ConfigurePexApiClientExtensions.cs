@@ -26,8 +26,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(configSection));
             }
 
-            RegisterIpResolver(services);
-
             services.Configure<PexApiClientOptions>(configSection);
 
             return services.RegisterPexApiClient();
@@ -43,8 +41,6 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 throw new ArgumentNullException(nameof(options));
             }
-
-            RegisterIpResolver(services);
 
             return services.AddPexApiClient((x) =>
             {
@@ -67,8 +63,6 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(configure));
             }
 
-            RegisterIpResolver(services);
-
             services.Configure(configure);
 
             return services.RegisterPexApiClient();
@@ -80,6 +74,8 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 throw new ArgumentNullException(nameof(services));
             }
+
+            RegisterIpResolver(services);
 
             services.AddHttpClient<IPexApiClient, PexApiClient>((sp, httpClient) =>
             {
