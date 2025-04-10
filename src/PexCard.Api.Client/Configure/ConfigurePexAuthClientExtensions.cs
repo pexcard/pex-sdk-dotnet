@@ -2,9 +2,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using PexCard.Api.Client;
 using PexCard.Api.Client.Core;
+using PexCard.Api.Client.Core.Interfaces;
 using System;
+using System.Linq;
 using System.Net.Http.Headers;
 using System.Reflection;
+using Microsoft.Extensions.DependencyInjection;
+using PexCard.Api.Client.Configure;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -23,6 +27,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(configSection));
             }
 
+            RegisterIpResolver(services);
+
             services.Configure<PexAuthClientOptions>(configSection);
 
             return services.RegisterPexAuthClient();
@@ -38,6 +44,8 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 throw new ArgumentNullException(nameof(options));
             }
+
+            RegisterIpResolver(services);
 
             return services.AddPexAuthClient((x) =>
             {
@@ -59,6 +67,8 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 throw new ArgumentNullException(nameof(configure));
             }
+
+            RegisterIpResolver(services);
 
             services.Configure(configure);
 
@@ -112,6 +122,15 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             // remove prohibited characters
             return userAgentVersion.Replace(":", "");
+        }
+
+        private static void RegisterIpResolver(IServiceCollection services)
+        {
+            if (!services.Any(x => x.ServiceType == typeof(IIPAddressResolver)))
+            {
+                services.AddHttpContextAccessor();
+                services.AddScoped<IIPAddressResolver, IpAddressResolver>();
+            }
         }
     }
 }

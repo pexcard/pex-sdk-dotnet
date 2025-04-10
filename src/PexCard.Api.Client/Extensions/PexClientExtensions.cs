@@ -12,6 +12,7 @@ namespace PexCard.Api.Client.Extensions
     {
         private const string PexCorrelationIdHeaderName = "X-CORRELATION-ID";
         private const string PexJsonMediaType = "application/json";
+        private const string PexForwardedForHeaderName = "X-Forwarded-For";
         private static readonly Encoding PexEncodingType = Encoding.UTF8;
         private static readonly JsonSerializerSettings PexJsonSettings = new JsonSerializerSettings
         {
@@ -38,6 +39,17 @@ namespace PexCard.Api.Client.Extensions
             }
 
             request.Headers.TryAddWithoutValidation(PexCorrelationIdHeaderName, correlationId);
+        }
+
+        public static void SetXForwardFor(this HttpRequestMessage request, string forwardFor)
+        {
+            if (request is null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            if(!string.IsNullOrWhiteSpace(forwardFor))
+                request.Headers.TryAddWithoutValidation(PexForwardedForHeaderName, forwardFor);
         }
 
         public static string GetPexCorrelationId(this HttpResponseMessage response)
