@@ -65,6 +65,9 @@ steps:
   - script: dotnet pack src/PexCard.Api.Client/PexCard.Api.Client.csproj --no-restore --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:VersionPrefix='$(versionPrefix)' -p:VersionSuffix='$(versionSuffix)' -p:SourceRevisionId='$(sourceRevisionId)'
     displayName: Pack PexCard.Api.Client
 
+  - script: dotnet pack src/PexCard.Api.AspNetCore/PexCard.Api.AspNetCore.csproj --no-restore --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:VersionPrefix='$(versionPrefix)' -p:VersionSuffix='$(versionSuffix)' -p:SourceRevisionId='$(sourceRevisionId)'
+    displayName: Pack PexCard.Api.AspNetCore
+
   - task: SonarCloudAnalyze@1
     displayName: SonarCloud analyze
 
