@@ -1,16 +1,17 @@
 ﻿using PexCard.Api.Client.Core.Interfaces;
 using Microsoft.AspNetCore.Http;
+using System;
 
 namespace PexCard.Api.AspNetCore
 {
-    public class IPAddressResolver : IIPAddressResolver
+    public class HttpContextIpAddressResolver : IIPAddressResolver
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private const string PexForwardedForHeaderName = "X-Forwarded-For";
 
-        public IPAddressResolver(IHttpContextAccessor httpContextAccessor)
+        public HttpContextIpAddressResolver(IHttpContextAccessor httpContextAccessor)
         {
-            _httpContextAccessor = httpContextAccessor;
+            _httpContextAccessor = httpContextAccessor ?? throw new ArgumentNullException(nameof(httpContextAccessor));
         }
 
         public string GetValue()

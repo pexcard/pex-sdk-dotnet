@@ -10,7 +10,7 @@ namespace PexCard.Api.AspNetCore.Configure
         {
             services.AddHttpContextAccessor();
             services.RemoveAll<IIPAddressResolver>();
-            services.AddScoped<IIPAddressResolver, IPAddressResolver>();
+            services.AddScoped<IIPAddressResolver, HttpContextIpAddressResolver>();
         }
     }
 }
