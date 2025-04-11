@@ -17,11 +17,15 @@ namespace PexCard.Api.Client
     public class PexAuthClient : IPexAuthClient
     {
         private readonly HttpClient _httpClient;
+        private readonly IIPAddressResolver _ipAddressResolver;
         private readonly ICorrelationIdResolver _correlationIdResolver;
 
-        public PexAuthClient(HttpClient httpClient, ICorrelationIdResolver correlationIdResolver = null)
+        public PexAuthClient(HttpClient httpClient,
+            IIPAddressResolver ipAddressResolver,
+            ICorrelationIdResolver correlationIdResolver = null)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
+            _ipAddressResolver = ipAddressResolver;
             _correlationIdResolver = correlationIdResolver ?? new DefaultCorrelationIdResolver();
         }
 
@@ -54,6 +58,7 @@ namespace PexCard.Api.Client
 
                 var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
                 request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+                request.SetXForwardFor(_ipAddressResolver.GetValue());
                 request.SetPexJsonContent(requestData);
 
                 var response = await _httpClient.SendAsync(request, cancelToken);
@@ -87,6 +92,7 @@ namespace PexCard.Api.Client
 
                 var request = new HttpRequestMessage(HttpMethod.Delete, requestUriBuilder.Uri);
                 request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+                request.SetXForwardFor(_ipAddressResolver.GetValue());
                 request.SetPexJsonContent(requestData);
 
                 var response = await _httpClient.SendAsync(request, cancelToken);
