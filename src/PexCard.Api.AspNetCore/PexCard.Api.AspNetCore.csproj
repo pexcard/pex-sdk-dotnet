@@ -5,7 +5,7 @@
 		<Company>Prepaid Expense Card Solutions Inc</Company>
 		<Authors>PEX</Authors>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Description>The official SDK for the PEX API AspNetCore, containing  interface implementations and error handling for working with it.</Description>
+		<Description>The official SDK for the PEX API, containing interface implementations and error handling for working with it.</Description>
 		<Product>PEX SDK for .NET</Product>
 		<PackageProjectUrl>https://developer.pexcard.com</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/pexcard/pex-sdk-dotnet</RepositoryUrl>
@@ -23,26 +23,26 @@
 		<SourceRevisionId></SourceRevisionId>
 	</PropertyGroup>
 
+  <ItemGroup>
+    <None Include="..\..\pexicon-128x128.png" Link="pexicon-128x128.png">
+      <PackagePath></PackagePath>
+      <Pack>True</Pack>
+    </None>
+  </ItemGroup>
+
 	<ItemGroup>
-		<PackageReference Include="coverlet.collector" Version="6.0.1">
-			<PrivateAssets>all</PrivateAssets>
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-		</PackageReference>
-		<PackageReference Include="JsonSubTypes" Version="2.0.1" />
-		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.4" />
-		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+		<PackageReference Include="Microsoft.AspNetCore.Http" Version="2.3.0" />
+		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.2" />
+		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.3.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\PexCard.Api.Client.Core\PexCard.Api.Client.Core.csproj" />
+	  <ProjectReference Include="..\PexCard.Api.Client\PexCard.Api.Client.csproj" />
 	</ItemGroup>
 
 	<PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
 		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<None Include="..\..\pexicon-128x128.png">
-			<Pack>True</Pack>
-			<PackagePath></PackagePath>
-		</None>
-	</ItemGroup>
 
 </Project>

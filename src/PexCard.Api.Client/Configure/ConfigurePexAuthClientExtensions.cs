@@ -123,8 +123,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             if (!services.Any(x => x.ServiceType == typeof(IIPAddressResolver)))
             {
-                services.AddHttpContextAccessor();
-                services.AddScoped<IIPAddressResolver, IpAddressResolver>();
+                services.AddScoped<IIPAddressResolver, DummyIpAddressResolver>();
             }
         }
     }
