@@ -1,8 +1,11 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using PexCard.Api.Client;
+using PexCard.Api.Client.Configure;
 using PexCard.Api.Client.Core;
+using PexCard.Api.Client.Core.Interfaces;
 using System;
+using System.Linq;
 using System.Net.Http.Headers;
 using System.Reflection;
 
@@ -72,6 +75,8 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(services));
             }
 
+            RegisterIpResolver(services);
+
             services.AddHttpClient<IPexAuthClient, PexAuthClient>((sp, httpClient) =>
             {
                 var options = sp.GetRequiredService<IOptions<PexAuthClientOptions>>().Value;
@@ -112,6 +117,14 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             // remove prohibited characters
             return userAgentVersion.Replace(":", "");
+        }
+
+        private static void RegisterIpResolver(IServiceCollection services)
+        {
+            if (!services.Any(x => x.ServiceType == typeof(IIPAddressResolver)))
+            {
+                services.AddScoped<IIPAddressResolver, DummyIpAddressResolver>();
+            }
         }
     }
 }
