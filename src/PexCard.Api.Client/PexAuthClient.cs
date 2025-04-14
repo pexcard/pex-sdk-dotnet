@@ -1,5 +1,4 @@
 using Newtonsoft.Json;
-using PexCard.Api.Client.Configure;
 using PexCard.Api.Client.Core;
 using PexCard.Api.Client.Core.Exceptions;
 using PexCard.Api.Client.Core.Interfaces;
@@ -21,11 +20,11 @@ namespace PexCard.Api.Client
         private readonly ICorrelationIdResolver _correlationIdResolver;
 
         public PexAuthClient(HttpClient httpClient,
-            IIPAddressResolver ipAddressResolver,
-            ICorrelationIdResolver correlationIdResolver = null)
+                             IIPAddressResolver ipAddressResolver,
+                             ICorrelationIdResolver correlationIdResolver = null)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-            _ipAddressResolver = ipAddressResolver;
+            _ipAddressResolver = ipAddressResolver ?? throw new ArgumentNullException(nameof(ipAddressResolver));
             _correlationIdResolver = correlationIdResolver ?? new DefaultCorrelationIdResolver();
         }
 
@@ -58,7 +57,7 @@ namespace PexCard.Api.Client
 
                 var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
                 request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
-                request.SetXForwardFor(_ipAddressResolver.GetValue());
+                request.SetXForwardForHeader(_ipAddressResolver.GetValue());
                 request.SetPexJsonContent(requestData);
 
                 var response = await _httpClient.SendAsync(request, cancelToken);
@@ -92,7 +91,7 @@ namespace PexCard.Api.Client
 
                 var request = new HttpRequestMessage(HttpMethod.Delete, requestUriBuilder.Uri);
                 request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
-                request.SetXForwardFor(_ipAddressResolver.GetValue());
+                request.SetXForwardForHeader(_ipAddressResolver.GetValue());
                 request.SetPexJsonContent(requestData);
 
                 var response = await _httpClient.SendAsync(request, cancelToken);
