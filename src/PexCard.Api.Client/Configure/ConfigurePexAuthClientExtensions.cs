@@ -1,7 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using PexCard.Api.Client;
-using PexCard.Api.Client.Configure;
 using PexCard.Api.Client.Core;
 using PexCard.Api.Client.Core.Interfaces;
 using System;

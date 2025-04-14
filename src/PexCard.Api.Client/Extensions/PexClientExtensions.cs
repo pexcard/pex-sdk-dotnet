@@ -41,7 +41,7 @@ namespace PexCard.Api.Client.Extensions
             request.Headers.TryAddWithoutValidation(PexCorrelationIdHeaderName, correlationId);
         }
 
-        public static void SetXForwardFor(this HttpRequestMessage request, string forwardFor)
+        public static void SetXForwardForHeader(this HttpRequestMessage request, string forwardFor)
         {
             if (request is null)
             {
