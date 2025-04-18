@@ -20,11 +20,11 @@ namespace PexCard.Api.Client
         private readonly ICorrelationIdResolver _correlationIdResolver;
 
         public PexAuthClient(HttpClient httpClient,
-                             IIPAddressResolver ipAddressResolver,
+                             IIPAddressResolver ipAddressResolver = null,
                              ICorrelationIdResolver correlationIdResolver = null)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
-            _ipAddressResolver = ipAddressResolver ?? throw new ArgumentNullException(nameof(ipAddressResolver));
+            _ipAddressResolver = ipAddressResolver ?? new DummyIpAddressResolver();
             _correlationIdResolver = correlationIdResolver ?? new DefaultCorrelationIdResolver();
         }
 
