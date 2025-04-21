@@ -82,7 +82,7 @@ namespace System.Net.Http
 
             return new Dictionary<string, object>
             {
-                ["PexCorrelationId"] = response.RequestMessage.Headers.GetPexCorrelationId() // ideally external api responds with the correlation id
+                ["PexCorrelationId"] = response.GetPexCorrelationId()
             };
         }
     }
