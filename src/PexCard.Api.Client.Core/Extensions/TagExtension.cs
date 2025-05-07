@@ -152,10 +152,10 @@ namespace PexCard.Api.Client.Core.Extensions
                 throw new ArgumentNullException(nameof(options));
             }
 
-            var duplicateTagOptionNamesOrValues = options.Where(x => options.Count(y => string.Equals(y.EntityName, x.EntityName, StringComparison.InvariantCultureIgnoreCase)) > 1 || options.Count(y => string.Equals(y.EntityId, x.EntityId, StringComparison.InvariantCultureIgnoreCase)) > 1).ToList();
+            var duplicateTagOptionNamesOrValues = options.Where(x => options.Count(y => string.Equals(y.EntityId, x.EntityId, StringComparison.InvariantCultureIgnoreCase)) > 1).ToList();
             if (duplicateTagOptionNamesOrValues.Any())
             {
-                throw new DataException($"Duplicate input entity names and/or ids: {string.Join(", ", duplicateTagOptionNamesOrValues.Select(x => $"[EntityName: '{x.EntityName}', EntityId: '{x.EntityId}']"))}.");
+                throw new DataException($"Duplicate input entity ids: {string.Join(", ", duplicateTagOptionNamesOrValues.Select(x => $"[EntityName: '{x.EntityName}', EntityId: '{x.EntityId}']"))}.");
             }
         }
 
@@ -197,13 +197,13 @@ namespace PexCard.Api.Client.Core.Extensions
             }
         }
 
-        private static void AppendAsterisksToDuplicates(IList<TagOptionModel> tagOptions, TagOptionModel newOption)
+        private static void AppendAsterisksToDuplicates(IList<TagOptionModel> existingOptions, TagOptionModel upsertedOption)
         {
-            var duplicate = tagOptions.FirstOrDefault(existingOption => existingOption.Value != newOption.Value && existingOption.Name.Equals(newOption.Name, StringComparison.InvariantCultureIgnoreCase));
+            var duplicate = existingOptions.FirstOrDefault(existingOption => !existingOption.Value.Equals(upsertedOption.Value, StringComparison.InvariantCultureIgnoreCase) && existingOption.Name.Equals(upsertedOption.Name, StringComparison.InvariantCultureIgnoreCase));
             if (duplicate != null)
             {
-                duplicate.Name = $"{duplicate.Name}*";
-                AppendAsterisksToDuplicates(tagOptions, newOption);
+                upsertedOption.Name = $"{upsertedOption.Name}*";
+                AppendAsterisksToDuplicates(existingOptions, upsertedOption);
             }
         }
     }

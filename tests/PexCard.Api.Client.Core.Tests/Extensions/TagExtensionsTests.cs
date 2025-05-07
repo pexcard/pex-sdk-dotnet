@@ -40,7 +40,7 @@ namespace PexCard.Api.Client.Core.Tests.Extensions
             tag.UpdateTagOptions(tagOptions, out var countUpdated);
 
             //Assert
-            Assert.True(tag.Options.Find(x => x.Value == "One").Name == "Foo*");
+            Assert.True(tag.Options.Find(x => x.Value == "Two").Name == "Foo*");
         }
 
         [Fact]
@@ -104,7 +104,7 @@ namespace PexCard.Api.Client.Core.Tests.Extensions
             tag.UpdateTagOptions(tagOptions, out var countUpdated);
 
             //Assert
-            Assert.True(tag.Options.Find(x => x.Value == "One").Name == "Foo*");
+            Assert.True(tag.Options.Find(x => x.Value == "Two").Name == "foo*");
         }
 
         [Fact]
@@ -173,7 +173,7 @@ namespace PexCard.Api.Client.Core.Tests.Extensions
             var ex = Assert.Throws<DataException>(() => tag.UpdateTagOptions(tagOptions, out var countUpdated));
 
             //Assert
-            Assert.Contains("Duplicate input entity names and/or ids", ex.Message);
+            Assert.Contains("Duplicate input entity ids", ex.Message);
         }
 
         [Fact]
@@ -210,11 +210,11 @@ namespace PexCard.Api.Client.Core.Tests.Extensions
             var ex = Assert.Throws<DataException>(() => tag.UpdateTagOptions(tagOptions, out var countUpdated));
 
             //Assert
-            Assert.Contains("Duplicate input entity names and/or ids", ex.Message);
+            Assert.Contains("Duplicate input entity ids", ex.Message);
         }
 
         [Fact]
-        public void UpdateTagOptions_WithDuplicateNamesDiffCaseInUpdateOptions_ThrowDataException()
+        public void UpdateTagOptions_WithDuplicateNamesDiffCaseInUpdateOptions_HandlesDuplicates()
         {
             //Arrange
             var tag = new TagDropdownDataModel
@@ -244,10 +244,96 @@ namespace PexCard.Api.Client.Core.Tests.Extensions
             };
 
             //Act
-            var ex = Assert.Throws<DataException>(() => tag.UpdateTagOptions(tagOptions, out var countUpdated));
+            tag.UpdateTagOptions(tagOptions, out var countUpdated);
 
             //Assert
-            Assert.Contains("Duplicate input entity names and/or ids", ex.Message);
+            Assert.True(tag.Options.Find(x => x.Value == "One").Name == "Foo");
+            Assert.True(tag.Options.Find(x => x.Value == "Two").Name == "Bar1");
+            Assert.True(tag.Options.Find(x => x.Value == "Three").Name == "bar1*");
+        }
+
+        [Fact]
+        public void UpdateTagOptions_WithDuplicateNamesDiffCaseInUpdateOptions_HandlesDuplicates2()
+        {
+            //Arrange
+            var tag = new TagDropdownDataModel
+            {
+                Name = "Test Tag",
+                Options = new List<TagOptionModel>
+                {
+                    new TagOptionModel
+                    {
+                        Value = "One",
+                        Name = "bAr1"
+                    }
+                }
+            };
+            var tagOptions = new List<TagOptionEntity>
+            {
+                new TagOptionEntity
+                {
+                    Id = "Two",
+                    Name = "Bar1"
+                },
+                new TagOptionEntity
+                {
+                    Id = "Three",
+                    Name = "bar1"
+                },
+            };
+
+            //Act
+            tag.UpdateTagOptions(tagOptions, out var countUpdated);
+
+            //Assert
+            Assert.True(tag.Options.Find(x => x.Value == "One").Name == "bAr1");
+            Assert.True(tag.Options.Find(x => x.Value == "Two").Name == "Bar1*");
+            Assert.True(tag.Options.Find(x => x.Value == "Three").Name == "bar1**");
+        }
+
+        [Fact]
+        public void UpdateTagOptions_WithDuplicateNamesDiffCaseInUpdateOptions_HandlesDuplicates3()
+        {
+            //Arrange
+            var tag = new TagDropdownDataModel
+            {
+                Name = "Test Tag",
+                Options = new List<TagOptionModel>
+                {
+                    new TagOptionModel
+                    {
+                        Value = "One",
+                        Name = "bAr1"
+                    },
+                    new TagOptionModel
+                    {
+                        Value = "Two",
+                        Name = "Bar1*"
+                    }
+                }
+            };
+            var tagOptions = new List<TagOptionEntity>
+            {
+                new TagOptionEntity
+                {
+                    Id = "Three",
+                    Name = "bar1"
+                },
+                new TagOptionEntity
+                {
+                    Id = "Four",
+                    Name = "bAr1"
+                },
+            };
+
+            //Act
+            tag.UpdateTagOptions(tagOptions, out var countUpdated);
+
+            //Assert
+            Assert.True(tag.Options.Find(x => x.Value == "One").Name == "bAr1");
+            Assert.True(tag.Options.Find(x => x.Value == "Two").Name == "Bar1*");
+            Assert.True(tag.Options.Find(x => x.Value == "Three").Name == "bar1**");
+            Assert.True(tag.Options.Find(x => x.Value == "Four").Name == "bAr1***");
         }
 
         [Fact]
