@@ -197,13 +197,13 @@ namespace PexCard.Api.Client.Core.Extensions
             }
         }
 
-        private static void AppendAsterisksToDuplicates(IList<TagOptionModel> tagOptions, TagOptionModel newOption)
+        private static void AppendAsterisksToDuplicates(IList<TagOptionModel> existingOptions, TagOptionModel upsertedOption)
         {
-            var duplicate = tagOptions.FirstOrDefault(existingOption => existingOption.Value != newOption.Value && existingOption.Name.Equals(newOption.Name, StringComparison.InvariantCultureIgnoreCase));
+            var duplicate = existingOptions.FirstOrDefault(existingOption => !existingOption.Value.Equals(upsertedOption.Value, StringComparison.InvariantCultureIgnoreCase) && existingOption.Name.Equals(upsertedOption.Name, StringComparison.InvariantCultureIgnoreCase));
             if (duplicate != null)
             {
-                duplicate.Name = $"{duplicate.Name}*";
-                AppendAsterisksToDuplicates(tagOptions, newOption);
+                upsertedOption.Name = $"{upsertedOption.Name}*";
+                AppendAsterisksToDuplicates(existingOptions, upsertedOption);
             }
         }
     }
