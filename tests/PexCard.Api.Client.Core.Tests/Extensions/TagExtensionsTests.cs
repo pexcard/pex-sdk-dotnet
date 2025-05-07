@@ -40,7 +40,7 @@ namespace PexCard.Api.Client.Core.Tests.Extensions
             tag.UpdateTagOptions(tagOptions, out var countUpdated);
 
             //Assert
-            Assert.True(tag.Options.Find(x => x.Value == "One").Name == "Foo*");
+            Assert.True(tag.Options.Find(x => x.Value == "Two").Name == "Foo*");
         }
 
         [Fact]
@@ -104,7 +104,7 @@ namespace PexCard.Api.Client.Core.Tests.Extensions
             tag.UpdateTagOptions(tagOptions, out var countUpdated);
 
             //Assert
-            Assert.True(tag.Options.Find(x => x.Value == "One").Name == "Foo*");
+            Assert.True(tag.Options.Find(x => x.Value == "Two").Name == "Foo*");
         }
 
         [Fact]
