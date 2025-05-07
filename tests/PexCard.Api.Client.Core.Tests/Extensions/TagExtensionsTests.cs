@@ -292,6 +292,51 @@ namespace PexCard.Api.Client.Core.Tests.Extensions
         }
 
         [Fact]
+        public void UpdateTagOptions_WithDuplicateNamesDiffCaseInUpdateOptions_HandlesDuplicates3()
+        {
+            //Arrange
+            var tag = new TagDropdownDataModel
+            {
+                Name = "Test Tag",
+                Options = new List<TagOptionModel>
+                {
+                    new TagOptionModel
+                    {
+                        Value = "One",
+                        Name = "bAr1"
+                    },
+                    new TagOptionModel
+                    {
+                        Value = "Two",
+                        Name = "Bar1*"
+                    }
+                }
+            };
+            var tagOptions = new List<TagOptionEntity>
+            {
+                new TagOptionEntity
+                {
+                    Id = "Three",
+                    Name = "bar1"
+                },
+                new TagOptionEntity
+                {
+                    Id = "Four",
+                    Name = "bAr1"
+                },
+            };
+
+            //Act
+            tag.UpdateTagOptions(tagOptions, out var countUpdated);
+
+            //Assert
+            Assert.True(tag.Options.Find(x => x.Value == "One").Name == "bAr1");
+            Assert.True(tag.Options.Find(x => x.Value == "Two").Name == "Bar1*");
+            Assert.True(tag.Options.Find(x => x.Value == "Three").Name == "bar1**");
+            Assert.True(tag.Options.Find(x => x.Value == "Four").Name == "bAr1***");
+        }
+
+        [Fact]
         public void UpdateTagOptions_WithNullOptions_ThrowDataException()
         {
             //Arrange
