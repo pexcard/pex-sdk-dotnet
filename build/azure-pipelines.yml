@@ -50,15 +50,6 @@ steps:
       projects: "tests/**/*.csproj"
       arguments: "--no-restore --configuration $(buildConfiguration)"
 
-  - task: SonarCloudPrepare@1
-    displayName: SonarCloud prepare
-    inputs:
-      SonarCloud: "SonarCloud - tbaker"
-      organization: "pex"
-      projectKey: "pex-sdk-dotnet"
-      projectName: "$(build.repository.name)"
-      projectVersion: "$(build.buildNumber)"
-
   - script: dotnet pack src/PexCard.Api.Client.Core/PexCard.Api.Client.Core.csproj --no-restore --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:VersionPrefix='$(versionPrefix)' -p:VersionSuffix='$(versionSuffix)' -p:SourceRevisionId='$(sourceRevisionId)'
     displayName: Pack PexCard.Api.Client.Core
 
@@ -68,22 +59,16 @@ steps:
   - script: dotnet pack src/PexCard.Api.AspNetCore/PexCard.Api.AspNetCore.csproj --no-restore --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory) -p:VersionPrefix='$(versionPrefix)' -p:VersionSuffix='$(versionSuffix)' -p:SourceRevisionId='$(sourceRevisionId)'
     displayName: Pack PexCard.Api.AspNetCore
 
-  - task: SonarCloudAnalyze@1
-    displayName: SonarCloud analyze
-
-  - task: SonarCloudPublish@1
-    displayName: SonarCloud publish
-    inputs:
-      pollingTimeoutSec: "300"
-
   - task: Bash@3
-    displayName: "Mend"
-    continueOnError: true
+    displayName: "Mend SCA & SAST"
     env:
       MEND_URL: $(MEND-URL)
       MEND_EMAIL: $(MEND-EMAIL)
       MEND_USER_KEY: $(MEND-USER-KEY)
       MEND_LOG_LEVEL: DEBUG
+      MEND_SAST_GENERATE_REPORT: true
+      MEND_SAST_REPORT_FORMATS: sarif
+      MEND_SAST_REPORT_FILENAME: sast-report
     inputs:
       targetType: "inline"
       failOnStderr: true
@@ -91,23 +76,58 @@ steps:
         # https://github.com/mend-toolkit/mend-examples/blob/main/CI-CD/AzureDevOps/Mend%20CLI/AzureDevOps-linux.yaml
 
         # https://curl.se/docs/optionswhen.html
-        echo Downloading mend cli...
+        echo "Downloading Mend CLI..."
         curl https://downloads.mend.io/cli/linux_amd64/mend -sS -o /usr/local/bin/mend && chmod +x /usr/local/bin/mend
 
-        # https://docs.mend.io/bundle/integrations/page/configure_the_mend_cli_for_sca.html#Mend-CLI-SCA-parameters
-        mend dependencies --dir '$(System.DefaultWorkingDirectory)' --scope 'PEX//$(system.teamProject)//$(build.repository.name)' --non-interactive --update --fail-policy
+        printf "\n"
+        printf "=============================================================================="
+        printf "\n"
+
+        # Run Mend's Software Composition Analysis (SCA) scan
+        # https://docs.mend.io/platform/latest/scan-sca-with-mend-cli
+        echo "Running Mend's Software Composition Analysis (SCA) scan..."
+        mend dependencies --dir "$(System.DefaultWorkingDirectory)" --scope "PEX//$(System.TeamProject)//$(Build.Repository.Name)" --non-interactive --update --fail-policy
 
         # https://docs.mend.io/bundle/integrations/page/mend_cli_exit_codes.html
         export dep_exit=$?
 
         if [[ "$dep_exit" == "9" ]]; then
-            echo "##vso[task.logissue type=warning;] 🚨 Dependency scan policy violation."
-            echo "##vso[task.complete result=SucceededWithIssues;]"
+          echo "##vso[task.logissue type=warning;] Mend SCA scan policy violation. Exit code $dep_exit."
+          echo "##vso[task.complete result=SucceededWithIssues;]"
         elif [[ "$dep_exit" != "0" ]]; then
-            echo "##vso[task.logissue type=error;] ⚠️ Dependency scan failed. Exit code $dep_exit https://docs.mend.io/bundle/integrations/page/mend_cli_exit_codes.html"
-            echo "##vso[task.complete result=SucceededWithIssues;]"
+          echo "##vso[task.logissue type=error;] Mend SCA scan failed. Exit code $dep_exit. https://docs.mend.io/bundle/integrations/page/mend_cli_exit_codes.html"
+          echo "##vso[task.complete result=SucceededWithIssues;]"
         else
-            echo "✅ No policy violations or failures occurred in dependencies scan"
+          echo "No policy violations or failures occurred in Mend SCA scan. Exit code $dep_exit."
+        fi
+
+        printf "\n"
+        printf "=============================================================================="
+        printf "\n"
+
+        # Run Mend's Static Application Security Testing (SAST) scan
+        # https://docs.mend.io/platform/latest/scan-your-custom-code-sast-with-the-mend-cli
+        echo "Running Mend's Static Application Security Testing (SAST) scan..."
+        mend sast --dir "$(System.DefaultWorkingDirectory)" --scope "PEX//$(System.TeamProject)//$(Build.Repository.Name)" --non-interactive --tags "build:$(Build.BuildNumber),branch:$(Build.SourceBranchName)"
+
+        # Copy SAST reports to the artifacts directory if they exist
+        if [ -f "sast-report.*" ]; then   
+          mkdir -p $(Build.ArtifactStagingDirectory)/sast-report
+          cp -f sast-report.* $(Build.ArtifactStagingDirectory)/sast-report/ 2>/dev/null || :
+          echo "Copied SAST report to artifacts."   
+        fi
+
+        # https://docs.mend.io/bundle/integrations/page/mend_cli_exit_codes.html
+        export sast_exit=$?
+
+        if [[ "$sast_exit" == "9" ]]; then
+          echo "##vso[task.logissue type=warning;] Mend SAST scan policy violation. Exit code $sast_exit."
+          echo "##vso[task.complete result=SucceededWithIssues;]"
+        elif [[ "$sast_exit" != "0" ]]; then
+          echo "##vso[task.logissue type=error;] Mend SAST scan failed. Exit code $sast_exit. https://docs.mend.io/bundle/integrations/page/mend_cli_exit_codes.html"
+          echo "##vso[task.complete result=SucceededWithIssues;]"
+        else
+          echo "No policy violations or failures occurred in Mend SAST scan. Exit code $sast_exit."
         fi
 
   - task: PublishBuildArtifacts@1
