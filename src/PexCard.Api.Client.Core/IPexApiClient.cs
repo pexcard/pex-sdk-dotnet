@@ -55,7 +55,7 @@ namespace PexCard.Api.Client.Core
 
         Task<CardholderTransactions> GetCardholderTransactions(string externalToken, int cardholderAccountId, DateTime startDate, DateTime endDate, bool includePending = false, bool includeDeclines = false, CancellationToken cancelToken = default);
 
-        Task AddTransactionNote(string externalToken, TransactionModel transaction, string noteText, bool visibleToCardholder = false, CancellationToken cancelToken = default);
+        Task AddTransactionNote(string externalToken, TransactionModel transaction, string noteText, bool visibleToCardholder = false, bool systemGenerated = true, CancellationToken cancelToken = default);
 
         Task AddTransactionRelationshipNote(string externalToken, long transactionRelationshipId, string noteText, CancellationToken cancelToken = default);
 
