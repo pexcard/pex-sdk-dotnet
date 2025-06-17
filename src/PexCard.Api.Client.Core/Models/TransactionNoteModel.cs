@@ -18,5 +18,7 @@ namespace PexCard.Api.Client.Core.Models
         public string UpdatedUserMiddleName { get; set; }
         public string UpdatedUserLastName { get; set; }
         public DateTime? UpdatedDate { get; set; }
+
+        public bool SystemGenerated { get; set; }
     }
 }
