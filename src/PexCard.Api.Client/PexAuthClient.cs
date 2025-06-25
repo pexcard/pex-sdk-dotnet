@@ -102,6 +102,51 @@ namespace PexCard.Api.Client
             return RevokePartnerAuthTokenAsync();
         }
 
+        public Task<string> GetTokenAsync(string appId, string appSecret, string username, string password, string userAgentString, CancellationToken cancelToken = default)
+        {
+            if (string.IsNullOrEmpty(appId))
+            {
+                throw new ArgumentException($"'{nameof(appId)}' cannot be null or empty.", nameof(appId));
+            }
+            if (string.IsNullOrEmpty(appSecret))
+            {
+                throw new ArgumentException($"'{nameof(appSecret)}' cannot be null or empty.", nameof(appSecret));
+            }
+            if (string.IsNullOrEmpty(username))
+            {
+                throw new ArgumentException($"'{nameof(username)}' cannot be null or empty.", nameof(username));
+            }
+            if (string.IsNullOrEmpty(password))
+            {
+                throw new ArgumentException($"'{nameof(password)}' cannot be null or empty.", nameof(password));
+            }
+            if (string.IsNullOrEmpty(userAgentString))
+            {
+                throw new ArgumentException($"'{nameof(userAgentString)}' cannot be null or empty.", nameof(userAgentString));
+            }
+
+            async Task<string> GetTokenAsync()
+            {
+                var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "/token"));
+
+                var requestData = new AuthTokenRequestModel(username, password, userAgentString);
+
+                var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+                request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+                request.SetXForwardForHeader(_ipAddressResolver.GetValue());
+                request.SetPexAuthorizationBasicHeader(appId, appSecret);
+                request.SetPexAcceptJsonHeader();
+                request.SetPexJsonContent(requestData);
+
+                var response = await _httpClient.SendAsync(request, cancelToken);
+
+                var responseModel = await HandleHttpResponseMessage<AuthTokenResponseModel>(response);
+                return responseModel?.Token;
+            }
+
+            return GetTokenAsync();
+        }
+
         #region Private methods
 
         private async Task<TData> HandleHttpResponseMessage<TData>(HttpResponseMessage response, bool notFoundAsDefault = false)

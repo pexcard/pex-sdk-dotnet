@@ -90,6 +90,29 @@ namespace PexCard.Api.Client.Extensions
             return request;
         }
 
+        public static HttpRequestMessage SetPexAuthorizationBasicHeader(this HttpRequestMessage request, string appId, string appSecret)
+        {
+            if (request is null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
+            if (string.IsNullOrEmpty(appId))
+            {
+                throw new ArgumentException($"'{nameof(appId)}' cannot be null or empty.", nameof(appId));
+            }
+
+            if (string.IsNullOrEmpty(appSecret))
+            {
+                throw new ArgumentException($"'{nameof(appSecret)}' cannot be null or empty.", nameof(appSecret));
+            }
+
+            var credentials = Convert.ToBase64String(PexEncodingType.GetBytes($"{appId}:{appSecret}"));
+            request.Headers.Authorization = new AuthenticationHeaderValue(TokenType.Basic, credentials);
+
+            return request;
+        }
+
         public static HttpRequestMessage SetPexAcceptJsonHeader(this HttpRequestMessage request)
         {
             if (request is null)
