@@ -102,49 +102,61 @@ namespace PexCard.Api.Client
             return RevokePartnerAuthTokenAsync();
         }
 
-        public Task<string> GetTokenAsync(string appId, string appSecret, string username, string password, string userAgentString, CancellationToken cancelToken = default)
+        public Task<CreateTokenResponseModel> CreateToken(CreateTokenRequestModel request, CancellationToken cancelToken = default)
         {
-            if (string.IsNullOrEmpty(appId))
+            if (request is null)
             {
-                throw new ArgumentException($"'{nameof(appId)}' cannot be null or empty.", nameof(appId));
+                throw new ArgumentNullException(nameof(request));
             }
-            if (string.IsNullOrEmpty(appSecret))
+            if (string.IsNullOrEmpty(request.AppId))
             {
-                throw new ArgumentException($"'{nameof(appSecret)}' cannot be null or empty.", nameof(appSecret));
+                throw new ArgumentException($"'{nameof(request.AppId)}' cannot be null or empty.", nameof(request.AppId));
             }
-            if (string.IsNullOrEmpty(username))
+            if (string.IsNullOrEmpty(request.AppSecret))
             {
-                throw new ArgumentException($"'{nameof(username)}' cannot be null or empty.", nameof(username));
+                throw new ArgumentException($"'{nameof(request.AppSecret)}' cannot be null or empty.", nameof(request.AppSecret));
             }
-            if (string.IsNullOrEmpty(password))
+            if (string.IsNullOrEmpty(request.Username))
             {
-                throw new ArgumentException($"'{nameof(password)}' cannot be null or empty.", nameof(password));
+                throw new ArgumentException($"'{nameof(request.Username)}' cannot be null or empty.", nameof(request.Username));
             }
-            if (string.IsNullOrEmpty(userAgentString))
+            if (string.IsNullOrEmpty(request.Password))
             {
-                throw new ArgumentException($"'{nameof(userAgentString)}' cannot be null or empty.", nameof(userAgentString));
+                throw new ArgumentException($"'{nameof(request.Password)}' cannot be null or empty.", nameof(request.Password));
+            }
+            if (string.IsNullOrEmpty(request.UserAgentString))
+            {
+                throw new ArgumentException($"'{nameof(request.UserAgentString)}' cannot be null or empty.", nameof(request.UserAgentString));
             }
 
-            async Task<string> GetTokenAsync()
+            async Task<CreateTokenResponseModel> CreateTokenAsync()
             {
                 var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "/token"));
 
-                var requestData = new AuthTokenRequestModel(username, password, userAgentString);
+                var requestData = new AuthTokenRequestModel
+                {
+                    Username = request.Username,
+                    Password = request.Password,
+                    UserAgentString = request.UserAgentString
+                };
 
-                var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
-                request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
-                request.SetXForwardForHeader(_ipAddressResolver.GetValue());
-                request.SetPexAuthorizationBasicHeader(appId, appSecret);
-                request.SetPexAcceptJsonHeader();
-                request.SetPexJsonContent(requestData);
+                var httpRequest = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+                httpRequest.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+                httpRequest.SetXForwardForHeader(_ipAddressResolver.GetValue());
+                httpRequest.SetPexAuthorizationBasicHeader(request.AppId, request.AppSecret);
+                httpRequest.SetPexAcceptJsonHeader();
+                httpRequest.SetPexJsonContent(requestData);
 
-                var response = await _httpClient.SendAsync(request, cancelToken);
+                var response = await _httpClient.SendAsync(httpRequest, cancelToken);
 
                 var responseModel = await HandleHttpResponseMessage<AuthTokenResponseModel>(response);
-                return responseModel?.Token;
+                return new CreateTokenResponseModel
+                {
+                    Token = responseModel?.Token
+                };
             }
 
-            return GetTokenAsync();
+            return CreateTokenAsync();
         }
 
         #region Private methods
