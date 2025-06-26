@@ -102,6 +102,63 @@ namespace PexCard.Api.Client
             return RevokePartnerAuthTokenAsync();
         }
 
+        public Task<CreateTokenResponseModel> CreateToken(CreateTokenRequestModel request, CancellationToken cancelToken = default)
+        {
+            if (request is null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+            if (string.IsNullOrEmpty(request.AppId))
+            {
+                throw new ArgumentException($"'{nameof(request.AppId)}' cannot be null or empty.", nameof(request.AppId));
+            }
+            if (string.IsNullOrEmpty(request.AppSecret))
+            {
+                throw new ArgumentException($"'{nameof(request.AppSecret)}' cannot be null or empty.", nameof(request.AppSecret));
+            }
+            if (string.IsNullOrEmpty(request.Username))
+            {
+                throw new ArgumentException($"'{nameof(request.Username)}' cannot be null or empty.", nameof(request.Username));
+            }
+            if (string.IsNullOrEmpty(request.Password))
+            {
+                throw new ArgumentException($"'{nameof(request.Password)}' cannot be null or empty.", nameof(request.Password));
+            }
+            if (string.IsNullOrEmpty(request.UserAgentString))
+            {
+                throw new ArgumentException($"'{nameof(request.UserAgentString)}' cannot be null or empty.", nameof(request.UserAgentString));
+            }
+
+            async Task<CreateTokenResponseModel> CreateTokenAsync()
+            {
+                var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "/token"));
+
+                var requestData = new AuthTokenRequestModel
+                {
+                    Username = request.Username,
+                    Password = request.Password,
+                    UserAgentString = request.UserAgentString
+                };
+
+                var httpRequest = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+                httpRequest.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+                httpRequest.SetXForwardForHeader(_ipAddressResolver.GetValue());
+                httpRequest.SetPexAuthorizationBasicHeader(request.AppId, request.AppSecret);
+                httpRequest.SetPexAcceptJsonHeader();
+                httpRequest.SetPexJsonContent(requestData);
+
+                var response = await _httpClient.SendAsync(httpRequest, cancelToken);
+
+                var responseModel = await HandleHttpResponseMessage<AuthTokenResponseModel>(response);
+                return new CreateTokenResponseModel
+                {
+                    Token = responseModel?.Token
+                };
+            }
+
+            return CreateTokenAsync();
+        }
+
         #region Private methods
 
         private async Task<TData> HandleHttpResponseMessage<TData>(HttpResponseMessage response, bool notFoundAsDefault = false)

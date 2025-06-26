@@ -4,5 +4,6 @@
     {
         public const string Bearer = "Bearer";
         public const string Token = "token";
+        public const string Basic = "Basic";
     }
 }
