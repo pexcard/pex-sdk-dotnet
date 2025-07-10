@@ -29,31 +29,31 @@ namespace PexCard.Api.Client.Core.Extensions
             return result;
         }
 
-        public static void UpdateTagOptions(this TagDropdownDataModel dropdownTag, IEnumerable<IMatchableEntity> entities, out int countUpdated, bool updateNames = false, bool disableDeleted = true, bool handleDuplicates = true)
+        public static void UpdateTagOptions(this TagDropdownDataModel dropdownTag, IEnumerable<IMatchableEntity> entities, out int countUpdated, bool updateNames = false, bool disableDeleted = true, bool handleDuplicates = true, bool enableDisabled = false)
         {
             if (dropdownTag is null)
             {
                 throw new ArgumentNullException(nameof(dropdownTag));
             }
 
-            dropdownTag.Options.UpdateTagOptions(entities, out countUpdated, updateNames, disableDeleted, handleDuplicates);
+            dropdownTag.Options.UpdateTagOptions(entities, out countUpdated, updateNames, disableDeleted, handleDuplicates, enableDisabled);
 
             dropdownTag.ValidateDropdownTag();
         }
 
-        public static void UpdateTagOptions(this TagDropdownDetailsModel dropdownTag, IEnumerable<IMatchableEntity> entities, out int countUpdated, bool updateNames = false, bool disableDeleted = true, bool handleDuplicates = true)
+        public static void UpdateTagOptions(this TagDropdownDetailsModel dropdownTag, IEnumerable<IMatchableEntity> entities, out int countUpdated, bool updateNames = false, bool disableDeleted = true, bool handleDuplicates = true, bool enableDisabled = false)
         {
             if (dropdownTag is null)
             {
                 throw new ArgumentNullException(nameof(dropdownTag));
             }
 
-            dropdownTag.Options.UpdateTagOptions(entities, out countUpdated, updateNames, disableDeleted, handleDuplicates);
+            dropdownTag.Options.UpdateTagOptions(entities, out countUpdated, updateNames, disableDeleted, handleDuplicates, enableDisabled);
 
             dropdownTag.ValidateDropdownTag();
         }
 
-        private static void UpdateTagOptions(this IList<TagOptionModel> tagOptions, IEnumerable<IMatchableEntity> entities, out int countUpdated, bool updateNames = false, bool disableDeleted = true, bool handleDuplicates = true)
+        private static void UpdateTagOptions(this IList<TagOptionModel> tagOptions, IEnumerable<IMatchableEntity> entities, out int countUpdated, bool updateNames = false, bool disableDeleted = true, bool handleDuplicates = true, bool enableDisabled = false)
         {
             if (tagOptions is null)
             {
@@ -110,6 +110,21 @@ namespace PexCard.Api.Client.Core.Extensions
                         if (handleDuplicates)
                         {
                             AppendAsterisksToDuplicates(tagOptions, newOption);
+                        }
+                    }
+                }
+
+                // enable disabled tag options
+                if (enableDisabled)
+                {
+                    foreach (var option in tagOptions)
+                    {
+                        var entity = entitiesList.Find(item => string.Equals(item.EntityId, option.Value, StringComparison.InvariantCultureIgnoreCase));
+                        if (entity != null && !option.IsEnabled)
+                        {
+                            option.IsEnabled = true;
+
+                            updateCounts[option.Value] = true;
                         }
                     }
                 }
