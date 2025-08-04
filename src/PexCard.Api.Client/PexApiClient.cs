@@ -1295,29 +1295,29 @@ namespace PexCard.Api.Client
         {
             var responseData = await response.Content.ReadAsStringAsync();
 
-            try
+            if (!response.IsSuccessStatusCode)
             {
-                if (!response.IsSuccessStatusCode)
+                if (response.StatusCode == HttpStatusCode.NotFound && returnValueForNotFound)
                 {
-                    if (response.StatusCode == HttpStatusCode.NotFound && returnValueForNotFound)
-                    {
-                        return notFoundValue;
-                    }
-
-                    var correlationId = response.GetPexCorrelationId();
-
-                    if (response.IsPexJsonContent())
-                    {
-                        var errorModel = JsonConvert.DeserializeObject<ErrorMessageModel>(responseData);
-
-                        throw new PexApiClientException(response.StatusCode, errorModel?.Message ?? response.ReasonPhrase, correlationId);
-                    }
-                    else
-                    {
-                        throw new PexApiClientException(response.StatusCode, response.ReasonPhrase ?? $"Error {response.StatusCode}", correlationId);
-                    }
+                    return notFoundValue;
                 }
 
+                var correlationId = response.GetPexCorrelationId();
+
+                if (response.IsPexJsonContent())
+                {
+                    var errorModel = JsonConvert.DeserializeObject<ErrorMessageModel>(responseData);
+
+                    throw new PexApiClientException(response.StatusCode, errorModel?.Message ?? response.ReasonPhrase, correlationId);
+                }
+                else
+                {
+                    throw new PexApiClientException(response.StatusCode, response.ReasonPhrase ?? $"Error {response.StatusCode}", correlationId);
+                }
+            }
+
+            try
+            {
                 return responseData.FromPexJson<TData>();
             }
             catch (Exception ex)
@@ -1333,17 +1333,18 @@ namespace PexCard.Api.Client
             if (!response.IsSuccessStatusCode)
             {
                 var responseData = await response.Content.ReadAsStringAsync();
+                var correlationId = response.GetPexCorrelationId();
 
                 try
                 {
                     var errorModel = JsonConvert.DeserializeObject<ErrorMessageModel>(responseData);
-                    var correlationId = response.GetPexCorrelationId();
-
                     throw new PexApiClientException(response.StatusCode, errorModel.Message, correlationId);
                 }
                 catch (Exception ex)
                 {
-                    var correlationId = response.GetPexCorrelationId();
+                    // Only wrap if it's not already a PexApiClientException
+                    if (ex is PexApiClientException)
+                        throw;
 
                     throw new PexApiClientException(response.StatusCode, $"Error parsing response: {ex.Message}\nContent: {responseData}", ex, correlationId);
                 }
