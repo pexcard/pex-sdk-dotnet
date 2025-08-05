@@ -12,10 +12,10 @@ variables:
 
 steps:
   - task: UseDotNet@2
-    displayName: "Use DotNet (global.json)"
+    displayName: "Use DotNet SDK 8.0.x"
     inputs:
       packageType: "sdk"
-      useGlobalJson: true
+      version: "8.0.x"
 
   - script: dotnet restore
     displayName: "DotNet restore"
