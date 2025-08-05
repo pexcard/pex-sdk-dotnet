@@ -1322,6 +1322,11 @@ namespace PexCard.Api.Client
             }
             catch (Exception ex)
             {
+                if (ex is PexApiClientException)
+                {
+                    throw;
+                }
+
                 var correlationId = response.GetPexCorrelationId();
 
                 throw new PexApiClientException(response.StatusCode, $"Error parsing response: {ex.Message}\nContent: {responseData}", ex, correlationId);
@@ -1343,6 +1348,11 @@ namespace PexCard.Api.Client
                 }
                 catch (Exception ex)
                 {
+                    if (ex is PexApiClientException)
+                    {
+                        throw;
+                    }
+
                     var correlationId = response.GetPexCorrelationId();
 
                     throw new PexApiClientException(response.StatusCode, $"Error parsing response: {ex.Message}\nContent: {responseData}", ex, correlationId);
