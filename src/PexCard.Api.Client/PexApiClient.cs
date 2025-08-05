@@ -1320,6 +1320,10 @@ namespace PexCard.Api.Client
 
                 return responseData.FromPexJson<TData>();
             }
+            catch (PexApiClientException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 var correlationId = response.GetPexCorrelationId();
@@ -1340,6 +1344,10 @@ namespace PexCard.Api.Client
                     var correlationId = response.GetPexCorrelationId();
 
                     throw new PexApiClientException(response.StatusCode, errorModel.Message, correlationId);
+                }
+                catch (PexApiClientException)
+                {
+                    throw;
                 }
                 catch (Exception ex)
                 {
