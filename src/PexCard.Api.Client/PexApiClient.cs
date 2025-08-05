@@ -1345,6 +1345,10 @@ namespace PexCard.Api.Client
 
                     throw new PexApiClientException(response.StatusCode, errorModel.Message, correlationId);
                 }
+                catch (PexApiClientException)
+                {
+                    throw;
+                }
                 catch (Exception ex)
                 {
                     var correlationId = response.GetPexCorrelationId();
