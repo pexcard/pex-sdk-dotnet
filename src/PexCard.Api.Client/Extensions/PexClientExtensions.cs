@@ -140,7 +140,7 @@ namespace PexCard.Api.Client.Extensions
 
         public static bool IsPexJsonContent(this HttpResponseMessage response)
         {
-            return response.Headers.IsPexJsonContent();
+            return response.Content?.Headers?.IsPexJsonContent() ?? false;
         }
 
         public static bool IsPexJsonContent(this HttpHeaders headers)
