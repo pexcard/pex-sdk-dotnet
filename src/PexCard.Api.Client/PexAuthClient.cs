@@ -174,10 +174,18 @@ namespace PexCard.Api.Client
                         return default;
                     }
 
-                    var errorModel = JsonConvert.DeserializeObject<ErrorMessageModel>(responseData);
                     var correlationId = response.GetPexCorrelationId();
 
-                    throw new PexAuthClientException(response.StatusCode, errorModel.Message, correlationId);
+                    if (response.IsPexJsonContent())
+                    {
+                        var errorModel = JsonConvert.DeserializeObject<ErrorMessageModel>(responseData);
+
+                        throw new PexAuthClientException(response.StatusCode, errorModel?.Message ?? response.ReasonPhrase, correlationId);
+                    }
+                    else
+                    {
+                        throw new PexAuthClientException(response.StatusCode, response.ReasonPhrase ?? $"Error {response.StatusCode}", correlationId);
+                    }
                 }
                 return responseData.FromPexJson<TData>();
             }
@@ -201,10 +209,18 @@ namespace PexCard.Api.Client
 
                 try
                 {
-                    var errorModel = JsonConvert.DeserializeObject<ErrorMessageModel>(responseData);
                     var correlationId = response.GetPexCorrelationId();
 
-                    throw new PexAuthClientException(response.StatusCode, errorModel.Message, correlationId);
+                    if (response.IsPexJsonContent())
+                    {
+                        var errorModel = JsonConvert.DeserializeObject<ErrorMessageModel>(responseData);
+
+                        throw new PexAuthClientException(response.StatusCode, errorModel?.Message ?? response.ReasonPhrase, correlationId);
+                    }
+                    else
+                    {
+                        throw new PexAuthClientException(response.StatusCode, response.ReasonPhrase ?? $"Error {response.StatusCode}", correlationId);
+                    }
                 }
                 catch (PexAuthClientException)
                 {
