@@ -140,12 +140,18 @@ namespace PexCard.Api.Client.Extensions
 
         public static bool IsPexJsonContent(this HttpResponseMessage response)
         {
-            return response.Content?.Headers?.IsPexJsonContent() ?? false;
+            return response.Content?.Headers?.ContentType?.MediaType?
+                .Equals(PexJsonMediaType, StringComparison.OrdinalIgnoreCase) ?? false;
         }
 
         public static bool IsPexJsonContent(this HttpHeaders headers)
         {
-            return headers.TryGetValues("Content-Type", out var contentTypes) && contentTypes.Contains(PexJsonMediaType);
+            if (headers is HttpContentHeaders contentHeaders)
+            {
+                return contentHeaders.ContentType?.MediaType?
+                    .Equals(PexJsonMediaType, StringComparison.OrdinalIgnoreCase) ?? false;
+            }
+            return false;
         }
 
         public static string ToPexJson<TData>(this TData data)
