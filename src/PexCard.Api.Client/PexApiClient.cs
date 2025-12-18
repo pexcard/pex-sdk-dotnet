@@ -9,6 +9,7 @@ using PexCard.Api.Client.Extensions;
 using PexCard.Api.Client.Models;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -1024,14 +1025,14 @@ namespace PexCard.Api.Client
 
             if (request.CardholderAcctId.HasValue)
             {
-                requestUriQueryParams.Add("cardholderAcctId", request.CardholderAcctId.Value.ToString());
+                requestUriQueryParams.Add("CardholderAcctId", request.CardholderAcctId.Value.ToString());
             }
 
             if (request.VendorStatuses != null)
             {
                 foreach (var status in request.VendorStatuses)
                 {
-                    requestUriQueryParams.Add("vendorStatuses", status.ToString());
+                    requestUriQueryParams.Add("VendorStatuses", status.ToString());
                 }
             }
 
@@ -1039,12 +1040,12 @@ namespace PexCard.Api.Client
             {
                 foreach (var trigger in request.VendorStatusTriggers)
                 {
-                    requestUriQueryParams.Add("vendorStatusTriggers", trigger.ToString());
+                    requestUriQueryParams.Add("VendorStatusTriggers", trigger.ToString());
                 }
             }
 
-            requestUriQueryParams.Add("pageIndex", request.PageIndex.ToString());
-            requestUriQueryParams.Add("pageSize", request.PageSize.ToString());
+            requestUriQueryParams.Add("PageIndex", request.PageIndex.ToString());
+            requestUriQueryParams.Add("PageSize", request.PageSize.ToString());
             requestUriBuilder.Query = requestUriQueryParams.ToString();
 
             var httpRequest = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
@@ -1315,9 +1316,9 @@ namespace PexCard.Api.Client
             if (request.VendorId.HasValue)
                 requestUriQueryParams.Add("VendorId", request.VendorId.Value.ToString());
             if (request.AmountFrom.HasValue)
-                requestUriQueryParams.Add("AmountFrom", request.AmountFrom.Value.ToString());
+                requestUriQueryParams.Add("AmountFrom", request.AmountFrom.Value.ToString(CultureInfo.InvariantCulture));
             if (request.AmountTo.HasValue)
-                requestUriQueryParams.Add("AmountTo", request.AmountTo.Value.ToString());
+                requestUriQueryParams.Add("AmountTo", request.AmountTo.Value.ToString(CultureInfo.InvariantCulture));
             if (request.PaymentRequestStatuses != null)
             {
                 foreach (var status in request.PaymentRequestStatuses)
