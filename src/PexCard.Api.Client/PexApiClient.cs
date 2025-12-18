@@ -9,9 +9,12 @@ using PexCard.Api.Client.Extensions;
 using PexCard.Api.Client.Models;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
@@ -1010,6 +1013,498 @@ namespace PexCard.Api.Client
 
             await HandleHttpResponseMessage(response);
         }
+
+        #region Vendor Management
+
+        public async Task<GetVendorsResponseModel> GetVendors(string externalToken, GetVendorsRequestModel request = null, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Vendor"));
+
+            request = request ?? new GetVendorsRequestModel();
+            var requestUriQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
+
+            if (request.CardholderAcctId.HasValue)
+            {
+                requestUriQueryParams.Add("CardholderAcctId", request.CardholderAcctId.Value.ToString());
+            }
+
+            if (request.VendorStatuses != null)
+            {
+                foreach (var status in request.VendorStatuses)
+                {
+                    requestUriQueryParams.Add("VendorStatuses", status.ToString());
+                }
+            }
+
+            if (request.VendorStatusTriggers != null)
+            {
+                foreach (var trigger in request.VendorStatusTriggers)
+                {
+                    requestUriQueryParams.Add("VendorStatusTriggers", trigger.ToString());
+                }
+            }
+
+            requestUriQueryParams.Add("PageIndex", request.PageIndex.ToString());
+            requestUriQueryParams.Add("PageSize", request.PageSize.ToString());
+            requestUriBuilder.Query = requestUriQueryParams.ToString();
+
+            var httpRequest = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            httpRequest.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            httpRequest.SetPexAcceptJsonHeader();
+            httpRequest.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(httpRequest, cancelToken);
+
+            return await HandleHttpResponseMessage<GetVendorsResponseModel>(response);
+        }
+
+        public async Task<VendorModel> GetVendor(string externalToken, int vendorId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Vendor/{vendorId}"));
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<VendorModel>(response);
+        }
+
+        public async Task<VendorModel> CreateVendor(string externalToken, CreateVendorRequestModel request, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Vendor"));
+
+            var httpRequest = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            httpRequest.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            httpRequest.SetPexAcceptJsonHeader();
+            httpRequest.SetPexAuthorizationTokenHeader(externalToken);
+            httpRequest.SetPexJsonContent(request);
+
+            var response = await _httpClient.SendAsync(httpRequest, cancelToken);
+
+            return await HandleHttpResponseMessage<VendorModel>(response);
+        }
+
+        public async Task<VendorModel> UpdateVendor(string externalToken, int vendorId, UpdateVendorRequestModel request, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Vendor/{vendorId}"));
+
+            var httpRequest = new HttpRequestMessage(HttpMethod.Put, requestUriBuilder.Uri);
+            httpRequest.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            httpRequest.SetPexAcceptJsonHeader();
+            httpRequest.SetPexAuthorizationTokenHeader(externalToken);
+            httpRequest.SetPexJsonContent(request);
+
+            var response = await _httpClient.SendAsync(httpRequest, cancelToken);
+
+            return await HandleHttpResponseMessage<VendorModel>(response);
+        }
+
+        public async Task<VendorModel> UpdateVendorStatus(string externalToken, int vendorId, UpdateVendorStatusRequestModel request, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Vendor/{vendorId}/Status"));
+
+            var httpRequest = new HttpRequestMessage(HttpMethod.Put, requestUriBuilder.Uri);
+            httpRequest.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            httpRequest.SetPexAcceptJsonHeader();
+            httpRequest.SetPexAuthorizationTokenHeader(externalToken);
+            httpRequest.SetPexJsonContent(request);
+
+            var response = await _httpClient.SendAsync(httpRequest, cancelToken);
+
+            return await HandleHttpResponseMessage<VendorModel>(response);
+        }
+
+        public async Task<VendorModel> ApproveVendor(string externalToken, int vendorId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Vendor/{vendorId}/Approve"));
+
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<VendorModel>(response);
+        }
+
+        public async Task<VendorModel> RejectVendor(string externalToken, int vendorId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Vendor/{vendorId}/Reject"));
+
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<VendorModel>(response);
+        }
+
+        #endregion
+
+        #region Vendor Documents
+
+        public async Task<VendorModel> AddVendorDocument(string externalToken, int vendorId, string fileName, Stream fileContent, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Vendor/{vendorId}/Document"));
+
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var multipartContent = new MultipartFormDataContent();
+            var streamContent = new StreamContent(fileContent);
+            streamContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+            multipartContent.Add(streamContent, "file", fileName);
+            request.Content = multipartContent;
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<VendorModel>(response);
+        }
+
+        public async Task<VendorModel> DeleteVendorDocument(string externalToken, int vendorId, int documentId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Vendor/{vendorId}/Document/{documentId}"));
+
+            var request = new HttpRequestMessage(HttpMethod.Delete, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<VendorModel>(response);
+        }
+
+        #endregion
+
+        #region Vendor Cards
+
+        public async Task<VendorModel> AddVendorCard(string externalToken, int vendorId, AddVendorCardRequestModel request, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Vendor/{vendorId}/Card"));
+
+            var httpRequest = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            httpRequest.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            httpRequest.SetPexAcceptJsonHeader();
+            httpRequest.SetPexAuthorizationTokenHeader(externalToken);
+            httpRequest.SetPexJsonContent(request);
+
+            var response = await _httpClient.SendAsync(httpRequest, cancelToken);
+
+            return await HandleHttpResponseMessage<VendorModel>(response);
+        }
+
+        public async Task<VendorModel> UpdateVendorCard(string externalToken, int vendorId, int cardholderAcctId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Vendor/{vendorId}/Card/{cardholderAcctId}"));
+
+            var request = new HttpRequestMessage(HttpMethod.Put, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<VendorModel>(response);
+        }
+
+        #endregion
+
+        #region Vendor Bank Accounts
+
+        public async Task<VendorModel> AddVendorBankAccount(string externalToken, int vendorId, AddVendorBankAccountRequestModel request, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Vendor/{vendorId}/BankAccount"));
+
+            var httpRequest = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            httpRequest.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            httpRequest.SetPexAcceptJsonHeader();
+            httpRequest.SetPexAuthorizationTokenHeader(externalToken);
+            httpRequest.SetPexJsonContent(request);
+
+            var response = await _httpClient.SendAsync(httpRequest, cancelToken);
+
+            return await HandleHttpResponseMessage<VendorModel>(response);
+        }
+
+        public async Task<VendorModel> UpdateVendorBankAccount(string externalToken, int vendorId, long bankAccountId, UpdateVendorBankAccountRequestModel request, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Vendor/{vendorId}/BankAccount/{bankAccountId}"));
+
+            var httpRequest = new HttpRequestMessage(HttpMethod.Put, requestUriBuilder.Uri);
+            httpRequest.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            httpRequest.SetPexAcceptJsonHeader();
+            httpRequest.SetPexAuthorizationTokenHeader(externalToken);
+            httpRequest.SetPexJsonContent(request);
+
+            var response = await _httpClient.SendAsync(httpRequest, cancelToken);
+
+            return await HandleHttpResponseMessage<VendorModel>(response);
+        }
+
+        #endregion
+
+        #region Bill Payments
+
+        public async Task<BillModel> GetBill(string externalToken, int billId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Bill/{billId}"));
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<BillModel>(response);
+        }
+
+        public async Task<GetBillPaymentsResponseModel> GetBillPayments(string externalToken, int billId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Bill/{billId}/Payments"));
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<GetBillPaymentsResponseModel>(response);
+        }
+
+        public async Task<BillModel> CreateBill(string externalToken, CreateBillRequestModel request, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Bill"));
+
+            var httpRequest = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            httpRequest.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            httpRequest.SetPexAcceptJsonHeader();
+            httpRequest.SetPexAuthorizationTokenHeader(externalToken);
+            httpRequest.SetPexJsonContent(request);
+
+            var response = await _httpClient.SendAsync(httpRequest, cancelToken);
+
+            return await HandleHttpResponseMessage<BillModel>(response);
+        }
+
+        public async Task<SearchBillsResponseModel> SearchBills(string externalToken, SearchBillsRequestModel request = null, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Bill"));
+
+            request = request ?? new SearchBillsRequestModel();
+            var requestUriQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
+
+            if (request.CreatedDateFrom.HasValue)
+                requestUriQueryParams.Add("CreatedDateFrom", request.CreatedDateFrom.Value.ToString("o"));
+            if (request.CreatedDateTo.HasValue)
+                requestUriQueryParams.Add("CreatedDateTo", request.CreatedDateTo.Value.ToString("o"));
+            if (request.DueDateFrom.HasValue)
+                requestUriQueryParams.Add("DueDateFrom", request.DueDateFrom.Value.ToString("o"));
+            if (request.DueDateTo.HasValue)
+                requestUriQueryParams.Add("DueDateTo", request.DueDateTo.Value.ToString("o"));
+            if (request.CreatedByUserId.HasValue)
+                requestUriQueryParams.Add("CreatedByUserId", request.CreatedByUserId.Value.ToString());
+            if (request.VendorId.HasValue)
+                requestUriQueryParams.Add("VendorId", request.VendorId.Value.ToString());
+            if (request.AmountFrom.HasValue)
+                requestUriQueryParams.Add("AmountFrom", request.AmountFrom.Value.ToString(CultureInfo.InvariantCulture));
+            if (request.AmountTo.HasValue)
+                requestUriQueryParams.Add("AmountTo", request.AmountTo.Value.ToString(CultureInfo.InvariantCulture));
+            if (request.PaymentRequestStatuses != null)
+            {
+                foreach (var status in request.PaymentRequestStatuses)
+                    requestUriQueryParams.Add("PaymentRequestStatuses", status);
+            }
+            if (request.PaymentRequestStatusTriggers != null)
+            {
+                foreach (var trigger in request.PaymentRequestStatusTriggers)
+                    requestUriQueryParams.Add("PaymentRequestStatusTriggers", trigger);
+            }
+            if (request.IsOwner)
+                requestUriQueryParams.Add("IsOwner", "true");
+            if (request.IsPendingReview)
+                requestUriQueryParams.Add("IsPendingReview", "true");
+            requestUriQueryParams.Add("Page", request.Page.ToString());
+            requestUriQueryParams.Add("PageSize", request.PageSize.ToString());
+            if (request.SortDirection.HasValue)
+                requestUriQueryParams.Add("SortDirection", request.SortDirection.Value.ToString());
+            if (request.SortByField.HasValue)
+                requestUriQueryParams.Add("SortByField", request.SortByField.Value.ToString());
+            requestUriBuilder.Query = requestUriQueryParams.ToString();
+
+            var httpRequest = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            httpRequest.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            httpRequest.SetPexAcceptJsonHeader();
+            httpRequest.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(httpRequest, cancelToken);
+
+            return await HandleHttpResponseMessage<SearchBillsResponseModel>(response);
+        }
+
+        public async Task UpdateBillTags(string externalToken, int billId, UpdateBillTagsRequestModel request, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Bill/{billId}/Tags"));
+
+            var httpRequest = new HttpRequestMessage(HttpMethod.Put, requestUriBuilder.Uri);
+            httpRequest.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            httpRequest.SetPexAcceptJsonHeader();
+            httpRequest.SetPexAuthorizationTokenHeader(externalToken);
+            httpRequest.SetPexJsonContent(request);
+
+            var response = await _httpClient.SendAsync(httpRequest, cancelToken);
+
+            await HandleHttpResponseMessage(response);
+        }
+
+        public async Task DeleteBillTags(string externalToken, int billId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Bill/{billId}/Tags"));
+
+            var request = new HttpRequestMessage(HttpMethod.Delete, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            await HandleHttpResponseMessage(response);
+        }
+
+        public async Task<BillNoteResponseModel> AddBillNote(string externalToken, int billId, AddBillNoteRequestModel request, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Bill/{billId}/Note"));
+
+            var httpRequest = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            httpRequest.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            httpRequest.SetPexAcceptJsonHeader();
+            httpRequest.SetPexAuthorizationTokenHeader(externalToken);
+            httpRequest.SetPexJsonContent(request);
+
+            var response = await _httpClient.SendAsync(httpRequest, cancelToken);
+
+            return await HandleHttpResponseMessage<BillNoteResponseModel>(response);
+        }
+
+        public async Task UpdateBillNote(string externalToken, int billId, long noteId, UpdateBillNoteRequestModel request, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Bill/{billId}/Note/{noteId}"));
+
+            var httpRequest = new HttpRequestMessage(HttpMethod.Put, requestUriBuilder.Uri);
+            httpRequest.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            httpRequest.SetPexAcceptJsonHeader();
+            httpRequest.SetPexAuthorizationTokenHeader(externalToken);
+            httpRequest.SetPexJsonContent(request);
+
+            var response = await _httpClient.SendAsync(httpRequest, cancelToken);
+
+            await HandleHttpResponseMessage(response);
+        }
+
+        public async Task DeleteBillNote(string externalToken, int billId, long noteId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Bill/{billId}/Note/{noteId}"));
+
+            var request = new HttpRequestMessage(HttpMethod.Delete, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            await HandleHttpResponseMessage(response);
+        }
+
+        public async Task<UploadBillAttachmentResponseModel> AddBillAttachment(string externalToken, int billId, string fileName, Stream fileContent, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Bill/{billId}/Attachment"));
+
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var multipartContent = new MultipartFormDataContent();
+            var streamContent = new StreamContent(fileContent);
+            streamContent.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+            multipartContent.Add(streamContent, "file", fileName);
+            request.Content = multipartContent;
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<UploadBillAttachmentResponseModel>(response);
+        }
+
+        public async Task<BillModel> SubmitBill(string externalToken, int billId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Bill/{billId}/Submit"));
+
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<BillModel>(response);
+        }
+
+        public async Task<BillModel> ApproveBill(string externalToken, int billId, ApproveBillRequestModel request = null, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Bill/{billId}/Approve"));
+
+            var httpRequest = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            httpRequest.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            httpRequest.SetPexAcceptJsonHeader();
+            httpRequest.SetPexAuthorizationTokenHeader(externalToken);
+            if (request != null)
+                httpRequest.SetPexJsonContent(request);
+
+            var response = await _httpClient.SendAsync(httpRequest, cancelToken);
+
+            return await HandleHttpResponseMessage<BillModel>(response);
+        }
+
+        public async Task<BillModel> RejectBill(string externalToken, int billId, RejectBillRequestModel request = null, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Bill/{billId}/Reject"));
+
+            var httpRequest = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            httpRequest.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            httpRequest.SetPexAcceptJsonHeader();
+            httpRequest.SetPexAuthorizationTokenHeader(externalToken);
+            if (request != null)
+                httpRequest.SetPexJsonContent(request);
+
+            var response = await _httpClient.SendAsync(httpRequest, cancelToken);
+
+            return await HandleHttpResponseMessage<BillModel>(response);
+        }
+
+        public async Task<BillModel> ProcessBill(string externalToken, int billId, ProcessBillRequestModel request = null, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Bill/{billId}/Process"));
+
+            var httpRequest = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            httpRequest.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            httpRequest.SetPexAcceptJsonHeader();
+            httpRequest.SetPexAuthorizationTokenHeader(externalToken);
+            httpRequest.SetPexJsonContent(request ?? new ProcessBillRequestModel());
+
+            var response = await _httpClient.SendAsync(httpRequest, cancelToken);
+
+            return await HandleHttpResponseMessage<BillModel>(response);
+        }
+
+        #endregion
 
         public async Task<GetSpendingRulesetsResponseModel> GetSpendingRulesets(string externalToken, CancellationToken cancelToken = default)
         {
