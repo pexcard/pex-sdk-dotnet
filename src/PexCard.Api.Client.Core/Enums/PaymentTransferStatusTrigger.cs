@@ -24,6 +24,10 @@
 
         Rejected = 52,
 
-        Cancelled = 55
+        Cancelled = 55,
+
+        InitiateTransferToPayablesError = 60,
+
+        InitiatedTransferToPayables = 62
     }
 }
