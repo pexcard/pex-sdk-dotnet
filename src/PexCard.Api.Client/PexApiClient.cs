@@ -1249,6 +1249,97 @@ namespace PexCard.Api.Client
             return await HandleHttpResponseMessage<PaymentRequestModel>(response);
         }
 
+        public async Task<BillPaymentDetailsResponseModel> GetBillPaymentDetails(string externalToken, int billId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Bill/{billId}"));
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<BillPaymentDetailsResponseModel>(response);
+        }
+
+        public async Task<BillPaymentsResponseModel> GetBillPayments(string externalToken, int billId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Bill/{billId}/Payments"));
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<BillPaymentsResponseModel>(response);
+        }
+
+        public async Task<BillPaymentListResponseModel> GetBillPaymentRequests(string externalToken, BillPaymentListRequestModel model, int page = 1, int pageSize = 15, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Bill"));
+
+            var requestUriQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
+
+            if (model != null)
+            {
+                if (model.CreatedDateFrom.HasValue)
+                {
+                    requestUriQueryParams.Add("CreatedDateFrom", model.CreatedDateFrom.Value.ToEst().ToDateTimeString());
+                }
+                if (model.CreatedDateTo.HasValue)
+                {
+                    requestUriQueryParams.Add("CreatedDateTo", model.CreatedDateTo.Value.ToEst().ToDateTimeString());
+                }
+                if (model.DueDateFrom.HasValue)
+                {
+                    requestUriQueryParams.Add("DueDateFrom", model.DueDateFrom.Value.ToEst().ToDateTimeString());
+                }
+                if (model.DueDateTo.HasValue)
+                {
+                    requestUriQueryParams.Add("DueDateTo", model.DueDateTo.Value.ToEst().ToDateTimeString());
+                }
+                if (model.CreatedByUserId.HasValue)
+                {
+                    requestUriQueryParams.Add("CreatedByUserId", model.CreatedByUserId.Value.ToString());
+                }
+                if (model.VendorId.HasValue)
+                {
+                    requestUriQueryParams.Add("VendorId", model.VendorId.Value.ToString());
+                }
+                if (model.AmountFrom.HasValue)
+                {
+                    requestUriQueryParams.Add("AmountFrom", model.AmountFrom.Value.ToString());
+                }
+                if (model.AmountTo.HasValue)
+                {
+                    requestUriQueryParams.Add("AmountTo", model.AmountTo.Value.ToString());
+                }
+                if (model.PaymentRequestStatuses != null && model.PaymentRequestStatuses.Any())
+                {
+                    foreach (var status in model.PaymentRequestStatuses)
+                    {
+                        requestUriQueryParams.Add("PaymentRequestStatuses", status.ToString());
+                    }
+                }
+            }
+
+            requestUriQueryParams.Add("Page", page.ToString());
+            requestUriQueryParams.Add("PageSize", pageSize.ToString());
+            requestUriBuilder.Query = requestUriQueryParams.ToString();
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<BillPaymentListResponseModel>(response);
+        }
+
         #region Private methods
 
         private async Task<HttpResponseMessage> GetTagsResponse(string externalToken, CancellationToken cancelToken)
