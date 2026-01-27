@@ -4,7 +4,7 @@ namespace PexCard.Api.Client.Core.Models
 {
     public class BillPaymentListResponseModel
     {
-        public List<BillPaymentSearchItemModel> Items { get; set; }
+        public List<BillPaymentModel> Items { get; set; }
 
         public PageInfoModel PageInfo { get; set; }
     }

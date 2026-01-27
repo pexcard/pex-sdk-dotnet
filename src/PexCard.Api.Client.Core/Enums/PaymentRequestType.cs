@@ -2,6 +2,7 @@
 {
     public enum PaymentRequestType
     {
-        Reimbursement = 1
+        Reimbursement = 1,
+        BillPay = 2
     }
 }

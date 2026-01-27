@@ -30,6 +30,10 @@
 
         PaymentFailed = 53,
 
-        Cancelled = 55
+        Cancelled = 55,
+
+        PaymentCancelled = 57,
+
+        PaymentProcessingException = 59
     }
 }

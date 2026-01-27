@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+
 using Newtonsoft.Json;
+
 using PexCard.Api.Client.Core;
 using PexCard.Api.Client.Core.Enums;
 using PexCard.Api.Client.Core.Exceptions;
@@ -7,11 +9,14 @@ using PexCard.Api.Client.Core.Interfaces;
 using PexCard.Api.Client.Core.Models;
 using PexCard.Api.Client.Extensions;
 using PexCard.Api.Client.Models;
+
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
@@ -1249,9 +1254,14 @@ namespace PexCard.Api.Client
             return await HandleHttpResponseMessage<PaymentRequestModel>(response);
         }
 
-        public async Task<BillPaymentDetailsResponseModel> GetBillPaymentDetails(string externalToken, int billId, CancellationToken cancelToken = default)
+        public async Task<BillPaymentRequestModel> GetBillPaymentRequest(string externalToken, int billPaymentRequestId, bool includeAttachmentContent, CancellationToken cancelToken = default)
         {
-            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Bill/{billId}"));
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/BillPaymentRequest/{billPaymentRequestId}"));
+
+            var requestUriQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
+
+            requestUriQueryParams.Add("IncludeAttachmentContent", includeAttachmentContent.ToString());
+            requestUriBuilder.Query = requestUriQueryParams.ToString();
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
             request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
@@ -1260,24 +1270,10 @@ namespace PexCard.Api.Client
 
             var response = await _httpClient.SendAsync(request, cancelToken);
 
-            return await HandleHttpResponseMessage<BillPaymentDetailsResponseModel>(response);
+            return await HandleHttpResponseMessage<BillPaymentRequestModel>(response);
         }
 
-        public async Task<BillPaymentsResponseModel> GetBillPayments(string externalToken, int billId, CancellationToken cancelToken = default)
-        {
-            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Bill/{billId}/Payments"));
-
-            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
-            request.SetPexAcceptJsonHeader();
-            request.SetPexAuthorizationTokenHeader(externalToken);
-
-            var response = await _httpClient.SendAsync(request, cancelToken);
-
-            return await HandleHttpResponseMessage<BillPaymentsResponseModel>(response);
-        }
-
-        public async Task<BillPaymentListResponseModel> GetBillPaymentRequests(string externalToken, BillPaymentListRequestModel model, int page = 1, int pageSize = 15, CancellationToken cancelToken = default)
+        public async Task<BillPaymentListResponseModel> GetBillPayments(string externalToken, BillPaymentListRequestModel model, int page = 1, int pageSize = 15, CancellationToken cancelToken = default)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Bill"));
 

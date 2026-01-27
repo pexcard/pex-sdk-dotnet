@@ -6,6 +6,10 @@
 
         Pending = 30,
 
-        Closed = 50
+        Closed = 50,
+
+        Exception = 55,
+
+        InProgress = 56
     }
 }
