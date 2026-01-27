@@ -8,8 +8,12 @@
 
         PendingPaymentTransfer = 30,
 
+        PaymentTransferException = 35,
+
         PendingPayment = 40,
 
-        Closed = 50
+        Closed = 50,
+
+        PaymentException = 55
     }
 }
