@@ -21,6 +21,11 @@ namespace PexCard.Api.Client.Core.Models
 
         public string PayeeName { get; set; }
 
+        /// <summary>
+        /// Normalized vendor name (payee) from merchant normalization system
+        /// </summary>
+        public string PayeeNameNormalized { get; set; }
+
         public DateTimeOffset? DueDate { get; set; }
 
         public PaymentRequestStatus PaymentRequestStatus { get; set; }
