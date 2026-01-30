@@ -21,6 +21,8 @@ namespace PexCard.Api.Client.Core.Models
 
         public string PayeeName { get; set; }
 
+        public string PayeeNameNormalized { get; set; }
+
         public DateTimeOffset? DueDate { get; set; }
 
         public PaymentRequestStatus PaymentRequestStatus { get; set; }
