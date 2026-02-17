@@ -1334,6 +1334,38 @@ namespace PexCard.Api.Client
             return await HandleHttpResponseMessage<BillPaymentListResponseModel>(response);
         }
 
+        public async Task<CreditPaymentListResponseModel> SearchCreditPaymentHistory(string externalToken, CreditPaymentListRequestModel model, int page = 1, int pageSize = 15, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Business/Credit/Payments"));
+
+            var requestUriQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
+
+            if (model != null)
+            {
+                if (model.StartDate.HasValue)
+                {
+                    requestUriQueryParams.Add("StartDate", model.StartDate.Value.ToEst().ToDateTimeString());
+                }
+                if (model.EndDate.HasValue)
+                {
+                    requestUriQueryParams.Add("EndDate", model.EndDate.Value.ToEst().ToDateTimeString());
+                }
+            }
+
+            requestUriQueryParams.Add("Page", page.ToString());
+            requestUriQueryParams.Add("PageSize", pageSize.ToString());
+            requestUriBuilder.Query = requestUriQueryParams.ToString();
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<CreditPaymentListResponseModel>(response);
+        }
+
         #region Private methods
 
         private async Task<HttpResponseMessage> GetTagsResponse(string externalToken, CancellationToken cancelToken)

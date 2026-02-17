@@ -164,5 +164,7 @@ namespace PexCard.Api.Client.Core
         Task<BillPaymentListResponseModel> GetBillPayments(string externalToken, BillPaymentListRequestModel model, int page = 1, int pageSize = 15, CancellationToken cancelToken = default);
 
         Task<BillPaymentRequestModel> GetBillPaymentRequest(string externalToken, int paymentRequestId, bool includeAttachmentContent = false, CancellationToken cancelToken = default);
+
+        Task<CreditPaymentListResponseModel> SearchCreditPaymentHistory(string externalToken, CreditPaymentListRequestModel model, int page = 1, int pageSize = 15, CancellationToken cancelToken = default);
     }
 }
