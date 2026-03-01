@@ -17,6 +17,9 @@ namespace PexCard.Api.Client.Core.Models
         /// <summary>UserId associated with the token</summary>
         public int? CardholderAccountId { get; set; }
 
+        /// <summary>PlatformAccountId associated with the token (for admin users)</summary>
+        public int? PlatformAccountId { get; set; }
+
         /// <summary>UserType associated with the token</summary>
         public UserType UserType { get; set; }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using PexCard.Api.Client.Core.Enums;
@@ -134,6 +135,65 @@ namespace PexCard.Api.Client.Core
         Task<VendorCardCreateOrderResponseModel> CreateVendorCardOrder(string externalToken, VendorCardCreateOrderRequestModel createOrder, CancellationToken cancelToken = default);
 
         Task SendVendorCardData(string externalToken, VendorCardDataModel data, CancellationToken cancelToken = default);
+
+        // Vendor Management
+        Task<GetVendorsResponseModel> GetVendors(string externalToken, GetVendorsRequestModel request = null, CancellationToken cancelToken = default);
+
+        Task<VendorModel> GetVendor(string externalToken, int vendorId, CancellationToken cancelToken = default);
+
+        Task<VendorModel> CreateVendor(string externalToken, CreateVendorRequestModel request, CancellationToken cancelToken = default);
+
+        Task<VendorModel> UpdateVendor(string externalToken, int vendorId, UpdateVendorRequestModel request, CancellationToken cancelToken = default);
+
+        Task<VendorModel> UpdateVendorStatus(string externalToken, int vendorId, UpdateVendorStatusRequestModel request, CancellationToken cancelToken = default);
+
+        Task<VendorModel> ApproveVendor(string externalToken, int vendorId, CancellationToken cancelToken = default);
+
+        Task<VendorModel> RejectVendor(string externalToken, int vendorId, CancellationToken cancelToken = default);
+
+        // Vendor Documents
+        Task<VendorModel> AddVendorDocument(string externalToken, int vendorId, string fileName, Stream fileContent, CancellationToken cancelToken = default);
+
+        Task<VendorModel> DeleteVendorDocument(string externalToken, int vendorId, int documentId, CancellationToken cancelToken = default);
+
+        // Vendor Cards (linked cardholder accounts)
+        Task<VendorModel> AddVendorCard(string externalToken, int vendorId, AddVendorCardRequestModel request, CancellationToken cancelToken = default);
+
+        Task<VendorModel> UpdateVendorCard(string externalToken, int vendorId, int cardholderAcctId, CancellationToken cancelToken = default);
+
+        // Vendor Bank Accounts
+        Task<VendorModel> AddVendorBankAccount(string externalToken, int vendorId, AddVendorBankAccountRequestModel request, CancellationToken cancelToken = default);
+
+        Task<VendorModel> UpdateVendorBankAccount(string externalToken, int vendorId, long bankAccountId, UpdateVendorBankAccountRequestModel request, CancellationToken cancelToken = default);
+
+        // Bill Payments
+        Task<BillModel> GetBill(string externalToken, int billId, CancellationToken cancelToken = default);
+
+        Task<GetBillPaymentsResponseModel> GetBillPayments(string externalToken, int billId, CancellationToken cancelToken = default);
+
+        Task<BillModel> CreateBill(string externalToken, CreateBillRequestModel request, CancellationToken cancelToken = default);
+
+        Task<SearchBillsResponseModel> SearchBills(string externalToken, SearchBillsRequestModel request = null, CancellationToken cancelToken = default);
+
+        Task UpdateBillTags(string externalToken, int billId, UpdateBillTagsRequestModel request, CancellationToken cancelToken = default);
+
+        Task DeleteBillTags(string externalToken, int billId, CancellationToken cancelToken = default);
+
+        Task<BillNoteResponseModel> AddBillNote(string externalToken, int billId, AddBillNoteRequestModel request, CancellationToken cancelToken = default);
+
+        Task UpdateBillNote(string externalToken, int billId, long noteId, UpdateBillNoteRequestModel request, CancellationToken cancelToken = default);
+
+        Task DeleteBillNote(string externalToken, int billId, long noteId, CancellationToken cancelToken = default);
+
+        Task<UploadBillAttachmentResponseModel> AddBillAttachment(string externalToken, int billId, string fileName, Stream fileContent, CancellationToken cancelToken = default);
+
+        Task<BillModel> SubmitBill(string externalToken, int billId, CancellationToken cancelToken = default);
+
+        Task<BillModel> ApproveBill(string externalToken, int billId, ApproveBillRequestModel request = null, CancellationToken cancelToken = default);
+
+        Task<BillModel> RejectBill(string externalToken, int billId, RejectBillRequestModel request = null, CancellationToken cancelToken = default);
+
+        Task<BillModel> ProcessBill(string externalToken, int billId, ProcessBillRequestModel request = null, CancellationToken cancelToken = default);
 
         Task<GetSpendingRulesetsResponseModel> GetSpendingRulesets(string externalToken, CancellationToken cancelToken = default);
 
