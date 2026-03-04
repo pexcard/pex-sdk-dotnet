@@ -1334,6 +1334,113 @@ namespace PexCard.Api.Client
             return await HandleHttpResponseMessage<BillPaymentListResponseModel>(response);
         }
 
+        public async Task<CreateBillResponseModel> CreateBill(string externalToken, CreateBillRequestModel model, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Bill"));
+
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.SetPexJsonContent(model);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<CreateBillResponseModel>(response);
+        }
+
+        public async Task UploadBillAttachment(string externalToken, int billId, ReceiptModel receipt, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Bill/{billId}/Attachment"));
+
+            using var fileContent = new ByteArrayContent(receipt.Bytes);
+            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(receipt.ContentType);
+
+            using var content = new MultipartFormDataContent();
+            content.Add(fileContent, "files", receipt.Name);
+
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.Content = content;
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            await HandleHttpResponseMessage(response);
+        }
+
+        public async Task<VendorListResponseModel> GetVendors(string externalToken, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Vendor"));
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<VendorListResponseModel>(response);
+        }
+
+        public async Task<VendorModel> CreateVendor(string externalToken, CreateVendorRequestModel model, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Vendor"));
+
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.SetPexJsonContent(model);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<VendorModel>(response);
+        }
+
+        public async Task<VendorModel> ApproveVendor(string externalToken, int vendorId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Vendor/{vendorId}/Approve"));
+
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<VendorModel>(response);
+        }
+
+        public async Task<VendorModel> AddVendorCard(string externalToken, int vendorId, AddVendorCardRequestModel model, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Vendor/{vendorId}/Card"));
+
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.SetPexJsonContent(model);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<VendorModel>(response);
+        }
+
+        public async Task<VendorModel> SetDefaultVendorCard(string externalToken, int vendorId, int cardholderAcctId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Vendor/{vendorId}/Card/{cardholderAcctId}"));
+
+            var request = new HttpRequestMessage(HttpMethod.Put, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<VendorModel>(response);
+        }
+
         #region Private methods
 
         private async Task<HttpResponseMessage> GetTagsResponse(string externalToken, CancellationToken cancelToken)
