@@ -164,5 +164,19 @@ namespace PexCard.Api.Client.Core
         Task<BillPaymentListResponseModel> GetBillPayments(string externalToken, BillPaymentListRequestModel model, int page = 1, int pageSize = 15, CancellationToken cancelToken = default);
 
         Task<BillPaymentRequestModel> GetBillPaymentRequest(string externalToken, int paymentRequestId, bool includeAttachmentContent = false, CancellationToken cancelToken = default);
+
+        Task<CreateBillResponseModel> CreateBill(string externalToken, CreateBillRequestModel model, CancellationToken cancelToken = default);
+
+        Task UploadBillAttachment(string externalToken, int billId, ReceiptModel receipt, CancellationToken cancelToken = default);
+
+        Task<VendorListResponseModel> GetVendors(string externalToken, CancellationToken cancelToken = default);
+
+        Task<VendorModel> CreateVendor(string externalToken, CreateVendorRequestModel model, CancellationToken cancelToken = default);
+
+        Task<VendorModel> ApproveVendor(string externalToken, int vendorId, CancellationToken cancelToken = default);
+
+        Task<VendorModel> AddVendorCard(string externalToken, int vendorId, AddVendorCardRequestModel model, CancellationToken cancelToken = default);
+
+        Task<VendorModel> SetDefaultVendorCard(string externalToken, int vendorId, int cardholderAcctId, CancellationToken cancelToken = default);
     }
 }
