@@ -12,5 +12,12 @@ namespace PexCard.Api.AspNetCore.Configure
             services.RemoveAll<IIPAddressResolver>();
             services.AddScoped<IIPAddressResolver, HttpContextIpAddressResolver>();
         }
+
+        public static void AddPexHttpContextCorrelationIdResolver(this IServiceCollection services)
+        {
+            services.AddHttpContextAccessor();
+            services.RemoveAll<ICorrelationIdResolver>();
+            services.AddScoped<ICorrelationIdResolver, HttpContextCorrelationIdResolver>();
+        }
     }
 }
