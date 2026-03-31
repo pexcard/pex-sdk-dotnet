@@ -113,6 +113,14 @@ namespace PexCard.Api.Client.Core
 
         Task<TagDropdownDetailsModel> DeleteDropdownTag(string externalToken, string tagId, CancellationToken cancelToken = default);
 
+        // Tag Dependencies
+        Task<List<TagDependencyModel>> GetBusinessTagDependencies(string externalToken, CancellationToken cancelToken = default);
+        Task<List<TagOptionsDependencyModel>> GetTagOptionDependencies(string externalToken, string tagId, CancellationToken cancelToken = default);
+        Task<TagOptionsDependencyModel> GetTagOptionDependency(string externalToken, string tagId, string dependencyId, CancellationToken cancelToken = default);
+        Task<TagOptionsDependencyModel> CreateTagOptionDependency(string externalToken, string tagId, CreateTagOptionsDependencyModel dependency, CancellationToken cancelToken = default);
+        Task<TagOptionsDependencyModel> UpdateTagOptionDependency(string externalToken, string tagId, string dependencyId, UpdateTagOptionsDependencyModel dependency, CancellationToken cancelToken = default);
+        Task DeleteTagDependency(string externalToken, string tagId, string dependencyId, CancellationToken cancelToken = default);
+
         Task<List<CallbackSubscriptionModel>> GetCallbackSubscriptions(string externalToken, CallbackType? type = default, CancellationToken cancelToken = default);
 
         Task<CallbackSubscriptionModel> GetCallbackSubscription(string externalToken, int callbackId, CancellationToken cancelToken = default);
