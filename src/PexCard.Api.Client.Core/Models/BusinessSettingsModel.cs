@@ -17,5 +17,6 @@ namespace PexCard.Api.Client.Core.Models
         public decimal? DefaultDailyLimit { get; set; }
         public bool UseReimbursements { get; set; }
         public bool UseBillPay { get; set; }
+        public bool UseTagDependencies { get; set; }
     }
 }
