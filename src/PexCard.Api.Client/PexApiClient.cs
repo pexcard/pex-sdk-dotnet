@@ -1459,6 +1459,148 @@ namespace PexCard.Api.Client
             await HandleHttpResponseMessage(response);
         }
 
+        public async Task<BillInboxModel> CreateBillInbox(string externalToken, CreateBillInboxRequestModel model, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/BillInbox"));
+
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.SetPexJsonContent(model);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<BillInboxModel>(response);
+        }
+
+        public async Task<BillInboxModel> GetBillInbox(string externalToken, int billInboxId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/BillInbox/{billInboxId}"));
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<BillInboxModel>(response);
+        }
+
+        public async Task<SearchBillInboxResponseModel> SearchBillInbox(string externalToken, SearchBillInboxRequestModel model, int page = 1, int pageSize = 15, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/BillInbox"));
+
+            var requestUriQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
+
+            if (model != null)
+            {
+                if (model.Statuses != null)
+                {
+                    foreach (var status in model.Statuses)
+                    {
+                        requestUriQueryParams.Add("Statuses", status.ToString());
+                    }
+                }
+                if (model.Source.HasValue)
+                {
+                    requestUriQueryParams.Add("Source", model.Source.Value.ToString());
+                }
+                if (model.ReceivedDateFrom.HasValue)
+                {
+                    requestUriQueryParams.Add("ReceivedDateFrom", model.ReceivedDateFrom.Value.UtcDateTime.ToEst().ToDateTimeString());
+                }
+                if (model.ReceivedDateTo.HasValue)
+                {
+                    requestUriQueryParams.Add("ReceivedDateTo", model.ReceivedDateTo.Value.UtcDateTime.ToEst().ToDateTimeString());
+                }
+                if (model.DueDateFrom.HasValue)
+                {
+                    requestUriQueryParams.Add("DueDateFrom", model.DueDateFrom.Value.UtcDateTime.ToEst().ToDateTimeString());
+                }
+                if (model.DueDateTo.HasValue)
+                {
+                    requestUriQueryParams.Add("DueDateTo", model.DueDateTo.Value.UtcDateTime.ToEst().ToDateTimeString());
+                }
+                if (model.BillDateFrom.HasValue)
+                {
+                    requestUriQueryParams.Add("BillDateFrom", model.BillDateFrom.Value.UtcDateTime.ToEst().ToDateTimeString());
+                }
+                if (model.BillDateTo.HasValue)
+                {
+                    requestUriQueryParams.Add("BillDateTo", model.BillDateTo.Value.UtcDateTime.ToEst().ToDateTimeString());
+                }
+                if (model.SortDirection.HasValue)
+                {
+                    requestUriQueryParams.Add("SortDirection", model.SortDirection.Value.ToString());
+                }
+                if (model.SortColumn.HasValue)
+                {
+                    requestUriQueryParams.Add("SortColumn", model.SortColumn.Value.ToString());
+                }
+            }
+
+            requestUriQueryParams.Add("Page", page.ToString());
+            requestUriQueryParams.Add("PageSize", pageSize.ToString());
+            requestUriBuilder.Query = requestUriQueryParams.ToString();
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<SearchBillInboxResponseModel>(response);
+        }
+
+        public async Task<UploadBillInboxAttachmentResponseModel> UploadBillInboxAttachment(string externalToken, int billInboxId, IEnumerable<ReceiptModel> receipts, CancellationToken cancelToken = default)
+        {
+            if (receipts == null)
+            {
+                throw new ArgumentNullException(nameof(receipts));
+            }
+
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/BillInbox/{billInboxId}/Attachment"));
+
+            using var content = new MultipartFormDataContent();
+            var fileContents = new List<ByteArrayContent>();
+
+            try
+            {
+                foreach (var receipt in receipts)
+                {
+                    if (receipt == null)
+                    {
+                        continue;
+                    }
+
+                    var fileContent = new ByteArrayContent(receipt.Bytes);
+                    fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(receipt.ContentType);
+                    fileContents.Add(fileContent);
+                    content.Add(fileContent, "files", receipt.Name);
+                }
+
+                var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+                request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+                request.SetPexAcceptJsonHeader();
+                request.SetPexAuthorizationTokenHeader(externalToken);
+                request.Content = content;
+
+                var response = await _httpClient.SendAsync(request, cancelToken);
+
+                return await HandleHttpResponseMessage<UploadBillInboxAttachmentResponseModel>(response);
+            }
+            finally
+            {
+                foreach (var fileContent in fileContents)
+                {
+                    fileContent.Dispose();
+                }
+            }
+        }
+
         public async Task<VendorListResponseModel> GetVendors(string externalToken, CancellationToken cancelToken = default)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Vendor"));

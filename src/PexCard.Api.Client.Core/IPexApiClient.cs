@@ -177,6 +177,14 @@ namespace PexCard.Api.Client.Core
 
         Task UploadBillAttachment(string externalToken, int billId, ReceiptModel receipt, CancellationToken cancelToken = default);
 
+        Task<BillInboxModel> CreateBillInbox(string externalToken, CreateBillInboxRequestModel model, CancellationToken cancelToken = default);
+
+        Task<BillInboxModel> GetBillInbox(string externalToken, int billInboxId, CancellationToken cancelToken = default);
+
+        Task<SearchBillInboxResponseModel> SearchBillInbox(string externalToken, SearchBillInboxRequestModel model, int page = 1, int pageSize = 15, CancellationToken cancelToken = default);
+
+        Task<UploadBillInboxAttachmentResponseModel> UploadBillInboxAttachment(string externalToken, int billInboxId, IEnumerable<ReceiptModel> receipts, CancellationToken cancelToken = default);
+
         Task<VendorListResponseModel> GetVendors(string externalToken, CancellationToken cancelToken = default);
 
         Task<VendorModel> CreateVendor(string externalToken, CreateVendorRequestModel model, CancellationToken cancelToken = default);
