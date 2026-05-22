@@ -17,7 +17,18 @@ namespace PexCard.Api.Client.Core.Models
         public string Email { get; set; }
         public bool IsVirtual { get; set; }
         public string CustomId { get; set; }
+
+        /// <summary>
+        /// Legacy single cardholder group.
+        /// </summary>
+        [Obsolete("Legacy single-group field. Use " + nameof(UserGroups) + " and the /UserGroup endpoints instead.")]
         public CardholderGroupModel Group { get; set; }
+
+        /// <summary>
+        /// User Groups the cardholder belongs to.
+        /// </summary>
+        public List<UserGroupBrief> UserGroups { get; set; }
+
         public List<CardDetailModel> CardList { get; set; }
     }
 }
