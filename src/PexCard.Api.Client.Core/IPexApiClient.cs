@@ -79,15 +79,60 @@ namespace PexCard.Api.Client.Core
 
         Task UpdateCardholderCardStatus(string externalToken, int cardholderAccountId, CardStatus status, CancellationToken cancelToken = default);
 
+        [Obsolete("Legacy cardholder Group endpoint. Use " + nameof(GetUserGroups) + " (/UserGroup) instead.")]
         Task<CardholderGroupsResponseModel> GetCardholderGroups(string externalToken, CancellationToken cancelToken = default);
 
+        [Obsolete("Legacy cardholder Group endpoint. Use " + nameof(GetUserGroup) + " (/UserGroup) instead.")]
         Task<CardholderGroupResponseModel> GetCardholderGroup(string externalToken, int groupId, CancellationToken cancelToken = default);
 
+        [Obsolete("Legacy cardholder Group endpoint. Use " + nameof(CreateUserGroup) + " (/UserGroup) instead.")]
         Task<CardholderGroupResponseModel> CreateCardholderGroup(string externalToken, string groupName, CancellationToken cancelToken = default);
 
+        [Obsolete("Legacy cardholder Group endpoint. Use " + nameof(UpdateUserGroup) + " (/UserGroup) instead.")]
         Task<CardholderGroupResponseModel> UpdateCardholderGroupName(string externalToken, int groupId, string groupName, CancellationToken cancelToken = default);
 
+        [Obsolete("Legacy cardholder Group endpoint. Use " + nameof(DeleteUserGroup) + " (/UserGroup) instead.")]
         Task DeleteCardholderGroup(string externalToken, int groupId, CancellationToken cancelToken = default);
+
+        /// <summary>
+        /// Return the list of User Groups for the business.
+        /// </summary>
+        Task<List<UserGroupBrief>> GetUserGroups(string externalToken, CancellationToken cancelToken = default);
+
+        /// <summary>
+        /// Return a single User Group.
+        /// </summary>
+        Task<UserGroupBrief> GetUserGroup(string externalToken, long userGroupId, CancellationToken cancelToken = default);
+
+        /// <summary>
+        /// Create a User Group.
+        /// </summary>
+        Task<UserGroupBrief> CreateUserGroup(string externalToken, string name, CancellationToken cancelToken = default);
+
+        /// <summary>
+        /// Update the User Group name.
+        /// </summary>
+        Task<UserGroupBrief> UpdateUserGroup(string externalToken, long userGroupId, string name, CancellationToken cancelToken = default);
+
+        /// <summary>
+        /// Delete a User Group. Cardholders that were members are no longer associated with it.
+        /// </summary>
+        Task DeleteUserGroup(string externalToken, long userGroupId, CancellationToken cancelToken = default);
+
+        /// <summary>
+        /// Return all cardholders in a User Group.
+        /// </summary>
+        Task<List<UserGroupCardholder>> GetUserGroupCardholders(string externalToken, long userGroupId, CancellationToken cancelToken = default);
+
+        /// <summary>
+        /// Add a cardholder (by account id) to a User Group. A cardholder may belong to multiple User Groups.
+        /// </summary>
+        Task AddCardholderToUserGroup(string externalToken, long userGroupId, int accountId, CancellationToken cancelToken = default);
+
+        /// <summary>
+        /// Remove a cardholder (by account id) from a User Group.
+        /// </summary>
+        Task RemoveCardholderFromUserGroup(string externalToken, long userGroupId, int accountId, CancellationToken cancelToken = default);
 
         Task<int> CreateCardOrder(string externalToken, CardOrderModel cardOrder, CancellationToken cancelToken = default);
 

@@ -795,6 +795,7 @@ namespace PexCard.Api.Client
             return responseData.CardOrderId;
         }
 
+        [Obsolete("Legacy cardholder Group endpoint. Use " + nameof(GetUserGroups) + " (/UserGroup) instead.")]
         public async Task<CardholderGroupsResponseModel> GetCardholderGroups(string externalToken, CancellationToken cancelToken = default)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Group"));
@@ -809,6 +810,7 @@ namespace PexCard.Api.Client
             return await HandleHttpResponseMessage<CardholderGroupsResponseModel>(response);
         }
 
+        [Obsolete("Legacy cardholder Group endpoint. Use " + nameof(GetUserGroup) + " (/UserGroup) instead.")]
         public async Task<CardholderGroupResponseModel> GetCardholderGroup(string externalToken, int groupId, CancellationToken cancelToken = default)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Group/{groupId}"));
@@ -823,6 +825,7 @@ namespace PexCard.Api.Client
             return await HandleHttpResponseMessage<CardholderGroupResponseModel>(response);
         }
 
+        [Obsolete("Legacy cardholder Group endpoint. Use " + nameof(CreateUserGroup) + " (/UserGroup) instead.")]
         public async Task<CardholderGroupResponseModel> CreateCardholderGroup(string externalToken, string groupName, CancellationToken cancelToken = default)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Group"));
@@ -840,6 +843,7 @@ namespace PexCard.Api.Client
             return await HandleHttpResponseMessage<CardholderGroupResponseModel>(response);
         }
 
+        [Obsolete("Legacy cardholder Group endpoint. Use " + nameof(UpdateUserGroup) + " (/UserGroup) instead.")]
         public async Task<CardholderGroupResponseModel> UpdateCardholderGroupName(string externalToken, int groupId, string groupName, CancellationToken cancelToken = default)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Group/{groupId}"));
@@ -857,9 +861,125 @@ namespace PexCard.Api.Client
             return await HandleHttpResponseMessage<CardholderGroupResponseModel>(response);
         }
 
+        [Obsolete("Legacy cardholder Group endpoint. Use " + nameof(DeleteUserGroup) + " (/UserGroup) instead.")]
         public async Task DeleteCardholderGroup(string externalToken, int groupId, CancellationToken cancelToken = default)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Group/{groupId}"));
+
+            var request = new HttpRequestMessage(HttpMethod.Delete, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            await HandleHttpResponseMessage(response);
+        }
+
+        public async Task<List<UserGroupBrief>> GetUserGroups(string externalToken, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/UserGroup"));
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<List<UserGroupBrief>>(response);
+        }
+
+        public async Task<UserGroupBrief> GetUserGroup(string externalToken, long userGroupId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/UserGroup/{userGroupId}"));
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<UserGroupBrief>(response);
+        }
+
+        public async Task<UserGroupBrief> CreateUserGroup(string externalToken, string name, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/UserGroup"));
+
+            var requestData = new CreateUserGroupRequest { Name = name };
+
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.SetPexJsonContent(requestData);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<UserGroupBrief>(response);
+        }
+
+        public async Task<UserGroupBrief> UpdateUserGroup(string externalToken, long userGroupId, string name, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/UserGroup/{userGroupId}"));
+
+            var requestData = new UpdateUserGroupRequest { Name = name };
+
+            var request = new HttpRequestMessage(HttpMethod.Put, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.SetPexJsonContent(requestData);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<UserGroupBrief>(response);
+        }
+
+        public async Task DeleteUserGroup(string externalToken, long userGroupId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/UserGroup/{userGroupId}"));
+
+            var request = new HttpRequestMessage(HttpMethod.Delete, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            await HandleHttpResponseMessage(response);
+        }
+
+        public async Task<List<UserGroupCardholder>> GetUserGroupCardholders(string externalToken, long userGroupId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/UserGroup/{userGroupId}/cardholders"));
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<List<UserGroupCardholder>>(response);
+        }
+
+        public async Task AddCardholderToUserGroup(string externalToken, long userGroupId, int accountId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/UserGroup/{userGroupId}/cardholders/{accountId}"));
+
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            await HandleHttpResponseMessage(response);
+        }
+
+        public async Task RemoveCardholderFromUserGroup(string externalToken, long userGroupId, int accountId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/UserGroup/{userGroupId}/cardholders/{accountId}"));
 
             var request = new HttpRequestMessage(HttpMethod.Delete, requestUriBuilder.Uri);
             request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());

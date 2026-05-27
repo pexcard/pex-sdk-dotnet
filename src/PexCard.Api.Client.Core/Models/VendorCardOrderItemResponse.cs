@@ -13,6 +13,11 @@ namespace PexCard.Api.Client.Core.Models
         public string Email { get; set; }
         public AddressModel HomeAddress { get; set; }
         public int? GroupId { get; set; }
+
+        /// <summary>
+        /// Id of the User Group the vendor card was assigned to, when applicable; otherwise null.
+        /// </summary>
+        public long? UserGroupId { get; set; }
         public int? SpendingRulesetsId { get; set; }
         public bool AutoActivation { get; set; }
         public decimal? FundCardAmount { get; set; }

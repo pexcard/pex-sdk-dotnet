@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace PexCard.Api.Client.Core.Models
 {
@@ -58,14 +59,26 @@ namespace PexCard.Api.Client.Core.Models
         public string CustomId { get; set; }
 
         /// <summary>
-        /// Cardholder's group id.
+        /// Cardholder's legacy group id.
         /// </summary>
+        [Obsolete("Legacy single-group field. Use " + nameof(UserGroupId) + " / " + nameof(UserGroups) + " and the /UserGroup endpoints instead.")]
         public int? GroupId { get; set; }
 
         /// <summary>
-        /// Cardholder's group name.
+        /// Cardholder's legacy group name.
         /// </summary>
+        [Obsolete("Legacy single-group field. Use " + nameof(UserGroups) + " and the /UserGroup endpoints instead.")]
         public string GroupName { get; set; }
+
+        /// <summary>
+        /// Id of the User Group the cardholder belongs to, when applicable; otherwise null.
+        /// </summary>
+        public long? UserGroupId { get; set; }
+
+        /// <summary>
+        /// User Groups the cardholder belongs to.
+        /// </summary>
+        public List<UserGroupBrief> UserGroups { get; set; }
 
         /// <summary>
         /// Cardholder's active card status (NULL, Active, Inactive, Closed, Blocked).
