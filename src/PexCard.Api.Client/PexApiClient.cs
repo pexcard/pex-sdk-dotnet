@@ -1721,6 +1721,35 @@ namespace PexCard.Api.Client
             }
         }
 
+        public async Task<CreateBusinessAttachmentModel> UploadBusinessAttachment(string externalToken, CreateBusinessAttachmentRequestModel model, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Business/Attachments"));
+
+            var request = new HttpRequestMessage(HttpMethod.Post, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+            request.SetPexJsonContent(model);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<CreateBusinessAttachmentModel>(response);
+        }
+
+        public async Task<BusinessAttachmentAnalysisModel> GetBusinessAttachmentAnalysis(string externalToken, long metadataId, string attachmentId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Business/Attachments/{metadataId}/{attachmentId}/Analysis"));
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationTokenHeader(externalToken);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<BusinessAttachmentAnalysisModel>(response, returnValueForNotFound: true);
+        }
+
         public async Task<VendorListResponseModel> GetVendors(string externalToken, CancellationToken cancelToken = default)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Vendor"));

@@ -230,6 +230,19 @@ namespace PexCard.Api.Client.Core
 
         Task<UploadBillInboxAttachmentResponseModel> UploadBillInboxAttachment(string externalToken, int billInboxId, IEnumerable<ReceiptModel> receipts, CancellationToken cancelToken = default);
 
+        /// <summary>
+        /// Uploads a business source attachment (an emailed / SMS'd receipt or invoice) for AI analysis and
+        /// auto-matching to a cardholder purchase. The <c>Source</c> must resolve to a cardholder in the
+        /// authenticated business, otherwise the API responds 403.
+        /// </summary>
+        Task<CreateBusinessAttachmentModel> UploadBusinessAttachment(string externalToken, CreateBusinessAttachmentRequestModel model, CancellationToken cancelToken = default);
+
+        /// <summary>
+        /// Gets the AI analysis for a previously uploaded business source attachment, or <see langword="null"/>
+        /// if the analysis is not available yet (the API responds 404 until it completes).
+        /// </summary>
+        Task<BusinessAttachmentAnalysisModel> GetBusinessAttachmentAnalysis(string externalToken, long metadataId, string attachmentId, CancellationToken cancelToken = default);
+
         Task<VendorListResponseModel> GetVendors(string externalToken, CancellationToken cancelToken = default);
 
         Task<VendorModel> CreateVendor(string externalToken, CreateVendorRequestModel model, CancellationToken cancelToken = default);
