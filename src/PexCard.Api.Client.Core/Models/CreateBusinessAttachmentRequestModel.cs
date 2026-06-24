@@ -36,5 +36,10 @@ namespace PexCard.Api.Client.Core.Models
         /// Optional original file name.
         /// </summary>
         public string FileName { get; set; }
+
+        /// <summary>
+        /// Optional note applied to the transaction the attachment is matched to. Omit to add no note.
+        /// </summary>
+        public CreateBusinessAttachmentNoteModel Note { get; set; }
     }
 }
