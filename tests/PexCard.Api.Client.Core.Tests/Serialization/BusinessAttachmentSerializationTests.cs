@@ -45,6 +45,48 @@ namespace PexCard.Api.Client.Core.Tests.Serialization
                 new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
 
             Assert.DoesNotContain("FileName", json);
+            Assert.DoesNotContain("Note", json);
+        }
+
+        [Fact]
+        public void CreateBusinessAttachmentRequest_SerializesNestedNote()
+        {
+            var request = new CreateBusinessAttachmentRequestModel
+            {
+                Content = "SGVsbG8=",
+                Type = AttachmentType.Image,
+                UploadChannel = AttachmentUploadChannel.Email,
+                Source = "sender@pexcard.com",
+                Note = new CreateBusinessAttachmentNoteModel
+                {
+                    Text = "Client lunch - please reimburse",
+                    VisibleToCardholder = true,
+                    IsSystemGenerated = false
+                }
+            };
+
+            var json = JsonConvert.SerializeObject(request);
+
+            Assert.Contains("\"Note\":{", json);
+            Assert.Contains("\"Text\":\"Client lunch - please reimburse\"", json);
+            Assert.Contains("\"VisibleToCardholder\":true", json);
+            Assert.Contains("\"IsSystemGenerated\":false", json);
+        }
+
+        [Fact]
+        public void CreateBusinessAttachment_DeserializesNewResponseFields()
+        {
+            const string json = "{\"AttachmentId\":\"att-1\",\"Type\":\"Image\",\"Size\":84213,\"MetadataId\":555," +
+                "\"FileName\":\"Email-jane@company.com.jpg\",\"Pages\":1,\"DuplicateOfId\":null," +
+                "\"UploadChannel\":\"Email\",\"Source\":\"jane@company.com\"}";
+
+            var model = JsonConvert.DeserializeObject<CreateBusinessAttachmentModel>(json);
+
+            Assert.Equal("Email-jane@company.com.jpg", model.FileName);
+            Assert.Equal(1, model.Pages);
+            Assert.Null(model.DuplicateOfId);
+            Assert.Equal(AttachmentUploadChannel.Email, model.UploadChannel);
+            Assert.Equal("jane@company.com", model.Source);
         }
 
         [Fact]
