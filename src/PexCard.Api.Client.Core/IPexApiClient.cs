@@ -245,6 +245,8 @@ namespace PexCard.Api.Client.Core
 
         Task<VendorListResponseModel> GetVendors(string externalToken, CancellationToken cancelToken = default);
 
+        Task<VendorListResponseModel> GetVendors(string externalToken, int pageIndex, int pageSize, CancellationToken cancelToken = default);
+
         Task<VendorModel> CreateVendor(string externalToken, CreateVendorRequestModel model, CancellationToken cancelToken = default);
 
         Task<VendorModel> ApproveVendor(string externalToken, int vendorId, CancellationToken cancelToken = default);

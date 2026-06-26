@@ -1752,7 +1752,46 @@ namespace PexCard.Api.Client
 
         public async Task<VendorListResponseModel> GetVendors(string externalToken, CancellationToken cancelToken = default)
         {
+            // V4/Vendor is paged (server default PageSize=10, max 1000). Page through every result so callers
+            // always get the complete vendor list; otherwise vendors beyond the first page are silently missing.
+            const int pageSize = 1000;
+            const int maxPages = 1000; // safety stop so an inconsistent TotalCount can never loop forever
+
+            var allVendors = new List<VendorModel>();
+
+            for (var pageIndex = 1; pageIndex <= maxPages; pageIndex++)
+            {
+                var page = await GetVendors(externalToken, pageIndex, pageSize, cancelToken);
+
+                if (page?.Vendors == null || page.Vendors.Count == 0)
+                {
+                    break;
+                }
+
+                allVendors.AddRange(page.Vendors);
+
+                // TotalCount is the count across all pages; stop once we've read them all.
+                if (allVendors.Count >= page.TotalCount)
+                {
+                    break;
+                }
+            }
+
+            return new VendorListResponseModel
+            {
+                Vendors = allVendors,
+                TotalCount = allVendors.Count,
+            };
+        }
+
+        public async Task<VendorListResponseModel> GetVendors(string externalToken, int pageIndex, int pageSize, CancellationToken cancelToken = default)
+        {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Vendor"));
+
+            var requestUriQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
+            requestUriQueryParams.Add("PageIndex", pageIndex.ToString());
+            requestUriQueryParams.Add("PageSize", pageSize.ToString());
+            requestUriBuilder.Query = requestUriQueryParams.ToString();
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
             request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
