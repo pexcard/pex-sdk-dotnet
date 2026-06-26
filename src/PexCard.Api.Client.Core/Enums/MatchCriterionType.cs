@@ -9,6 +9,7 @@ namespace PexCard.Api.Client.Core.Enums
     [JsonConverter(typeof(StringEnumConverter))]
     public enum MatchCriterionType
     {
+        Unknown,
         MerchantName,
         Total,
         Date,
@@ -61,7 +62,6 @@ namespace PexCard.Api.Client.Core.Enums
         IsAirTrainTravel,
         IsVehicleRental,
         IsRestaurant,
-        IsRideShare,
-        Unknown
+        IsRideShare
     }
 }
