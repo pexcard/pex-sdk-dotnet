@@ -117,12 +117,89 @@ namespace PexCard.Api.Client.Core.Tests.Serialization
             Assert.Equal(555, model.MetadataId);
             Assert.NotNull(model.Analysis);
             Assert.Equal("op-9", model.Analysis.OperationId);
-            Assert.Equal("OpenAi", model.Analysis.Platform);
+            Assert.Equal(AttachmentAnalysisPlatform.OpenAi, model.Analysis.Platform);
             Assert.NotNull(model.Analysis.MatchCriteria?.Merchant);
             Assert.Equal("Acme", model.Analysis.MatchCriteria.Merchant.Value);
             Assert.Equal(0.95f, model.Analysis.MatchCriteria.Merchant.Confidence);
-            Assert.Equal("MerchantName", model.Analysis.MatchCriteria.Merchant.Type);
-            Assert.Equal("Match", model.Analysis.IntelligentMatch?.Status);
+            Assert.Equal(MatchCriterionType.MerchantName, model.Analysis.MatchCriteria.Merchant.Type);
+            Assert.Equal(IntelligentMatchStatus.Match, model.Analysis.IntelligentMatch?.Status);
+        }
+
+        [Fact]
+        public void BusinessAttachment_DeserializesCommittedMatch()
+        {
+            const string json = "{\"AttachmentId\":\"att-1\",\"Type\":\"Image\",\"Size\":84213,\"MetadataId\":555," +
+                "\"UploadStatus\":\"Loaded\",\"CreatedDateUtc\":\"2026-06-26T14:05:11Z\"," +
+                "\"FileName\":\"receipt.png\",\"UploadChannel\":\"Email\",\"Match\":{" +
+                "\"Status\":\"AutoMatch\",\"SuggestedMatchId\":\"sm-9\",\"NoMatchDateUtc\":null," +
+                "\"CommitDateUtc\":\"2026-06-26T14:09:30Z\",\"MatchRetryCount\":0,\"Matched\":{" +
+                "\"DateUtc\":\"2026-06-26T14:09:30Z\",\"By\":{\"AdminId\":null,\"UserId\":552201,\"PexUserId\":99812}}}}";
+
+            var model = JsonConvert.DeserializeObject<BusinessAttachmentModel>(json);
+
+            Assert.Equal("att-1", model.AttachmentId);
+            Assert.Equal(AttachmentType.Image, model.Type);
+            Assert.Equal(555, model.MetadataId);
+            Assert.Equal(MetadataFileSaveState.Loaded, model.UploadStatus);
+            Assert.Equal("receipt.png", model.FileName);
+            Assert.Equal(AttachmentUploadChannel.Email, model.UploadChannel);
+
+            Assert.NotNull(model.Match);
+            Assert.Equal(AttachmentMatchStatus.AutoMatch, model.Match.Status);
+            Assert.Equal("sm-9", model.Match.SuggestedMatchId);
+            Assert.Null(model.Match.NoMatchDateUtc);
+            Assert.NotNull(model.Match.CommitDateUtc);
+            Assert.Equal(0, model.Match.MatchRetryCount);
+            Assert.NotNull(model.Match.Matched);
+            Assert.NotNull(model.Match.Matched.DateUtc);
+            Assert.NotNull(model.Match.Matched.By);
+            Assert.Equal(552201, model.Match.Matched.By.UserId);
+            Assert.Equal(99812, model.Match.Matched.By.PexUserId);
+        }
+
+        [Fact]
+        public void BusinessAttachment_DeserializesNullMatch()
+        {
+            const string json = "{\"AttachmentId\":\"att-1\",\"Type\":\"Pdf\",\"Size\":1234,\"MetadataId\":555," +
+                "\"UploadStatus\":\"Loaded\",\"FileName\":\"invoice.pdf\",\"UploadChannel\":\"Sms\",\"Match\":null}";
+
+            var model = JsonConvert.DeserializeObject<BusinessAttachmentModel>(json);
+
+            Assert.Equal(AttachmentType.Pdf, model.Type);
+            Assert.Equal(AttachmentUploadChannel.Sms, model.UploadChannel);
+            Assert.Null(model.Match);
+        }
+
+        [Fact]
+        public void BusinessAttachment_DeserializesNoMatchStatus()
+        {
+            const string json = "{\"AttachmentId\":\"att-1\",\"Type\":\"Pdf\",\"Size\":1234,\"MetadataId\":555," +
+                "\"UploadChannel\":\"Email\",\"Match\":{\"Status\":\"NoMatch\"," +
+                "\"NoMatchDateUtc\":\"2026-06-26T14:30:00Z\",\"MatchRetryCount\":1,\"Matched\":null}}";
+
+            var model = JsonConvert.DeserializeObject<BusinessAttachmentModel>(json);
+
+            Assert.NotNull(model.Match);
+            Assert.Equal(AttachmentMatchStatus.NoMatch, model.Match.Status);
+            Assert.NotNull(model.Match.NoMatchDateUtc);
+            Assert.Null(model.Match.CommitDateUtc);
+            Assert.Equal(1, model.Match.MatchRetryCount);
+            Assert.Null(model.Match.Matched);
+        }
+
+        [Fact]
+        public void MatchCriterion_DeserializesTypeAndStatusEnums()
+        {
+            const string json = "{\"AttachmentId\":\"att-1\",\"MetadataId\":555,\"Analysis\":{" +
+                "\"Platform\":\"AzureDocumentAi\",\"MatchCriteria\":{" +
+                "\"Total\":{\"Name\":\"Total\",\"Value\":\"42.00\",\"Confidence\":0.9,\"Type\":\"Total\"}}," +
+                "\"IntelligentMatch\":{\"Status\":\"NoMatch\"}}}";
+
+            var model = JsonConvert.DeserializeObject<BusinessAttachmentAnalysisModel>(json);
+
+            Assert.Equal(AttachmentAnalysisPlatform.AzureDocumentAi, model.Analysis.Platform);
+            Assert.Equal(MatchCriterionType.Total, model.Analysis.MatchCriteria.Total.Type);
+            Assert.Equal(IntelligentMatchStatus.NoMatch, model.Analysis.IntelligentMatch.Status);
         }
     }
 }
