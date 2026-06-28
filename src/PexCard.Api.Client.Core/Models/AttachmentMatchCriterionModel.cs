@@ -1,5 +1,3 @@
-using PexCard.Api.Client.Core.Enums;
-
 namespace PexCard.Api.Client.Core.Models
 {
     /// <summary>
@@ -17,6 +15,6 @@ namespace PexCard.Api.Client.Core.Models
         public float Confidence { get; set; }
 
         /// <summary>Criterion type (e.g. MerchantName, Total, Date).</summary>
-        public MatchCriterionType Type { get; set; }
+        public string Type { get; set; }
     }
 }

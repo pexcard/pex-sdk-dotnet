@@ -117,12 +117,12 @@ namespace PexCard.Api.Client.Core.Tests.Serialization
             Assert.Equal(555, model.MetadataId);
             Assert.NotNull(model.Analysis);
             Assert.Equal("op-9", model.Analysis.OperationId);
-            Assert.Equal(AttachmentAnalysisPlatform.OpenAi, model.Analysis.Platform);
+            Assert.Equal("OpenAi", model.Analysis.Platform);
             Assert.NotNull(model.Analysis.MatchCriteria?.Merchant);
             Assert.Equal("Acme", model.Analysis.MatchCriteria.Merchant.Value);
             Assert.Equal(0.95f, model.Analysis.MatchCriteria.Merchant.Confidence);
-            Assert.Equal(MatchCriterionType.MerchantName, model.Analysis.MatchCriteria.Merchant.Type);
-            Assert.Equal(IntelligentMatchStatus.Match, model.Analysis.IntelligentMatch?.Status);
+            Assert.Equal("MerchantName", model.Analysis.MatchCriteria.Merchant.Type);
+            Assert.Equal("Match", model.Analysis.IntelligentMatch?.Status);
         }
 
         [Fact]
@@ -145,7 +145,7 @@ namespace PexCard.Api.Client.Core.Tests.Serialization
             Assert.Equal(AttachmentUploadChannel.Email, model.UploadChannel);
 
             Assert.NotNull(model.Match);
-            Assert.Equal(AttachmentMatchStatus.AutoMatch, model.Match.Status);
+            Assert.Equal("AutoMatch", model.Match.Status);
             Assert.Equal("sm-9", model.Match.SuggestedMatchId);
             Assert.Null(model.Match.NoMatchDateUtc);
             Assert.NotNull(model.Match.CommitDateUtc);
@@ -180,7 +180,7 @@ namespace PexCard.Api.Client.Core.Tests.Serialization
             var model = JsonConvert.DeserializeObject<BusinessAttachmentModel>(json);
 
             Assert.NotNull(model.Match);
-            Assert.Equal(AttachmentMatchStatus.NoMatch, model.Match.Status);
+            Assert.Equal("NoMatch", model.Match.Status);
             Assert.NotNull(model.Match.NoMatchDateUtc);
             Assert.Null(model.Match.CommitDateUtc);
             Assert.Equal(1, model.Match.MatchRetryCount);
@@ -188,7 +188,7 @@ namespace PexCard.Api.Client.Core.Tests.Serialization
         }
 
         [Fact]
-        public void MatchCriterion_DeserializesTypeAndStatusEnums()
+        public void MatchCriterion_DeserializesTypeAndStatus()
         {
             const string json = "{\"AttachmentId\":\"att-1\",\"MetadataId\":555,\"Analysis\":{" +
                 "\"Platform\":\"AzureDocumentAi\",\"MatchCriteria\":{" +
@@ -197,9 +197,9 @@ namespace PexCard.Api.Client.Core.Tests.Serialization
 
             var model = JsonConvert.DeserializeObject<BusinessAttachmentAnalysisModel>(json);
 
-            Assert.Equal(AttachmentAnalysisPlatform.AzureDocumentAi, model.Analysis.Platform);
-            Assert.Equal(MatchCriterionType.Total, model.Analysis.MatchCriteria.Total.Type);
-            Assert.Equal(IntelligentMatchStatus.NoMatch, model.Analysis.IntelligentMatch.Status);
+            Assert.Equal("AzureDocumentAi", model.Analysis.Platform);
+            Assert.Equal("Total", model.Analysis.MatchCriteria.Total.Type);
+            Assert.Equal("NoMatch", model.Analysis.IntelligentMatch.Status);
         }
     }
 }

@@ -1,5 +1,4 @@
 using System;
-using PexCard.Api.Client.Core.Enums;
 
 namespace PexCard.Api.Client.Core.Models
 {
@@ -8,8 +7,8 @@ namespace PexCard.Api.Client.Core.Models
     /// </summary>
     public class BusinessAttachmentMatchModel
     {
-        /// <summary>Committed match status (e.g. AutoMatch, ManualMatch, NoMatch, Retry).</summary>
-        public AttachmentMatchStatus Status { get; set; }
+        /// <summary>Committed match status (e.g. AutoMatch, ManualMatch, SuggestedMatch, NoMatch, NoMatchDuplicate, NoMatchNoData, NoMatchTechnicalError, Retry, NoMatchAutoMatchRemoved, Unknown).</summary>
+        public string Status { get; set; }
 
         /// <summary>Id of the suggested match this attachment resolved to, if any.</summary>
         public string SuggestedMatchId { get; set; }

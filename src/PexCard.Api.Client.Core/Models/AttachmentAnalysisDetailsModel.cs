@@ -1,5 +1,4 @@
 using System;
-using PexCard.Api.Client.Core.Enums;
 
 namespace PexCard.Api.Client.Core.Models
 {
@@ -12,7 +11,7 @@ namespace PexCard.Api.Client.Core.Models
         public string OperationId { get; set; }
 
         /// <summary>Analysis platform (e.g. AwsTextract, AzureDocumentAi, OpenAi, AzureOpenAi).</summary>
-        public AttachmentAnalysisPlatform Platform { get; set; }
+        public string Platform { get; set; }
 
         /// <summary>When the analysis record was created (UTC).</summary>
         public DateTime CreatedDateUtc { get; set; }
