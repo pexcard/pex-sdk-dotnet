@@ -60,6 +60,7 @@ namespace PexCard.Api.Client.Core.Enums
         IsInvoice,
         IsHotel,
         IsAirTrainTravel,
+        IsAirfare,
         IsVehicleRental,
         IsRestaurant,
         IsRideShare
