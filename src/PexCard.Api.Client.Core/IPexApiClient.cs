@@ -243,6 +243,13 @@ namespace PexCard.Api.Client.Core
         /// </summary>
         Task<BusinessAttachmentAnalysisModel> GetBusinessAttachmentAnalysis(string externalToken, long metadataId, string attachmentId, CancellationToken cancelToken = default);
 
+        /// <summary>
+        /// Gets a previously uploaded business source attachment, including its committed match state, or
+        /// <see langword="null"/> if it does not exist (the API responds 404). Unlike the analysis, this
+        /// reflects the committed match (what the Dashboard shows) regardless of AI analysis.
+        /// </summary>
+        Task<BusinessAttachmentModel> GetBusinessAttachment(string externalToken, long metadataId, string attachmentId, CancellationToken cancelToken = default);
+
         Task<VendorListResponseModel> GetVendors(string externalToken, CancellationToken cancelToken = default);
 
         Task<VendorListResponseModel> GetVendors(string externalToken, int pageIndex, int pageSize, CancellationToken cancelToken = default);
