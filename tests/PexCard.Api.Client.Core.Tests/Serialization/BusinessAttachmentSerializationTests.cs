@@ -133,7 +133,8 @@ namespace PexCard.Api.Client.Core.Tests.Serialization
                 "\"FileName\":\"receipt.png\",\"UploadChannel\":\"Email\",\"Match\":{" +
                 "\"Status\":\"AutoMatch\",\"SuggestedMatchId\":\"sm-9\",\"NoMatchDateUtc\":null," +
                 "\"CommitDateUtc\":\"2026-06-26T14:09:30Z\",\"MatchRetryCount\":0,\"Matched\":{" +
-                "\"DateUtc\":\"2026-06-26T14:09:30Z\",\"By\":{\"AdminId\":null,\"UserId\":552201,\"PexUserId\":99812}}}}";
+                "\"DateUtc\":\"2026-06-26T14:09:30Z\",\"By\":{\"AdminId\":null,\"UserId\":552201,\"PexUserId\":99812," +
+                "\"UserName\":\"jdoe\",\"FirstName\":\"Jane\",\"LastName\":\"Doe\"}}}}";
 
             var model = JsonConvert.DeserializeObject<BusinessAttachmentModel>(json);
 
@@ -155,6 +156,26 @@ namespace PexCard.Api.Client.Core.Tests.Serialization
             Assert.NotNull(model.Match.Matched.By);
             Assert.Equal(552201, model.Match.Matched.By.UserId);
             Assert.Equal(99812, model.Match.Matched.By.PexUserId);
+            Assert.Equal("jdoe", model.Match.Matched.By.UserName);
+            Assert.Equal("Jane", model.Match.Matched.By.FirstName);
+            Assert.Equal("Doe", model.Match.Matched.By.LastName);
+        }
+
+        [Fact]
+        public void BusinessAttachment_MetadataUserNames_NullWhenAbsent()
+        {
+            // Old API format (or unresolved identity): the By object omits the name fields entirely.
+            const string json = "{\"AttachmentId\":\"att-1\",\"Type\":\"Pdf\",\"Size\":1234,\"MetadataId\":555," +
+                "\"UploadChannel\":\"Email\",\"Match\":{\"Status\":\"AutoMatch\",\"Matched\":{" +
+                "\"DateUtc\":\"2026-06-26T14:09:30Z\",\"By\":{\"AdminId\":null,\"UserId\":552201,\"PexUserId\":99812}}}}";
+
+            var model = JsonConvert.DeserializeObject<BusinessAttachmentModel>(json);
+
+            Assert.NotNull(model.Match.Matched.By);
+            Assert.Equal(552201, model.Match.Matched.By.UserId);
+            Assert.Null(model.Match.Matched.By.UserName);
+            Assert.Null(model.Match.Matched.By.FirstName);
+            Assert.Null(model.Match.Matched.By.LastName);
         }
 
         [Fact]
