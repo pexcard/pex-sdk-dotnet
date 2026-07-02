@@ -79,15 +79,60 @@ namespace PexCard.Api.Client.Core
 
         Task UpdateCardholderCardStatus(string externalToken, int cardholderAccountId, CardStatus status, CancellationToken cancelToken = default);
 
+        [Obsolete("Legacy cardholder Group endpoint. Use " + nameof(GetUserGroups) + " (/UserGroup) instead.")]
         Task<CardholderGroupsResponseModel> GetCardholderGroups(string externalToken, CancellationToken cancelToken = default);
 
+        [Obsolete("Legacy cardholder Group endpoint. Use " + nameof(GetUserGroup) + " (/UserGroup) instead.")]
         Task<CardholderGroupResponseModel> GetCardholderGroup(string externalToken, int groupId, CancellationToken cancelToken = default);
 
+        [Obsolete("Legacy cardholder Group endpoint. Use " + nameof(CreateUserGroup) + " (/UserGroup) instead.")]
         Task<CardholderGroupResponseModel> CreateCardholderGroup(string externalToken, string groupName, CancellationToken cancelToken = default);
 
+        [Obsolete("Legacy cardholder Group endpoint. Use " + nameof(UpdateUserGroup) + " (/UserGroup) instead.")]
         Task<CardholderGroupResponseModel> UpdateCardholderGroupName(string externalToken, int groupId, string groupName, CancellationToken cancelToken = default);
 
+        [Obsolete("Legacy cardholder Group endpoint. Use " + nameof(DeleteUserGroup) + " (/UserGroup) instead.")]
         Task DeleteCardholderGroup(string externalToken, int groupId, CancellationToken cancelToken = default);
+
+        /// <summary>
+        /// Return the list of User Groups for the business.
+        /// </summary>
+        Task<List<UserGroupBrief>> GetUserGroups(string externalToken, CancellationToken cancelToken = default);
+
+        /// <summary>
+        /// Return a single User Group.
+        /// </summary>
+        Task<UserGroupBrief> GetUserGroup(string externalToken, long userGroupId, CancellationToken cancelToken = default);
+
+        /// <summary>
+        /// Create a User Group.
+        /// </summary>
+        Task<UserGroupBrief> CreateUserGroup(string externalToken, string name, CancellationToken cancelToken = default);
+
+        /// <summary>
+        /// Update the User Group name.
+        /// </summary>
+        Task<UserGroupBrief> UpdateUserGroup(string externalToken, long userGroupId, string name, CancellationToken cancelToken = default);
+
+        /// <summary>
+        /// Delete a User Group. Cardholders that were members are no longer associated with it.
+        /// </summary>
+        Task DeleteUserGroup(string externalToken, long userGroupId, CancellationToken cancelToken = default);
+
+        /// <summary>
+        /// Return all cardholders in a User Group.
+        /// </summary>
+        Task<List<UserGroupCardholder>> GetUserGroupCardholders(string externalToken, long userGroupId, CancellationToken cancelToken = default);
+
+        /// <summary>
+        /// Add a cardholder (by account id) to a User Group. A cardholder may belong to multiple User Groups.
+        /// </summary>
+        Task AddCardholderToUserGroup(string externalToken, long userGroupId, int accountId, CancellationToken cancelToken = default);
+
+        /// <summary>
+        /// Remove a cardholder (by account id) from a User Group.
+        /// </summary>
+        Task RemoveCardholderFromUserGroup(string externalToken, long userGroupId, int accountId, CancellationToken cancelToken = default);
 
         Task<int> CreateCardOrder(string externalToken, CardOrderModel cardOrder, CancellationToken cancelToken = default);
 
@@ -112,6 +157,14 @@ namespace PexCard.Api.Client.Core
         Task<TagDropdownDetailsModel> UpdateDropdownTag(string externalToken, string tagId, TagDropdownDetailsModel tag, CancellationToken cancelToken = default);
 
         Task<TagDropdownDetailsModel> DeleteDropdownTag(string externalToken, string tagId, CancellationToken cancelToken = default);
+
+        // Tag Dependencies
+        Task<List<TagDependencyModel>> GetBusinessTagDependencies(string externalToken, CancellationToken cancelToken = default);
+        Task<List<TagOptionsDependencyModel>> GetTagOptionDependencies(string externalToken, string tagId, CancellationToken cancelToken = default);
+        Task<TagOptionsDependencyModel> GetTagOptionDependency(string externalToken, string tagId, string dependencyId, CancellationToken cancelToken = default);
+        Task<TagOptionsDependencyModel> CreateTagOptionDependency(string externalToken, string tagId, CreateTagOptionsDependencyModel dependency, CancellationToken cancelToken = default);
+        Task<TagOptionsDependencyModel> UpdateTagOptionDependency(string externalToken, string tagId, string dependencyId, UpdateTagOptionsDependencyModel dependency, CancellationToken cancelToken = default);
+        Task DeleteTagDependency(string externalToken, string tagId, string dependencyId, CancellationToken cancelToken = default);
 
         Task<List<CallbackSubscriptionModel>> GetCallbackSubscriptions(string externalToken, CallbackType? type = default, CancellationToken cancelToken = default);
 
@@ -164,5 +217,49 @@ namespace PexCard.Api.Client.Core
         Task<BillPaymentListResponseModel> GetBillPayments(string externalToken, BillPaymentListRequestModel model, int page = 1, int pageSize = 15, CancellationToken cancelToken = default);
 
         Task<BillPaymentRequestModel> GetBillPaymentRequest(string externalToken, int paymentRequestId, bool includeAttachmentContent = false, CancellationToken cancelToken = default);
+
+        Task<CreateBillResponseModel> CreateBill(string externalToken, CreateBillRequestModel model, CancellationToken cancelToken = default);
+
+        Task UploadBillAttachment(string externalToken, int billId, ReceiptModel receipt, CancellationToken cancelToken = default);
+
+        Task<BillInboxModel> CreateBillInbox(string externalToken, CreateBillInboxRequestModel model, CancellationToken cancelToken = default);
+
+        Task<BillInboxModel> GetBillInbox(string externalToken, int billInboxId, CancellationToken cancelToken = default);
+
+        Task<SearchBillInboxResponseModel> SearchBillInbox(string externalToken, SearchBillInboxRequestModel model, int page = 1, int pageSize = 15, CancellationToken cancelToken = default);
+
+        Task<UploadBillInboxAttachmentResponseModel> UploadBillInboxAttachment(string externalToken, int billInboxId, IEnumerable<ReceiptModel> receipts, CancellationToken cancelToken = default);
+
+        /// <summary>
+        /// Uploads a business source attachment (an emailed / SMS'd receipt or invoice) for AI analysis and
+        /// auto-matching to a cardholder purchase. The <c>Source</c> must resolve to a cardholder in the
+        /// authenticated business, otherwise the API responds 403.
+        /// </summary>
+        Task<CreateBusinessAttachmentModel> UploadBusinessAttachment(string externalToken, CreateBusinessAttachmentRequestModel model, CancellationToken cancelToken = default);
+
+        /// <summary>
+        /// Gets the AI analysis for a previously uploaded business source attachment, or <see langword="null"/>
+        /// if the analysis is not available yet (the API responds 404 until it completes).
+        /// </summary>
+        Task<BusinessAttachmentAnalysisModel> GetBusinessAttachmentAnalysis(string externalToken, long metadataId, string attachmentId, CancellationToken cancelToken = default);
+
+        /// <summary>
+        /// Gets a previously uploaded business source attachment, including its committed match state, or
+        /// <see langword="null"/> if it does not exist (the API responds 404). Unlike the analysis, this
+        /// reflects the committed match (what the Dashboard shows) regardless of AI analysis.
+        /// </summary>
+        Task<BusinessAttachmentModel> GetBusinessAttachment(string externalToken, long metadataId, string attachmentId, CancellationToken cancelToken = default);
+
+        Task<VendorListResponseModel> GetVendors(string externalToken, CancellationToken cancelToken = default);
+
+        Task<VendorListResponseModel> GetVendors(string externalToken, int pageIndex, int pageSize, CancellationToken cancelToken = default);
+
+        Task<VendorModel> CreateVendor(string externalToken, CreateVendorRequestModel model, CancellationToken cancelToken = default);
+
+        Task<VendorModel> ApproveVendor(string externalToken, int vendorId, CancellationToken cancelToken = default);
+
+        Task<VendorModel> AddVendorCard(string externalToken, int vendorId, AddVendorCardRequestModel model, CancellationToken cancelToken = default);
+
+        Task<VendorModel> SetDefaultVendorCard(string externalToken, int vendorId, int cardholderAcctId, CancellationToken cancelToken = default);
     }
 }

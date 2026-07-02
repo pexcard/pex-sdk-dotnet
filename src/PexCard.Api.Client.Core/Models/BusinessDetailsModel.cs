@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace PexCard.Api.Client.Core.Models
 {
@@ -22,7 +23,16 @@ namespace PexCard.Api.Client.Core.Models
 
         public int OpenVendorCardsCount { get; set; }
 
+        /// <summary>
+        /// Legacy cardholder groups for the business.
+        /// </summary>
+        [Obsolete("Legacy single-group collection. Use " + nameof(UserGroups) + " and the /UserGroup endpoints instead.")]
         public List<GroupModel> CardholderGroups { get; set; }
+
+        /// <summary>
+        /// User Groups defined for the business.
+        /// </summary>
+        public List<UserGroupBrief> UserGroups { get; set; }
 
         public List<ExternalBankAccount> BankAccountList { get; set; }
     }
