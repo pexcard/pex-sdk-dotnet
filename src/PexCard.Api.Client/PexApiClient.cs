@@ -180,13 +180,14 @@ namespace PexCard.Api.Client
             return await HandleHttpResponseMessage<int>(response);
         }
 
-        public async Task<CardholderTransactions> GetAllCardholderTransactions(string externalToken, DateTime startDate, DateTime endDate, bool includePendings = false, bool includeDeclines = false, CancellationToken cancelToken = default)
+        public async Task<CardholderTransactions> GetAllCardholderTransactions(string externalToken, DateTime startDate, DateTime endDate, bool includePendings = false, bool includeDeclines = false, bool includeVendorBillPay = true, CancellationToken cancelToken = default)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Details/AllCardholderTransactions"));
 
             var requestUriQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
             requestUriQueryParams.Add("IncludePendings", includePendings.ToString());
             requestUriQueryParams.Add("IncludeDeclines", includeDeclines.ToString());
+            requestUriQueryParams.Add("IncludeVendorBillPay", includeVendorBillPay.ToString());
             requestUriQueryParams.Add("StartDate", startDate.ToEst().ToDateTimeString());
             requestUriQueryParams.Add("EndDate", endDate.ToEst().ToDateTimeString());
             requestUriBuilder.Query = requestUriQueryParams.ToString();
@@ -1504,6 +1505,14 @@ namespace PexCard.Api.Client
                 if (model.DueDateTo.HasValue)
                 {
                     requestUriQueryParams.Add("DueDateTo", model.DueDateTo.Value.ToEst().ToDateTimeString());
+                }
+                if (model.BillDateFrom.HasValue)
+                {
+                    requestUriQueryParams.Add("BillDateFrom", model.BillDateFrom.Value.ToEst().ToDateTimeString());
+                }
+                if (model.BillDateTo.HasValue)
+                {
+                    requestUriQueryParams.Add("BillDateTo", model.BillDateTo.Value.ToEst().ToDateTimeString());
                 }
                 if (model.CreatedByUserId.HasValue)
                 {

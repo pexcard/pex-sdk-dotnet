@@ -25,6 +25,8 @@ namespace PexCard.Api.Client.Core.Models
 
         public DateTimeOffset? DueDate { get; set; }
 
+        public DateTimeOffset? BillDate { get; set; }
+
         public PaymentRequestStatus PaymentRequestStatus { get; set; }
 
         public PaymentRequestStatusTrigger PaymentRequestStatusTrigger { get; set; }
