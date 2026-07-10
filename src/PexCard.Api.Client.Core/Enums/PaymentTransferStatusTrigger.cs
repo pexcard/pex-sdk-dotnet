@@ -14,9 +14,13 @@
 
         Scheduled = 31,
 
+        InboundAchCreationError = 33,
+
         Settling = 35,
 
         AwaitingPaymentDelay = 36,
+
+        InboundAchCheckStatusError = 37,
 
         Settled = 50,
 

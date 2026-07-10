@@ -17,9 +17,12 @@
         VirtualCardEnsureSpendingRuleset = 61,
         VirtualCardDeliveryCreated = 65,
         VirtualCardDetailsRequestCreated = 66,
+        VendorCardSettled = 67,
         VirtualCardCreationError = 70,
         VirtualCardEnsureSpendingRulesetError = 71,
         VirtualCardDeliveryCreationError = 75,
-        VirtualCardDetailsRequestCreationError = 76
+        VirtualCardDetailsRequestCreationError = 76,
+
+        NonPlatformCompleted = 80
     }
 }
