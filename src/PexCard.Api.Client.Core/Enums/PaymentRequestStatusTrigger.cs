@@ -10,6 +10,10 @@
 
         UpdatedAmount = 17,
 
+        PaidViaExternalMethod = 18,
+
+        AutoBilledVendorCard = 19,
+
         Submitted = 20,
 
         Approved = 30,
@@ -19,6 +23,8 @@
         RemovedFromPaymentTransfer = 36,
 
         PaymentTransferFailed = 37,
+
+        PaymentTransferProcessingException = 38,
 
         PaymentTransferCompleted = 40,
 

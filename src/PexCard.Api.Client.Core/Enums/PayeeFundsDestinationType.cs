@@ -7,6 +7,8 @@ namespace PexCard.Api.Client.Core.Enums
     public enum PayeeFundsDestinationType
     {
         BankAccount = 10,
-        SingleUseVendorVirtualCard = 20
+        SingleUseVendorVirtualCard = 20,
+        NonPlatform = 30,
+        VendorVirtualCard = 40
     }
 }
