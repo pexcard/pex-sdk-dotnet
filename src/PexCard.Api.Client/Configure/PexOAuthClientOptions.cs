@@ -6,25 +6,22 @@ using System.Text.Json.Serialization;
 
 namespace PexCard.Api.Client
 {
-    public record PexApiClientOptions
+    /// <summary>
+    /// Options for <see cref="PexOAuthClient"/>. <see cref="BaseUri"/> is the OAuth Server authority
+    /// (the host that serves <c>/.well-known/openid-configuration</c>).
+    /// </summary>
+    public class PexOAuthClientOptions
     {
         public string AppName { get; set; }
 
         public string AppVersion { get; set; }
 
 #pragma warning disable S1075 // URIs should not be hardcoded
-        public Uri BaseUri { get; set; } = new Uri("https://coreapi.pexcard.com");
+        public Uri BaseUri { get; set; } = new Uri("https://oauth.pexcard.com");
 #pragma warning restore S1075 // URIs should not be hardcoded
 
         [JsonConverter(typeof(JsonTimeSpanConverter))]
-        public TimeSpan Timeout { get; set; } = TimeSpan.FromMinutes(3);
-
-        /// <summary>
-        /// The HTTP <c>Authorization</c> scheme used for caller-supplied tokens on PEX API calls.
-        /// Defaults to the legacy <see cref="PexApiTokenScheme.Token"/> scheme; set to
-        /// <see cref="PexApiTokenScheme.Bearer"/> when the client is used with OAuth 2.1 access tokens.
-        /// </summary>
-        public PexApiTokenScheme TokenScheme { get; set; } = PexApiTokenScheme.Token;
+        public TimeSpan Timeout { get; set; } = TimeSpan.FromSeconds(30);
 
         public LogLevel LogLevelSuccess { get; set; } = LogLevel.Information;
 

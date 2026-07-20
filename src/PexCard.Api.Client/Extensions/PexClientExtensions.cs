@@ -90,6 +90,13 @@ namespace PexCard.Api.Client.Extensions
             return request;
         }
 
+        public static HttpRequestMessage SetPexAuthorizationHeader(this HttpRequestMessage request, string token, PexApiTokenScheme scheme)
+        {
+            return scheme == PexApiTokenScheme.Bearer
+                ? request.SetPexAuthorizationBearerHeader(token)
+                : request.SetPexAuthorizationTokenHeader(token);
+        }
+
         public static HttpRequestMessage SetPexAuthorizationBasicHeader(this HttpRequestMessage request, string appId, string appSecret)
         {
             if (request is null)
