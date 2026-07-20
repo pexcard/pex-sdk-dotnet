@@ -1,6 +1,4 @@
 using System;
-using System.Security.Cryptography;
-using System.Text;
 using PexCard.Api.Client.Security;
 using Xunit;
 
@@ -27,12 +25,13 @@ namespace PexCard.Api.Client.Core.Tests
         }
 
         [Fact]
-        public void CreateCodeChallenge_IsBase64UrlSha256_OfVerifier()
+        public void CreateCodeChallenge_MatchesRfc7636TestVector()
         {
-            const string verifier = "test-verifier-1234567890-abcdefg";
-            var expected = Base64UrlEncode(SHA256.HashData(Encoding.ASCII.GetBytes(verifier)));
+            // RFC 7636 Appendix B known-answer vector (not a re-implementation of the algorithm).
+            const string verifier = "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk";
+            const string expectedChallenge = "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM";
 
-            Assert.Equal(expected, PexOAuthPkce.CreateCodeChallenge(verifier));
+            Assert.Equal(expectedChallenge, PexOAuthPkce.CreateCodeChallenge(verifier));
         }
 
         [Fact]
@@ -77,8 +76,5 @@ namespace PexCard.Api.Client.Core.Tests
         {
             Assert.Equal("S256", PexOAuthPkce.CodeChallengeMethod);
         }
-
-        private static string Base64UrlEncode(byte[] bytes) =>
-            Convert.ToBase64String(bytes).TrimEnd('=').Replace('+', '-').Replace('/', '_');
     }
 }
