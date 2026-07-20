@@ -41,6 +41,8 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return services.AddPexApiClient((x) =>
             {
+                x.AppName = options.AppName;
+                x.AppVersion = options.AppVersion;
                 x.BaseUri = options.BaseUri;
                 x.Timeout = options.Timeout;
                 x.TokenScheme = options.TokenScheme;
