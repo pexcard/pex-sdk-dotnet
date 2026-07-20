@@ -8,11 +8,11 @@ using System.Reflection;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
-    public static class ConfigurePexApiClientExtensions
+    public static class ConfigurePexOAuthClientExtensions
     {
-        public static IServiceCollection AddPexApiClient(this IServiceCollection services) => AddPexApiClient(services, new PexApiClientOptions());
+        public static IServiceCollection AddPexOAuthClient(this IServiceCollection services) => AddPexOAuthClient(services, new PexOAuthClientOptions());
 
-        public static IServiceCollection AddPexApiClient(this IServiceCollection services, IConfiguration configSection)
+        public static IServiceCollection AddPexOAuthClient(this IServiceCollection services, IConfiguration configSection)
         {
             if (services is null)
             {
@@ -23,12 +23,12 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(configSection));
             }
 
-            services.Configure<PexApiClientOptions>(configSection);
+            services.Configure<PexOAuthClientOptions>(configSection);
 
-            return services.RegisterPexApiClient();
+            return services.RegisterPexOAuthClient();
         }
 
-        public static IServiceCollection AddPexApiClient(this IServiceCollection services, PexApiClientOptions options)
+        public static IServiceCollection AddPexOAuthClient(this IServiceCollection services, PexOAuthClientOptions options)
         {
             if (services is null)
             {
@@ -39,18 +39,19 @@ namespace Microsoft.Extensions.DependencyInjection
                 throw new ArgumentNullException(nameof(options));
             }
 
-            return services.AddPexApiClient((x) =>
+            return services.AddPexOAuthClient((x) =>
             {
+                x.AppName = options.AppName;
+                x.AppVersion = options.AppVersion;
                 x.BaseUri = options.BaseUri;
                 x.Timeout = options.Timeout;
-                x.TokenScheme = options.TokenScheme;
                 x.Retries = options.Retries;
                 x.LogLevelSuccess = options.LogLevelSuccess;
                 x.LogLevelFailure = options.LogLevelFailure;
             });
         }
 
-        public static IServiceCollection AddPexApiClient(this IServiceCollection services, Action<PexApiClientOptions> configure)
+        public static IServiceCollection AddPexOAuthClient(this IServiceCollection services, Action<PexOAuthClientOptions> configure)
         {
             if (services is null)
             {
@@ -63,24 +64,24 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.Configure(configure);
 
-            return services.RegisterPexApiClient();
+            return services.RegisterPexOAuthClient();
         }
 
-        private static IServiceCollection RegisterPexApiClient(this IServiceCollection services)
+        private static IServiceCollection RegisterPexOAuthClient(this IServiceCollection services)
         {
             if (services is null)
             {
                 throw new ArgumentNullException(nameof(services));
             }
 
-            services.AddHttpClient<IPexApiClient, PexApiClient>((sp, httpClient) =>
+            services.AddHttpClient<IPexOAuthClient, PexOAuthClient>((sp, httpClient) =>
             {
-                var options = sp.GetRequiredService<IOptions<PexApiClientOptions>>().Value;
+                var options = sp.GetRequiredService<IOptions<PexOAuthClientOptions>>().Value;
 
                 httpClient.BaseAddress = options.BaseUri;
                 httpClient.Timeout = options.Timeout;
 
-                var sdkAssembly = typeof(PexApiClient).Assembly;
+                var sdkAssembly = typeof(PexOAuthClient).Assembly;
                 var sdkUserAgentName = "pex-sdk";
                 var sdkUserAgentVersion = FixUserAgentString(sdkAssembly.GetInformationalVersion() ?? sdkAssembly.GetVersion() ?? "0.0.0");
                 var sdkUserAgent = new ProductInfoHeaderValue(sdkUserAgentName, sdkUserAgentVersion);
@@ -93,15 +94,15 @@ namespace Microsoft.Extensions.DependencyInjection
                 httpClient.DefaultRequestHeaders.UserAgent.Add(sdkUserAgent);
                 httpClient.DefaultRequestHeaders.UserAgent.Add(appUserAgent);
             })
-            .UsePexTerseLogging<PexApiClient>(sp =>
+            .UsePexTerseLogging<PexOAuthClient>(sp =>
             {
-                var options = sp.GetRequiredService<IOptions<PexApiClientOptions>>().Value;
+                var options = sp.GetRequiredService<IOptions<PexOAuthClientOptions>>().Value;
 
                 return (options.LogLevelSuccess, options.LogLevelFailure);
             })
-            .UsePexRetryPolicies<PexApiClient>(sp =>
+            .UsePexRetryPolicies<PexOAuthClient>(sp =>
             {
-                var options = sp.GetRequiredService<IOptions<PexApiClientOptions>>().Value;
+                var options = sp.GetRequiredService<IOptions<PexOAuthClientOptions>>().Value;
 
                 return options.Retries;
             });
