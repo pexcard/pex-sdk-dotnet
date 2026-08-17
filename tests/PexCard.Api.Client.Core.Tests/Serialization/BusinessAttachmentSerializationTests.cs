@@ -1,3 +1,4 @@
+using System;
 using Newtonsoft.Json;
 using PexCard.Api.Client.Core.Enums;
 using PexCard.Api.Client.Core.Models;
@@ -46,6 +47,40 @@ namespace PexCard.Api.Client.Core.Tests.Serialization
 
             Assert.DoesNotContain("FileName", json);
             Assert.DoesNotContain("Note", json);
+        }
+
+        [Fact]
+        public void CreateBusinessAttachmentRequest_EnforcesCardholderEmailByDefault()
+        {
+            var request = new CreateBusinessAttachmentRequestModel
+            {
+                Content = "SGVsbG8=",
+                Type = AttachmentType.Image,
+                UploadChannel = AttachmentUploadChannel.Email,
+                Source = "sender@pexcard.com"
+            };
+
+            Assert.True(request.EnforceCardholderEmail);
+            Assert.Contains("\"EnforceCardholderEmail\":true", JsonConvert.SerializeObject(request));
+        }
+
+        [Fact]
+        public void CreateBusinessAttachmentRequest_SerializesEnforceCardholderEmailFalse()
+        {
+            var request = new CreateBusinessAttachmentRequestModel
+            {
+                Content = "SGVsbG8=",
+                Type = AttachmentType.Image,
+                UploadChannel = AttachmentUploadChannel.Email,
+                Source = "unknown@vendor.com",
+                EnforceCardholderEmail = false
+            };
+
+            var json = JsonConvert.SerializeObject(
+                request,
+                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+
+            Assert.Contains("\"EnforceCardholderEmail\":false", json);
         }
 
         [Fact]
@@ -206,6 +241,91 @@ namespace PexCard.Api.Client.Core.Tests.Serialization
             Assert.Null(model.Match.CommitDateUtc);
             Assert.Equal(1, model.Match.MatchRetryCount);
             Assert.Null(model.Match.Matched);
+        }
+
+        [Fact]
+        public void BusinessAttachment_DeserializesSourceAndLinks()
+        {
+            const string json = "{\"AttachmentId\":\"att-1\",\"Type\":\"Image\",\"Size\":84213,\"MetadataId\":555," +
+                "\"FileName\":\"receipt.png\",\"UploadChannel\":\"Email\",\"Source\":\"jane@company.com\",\"Links\":{" +
+                "\"Full\":\"https://files.pexcard.com/att-1?sig=abc\"," +
+                "\"Thumbnail\":\"https://files.pexcard.com/att-1/thumb?sig=abc\"," +
+                "\"Expiration\":\"2026-06-26T15:05:11Z\"}}";
+
+            var model = JsonConvert.DeserializeObject<BusinessAttachmentModel>(json);
+
+            Assert.Equal("jane@company.com", model.Source);
+            Assert.NotNull(model.Links);
+            Assert.Equal("https://files.pexcard.com/att-1?sig=abc", model.Links.Full);
+            Assert.Equal("https://files.pexcard.com/att-1/thumb?sig=abc", model.Links.Thumbnail);
+            Assert.Equal(new DateTime(2026, 6, 26, 15, 5, 11, DateTimeKind.Utc), model.Links.Expiration.ToUniversalTime());
+        }
+
+        [Fact]
+        public void BusinessAttachment_DeserializesLinksWithoutThumbnail()
+        {
+            const string json = "{\"AttachmentId\":\"att-1\",\"Type\":\"Pdf\",\"Size\":1234,\"MetadataId\":555," +
+                "\"UploadChannel\":\"Email\",\"Links\":{\"Full\":\"https://files.pexcard.com/att-1?sig=abc\"," +
+                "\"Thumbnail\":null,\"Expiration\":\"2026-06-26T15:05:11Z\"}}";
+
+            var model = JsonConvert.DeserializeObject<BusinessAttachmentModel>(json);
+
+            Assert.NotNull(model.Links);
+            Assert.Null(model.Links.Thumbnail);
+        }
+
+        [Fact]
+        public void BusinessAttachment_DeserializesNullSourceAndLinks()
+        {
+            const string json = "{\"AttachmentId\":\"att-1\",\"Type\":\"Pdf\",\"Size\":1234,\"MetadataId\":555," +
+                "\"UploadChannel\":\"Email\",\"Source\":null,\"Links\":null}";
+
+            var model = JsonConvert.DeserializeObject<BusinessAttachmentModel>(json);
+
+            Assert.Null(model.Source);
+            Assert.Null(model.Links);
+        }
+
+        [Fact]
+        public void BusinessAttachmentMatch_DeserializesSettledTransactionIds()
+        {
+            const string json = "{\"AttachmentId\":\"att-1\",\"Type\":\"Image\",\"Size\":1234,\"MetadataId\":555," +
+                "\"UploadChannel\":\"Email\",\"Match\":{\"Status\":\"AutoMatch\"," +
+                "\"AuthTranId\":880011,\"NetworkTranId\":990022,\"TransactionId\":770033}}";
+
+            var model = JsonConvert.DeserializeObject<BusinessAttachmentModel>(json);
+
+            Assert.Equal(880011, model.Match.AuthTranId);
+            Assert.Equal(990022, model.Match.NetworkTranId);
+            Assert.Equal(770033, model.Match.TransactionId);
+        }
+
+        [Fact]
+        public void BusinessAttachmentMatch_PendingTransaction_HasNullTransactionId()
+        {
+            // Auth-only: correlate on AuthTranId until the transaction settles and TransactionId is populated.
+            const string json = "{\"AttachmentId\":\"att-1\",\"Type\":\"Image\",\"Size\":1234,\"MetadataId\":555," +
+                "\"UploadChannel\":\"Email\",\"Match\":{\"Status\":\"AutoMatch\"," +
+                "\"AuthTranId\":880011,\"NetworkTranId\":990022,\"TransactionId\":null}}";
+
+            var model = JsonConvert.DeserializeObject<BusinessAttachmentModel>(json);
+
+            Assert.Equal(880011, model.Match.AuthTranId);
+            Assert.Equal(990022, model.Match.NetworkTranId);
+            Assert.Null(model.Match.TransactionId);
+        }
+
+        [Fact]
+        public void BusinessAttachmentMatch_TransactionIds_NullWhenAbsent()
+        {
+            const string json = "{\"AttachmentId\":\"att-1\",\"Type\":\"Pdf\",\"Size\":1234,\"MetadataId\":555," +
+                "\"UploadChannel\":\"Email\",\"Match\":{\"Status\":\"NoMatch\"}}";
+
+            var model = JsonConvert.DeserializeObject<BusinessAttachmentModel>(json);
+
+            Assert.Null(model.Match.AuthTranId);
+            Assert.Null(model.Match.NetworkTranId);
+            Assert.Null(model.Match.TransactionId);
         }
 
         [Fact]
