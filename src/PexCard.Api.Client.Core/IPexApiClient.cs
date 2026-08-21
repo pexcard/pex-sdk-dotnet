@@ -233,7 +233,8 @@ namespace PexCard.Api.Client.Core
         /// <summary>
         /// Uploads a business source attachment (an emailed / SMS'd receipt or invoice) for AI analysis and
         /// auto-matching to a cardholder purchase. The <c>Source</c> must resolve to a cardholder in the
-        /// authenticated business, otherwise the API responds 403.
+        /// authenticated business, otherwise the API responds 403 — unless <c>EnforceCardholderEmail</c> is
+        /// false, in which case the attachment is stored against the business, unattributed.
         /// </summary>
         Task<CreateBusinessAttachmentModel> UploadBusinessAttachment(string externalToken, CreateBusinessAttachmentRequestModel model, CancellationToken cancelToken = default);
 
@@ -246,7 +247,8 @@ namespace PexCard.Api.Client.Core
         /// <summary>
         /// Gets a previously uploaded business source attachment, including its committed match state, or
         /// <see langword="null"/> if it does not exist (the API responds 404). Unlike the analysis, this
-        /// reflects the committed match (what the Dashboard shows) regardless of AI analysis.
+        /// reflects the committed match (what the Dashboard shows) regardless of AI analysis. The returned
+        /// <c>Links</c> are short-lived — call this again when they are needed instead of storing them.
         /// </summary>
         Task<BusinessAttachmentModel> GetBusinessAttachment(string externalToken, long metadataId, string attachmentId, CancellationToken cancelToken = default);
 

@@ -24,5 +24,14 @@ namespace PexCard.Api.Client.Core.Models
 
         /// <summary>Who/when finalized the match; null until matched.</summary>
         public BusinessAttachmentMatchedByModel Matched { get; set; }
+
+        /// <summary>Auth transaction id of the matched transaction; null when unmatched.</summary>
+        public long? AuthTranId { get; set; }
+
+        /// <summary>Network transaction id of the matched transaction; null when unmatched.</summary>
+        public long? NetworkTranId { get; set; }
+
+        /// <summary>Settled transaction id (the same id /Details uses); null while the transaction is pending (auth-only), set once settled.</summary>
+        public long? TransactionId { get; set; }
     }
 }

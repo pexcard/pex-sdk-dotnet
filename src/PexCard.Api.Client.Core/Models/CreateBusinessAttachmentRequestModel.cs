@@ -7,7 +7,7 @@ namespace PexCard.Api.Client.Core.Models
     /// <summary>
     /// Request to upload a business source attachment (an emailed / SMS'd receipt or invoice) for AI analysis
     /// and auto-matching to a cardholder purchase. The <see cref="Source"/> must resolve to a cardholder in the
-    /// authenticated business.
+    /// authenticated business unless <see cref="EnforceCardholderEmail"/> is false.
     /// </summary>
     public class CreateBusinessAttachmentRequestModel
     {
@@ -28,7 +28,7 @@ namespace PexCard.Api.Client.Core.Models
         public AttachmentUploadChannel UploadChannel { get; set; }
 
         /// <summary>
-        /// Sender identifier used to resolve the cardholder: email address (Email) or phone number (Sms). Required.
+        /// Sender identifier: email address (Email) or phone number (Sms). Required.
         /// </summary>
         public string Source { get; set; }
 
@@ -36,6 +36,12 @@ namespace PexCard.Api.Client.Core.Models
         /// Optional original file name.
         /// </summary>
         public string FileName { get; set; }
+
+        /// <summary>
+        /// Whether <see cref="Source"/> must resolve to a cardholder in the business. Defaults to true.
+        /// When false the attachment is stored against the business, unattributed.
+        /// </summary>
+        public bool EnforceCardholderEmail { get; set; } = true;
 
         /// <summary>
         /// Optional note applied to the transaction the attachment is matched to. Omit to add no note.

@@ -16,7 +16,13 @@ namespace PexCard.Api.Client.Core.Models
         /// <summary>Channel the attachment originated from (Email or Sms).</summary>
         public AttachmentUploadChannel UploadChannel { get; set; }
 
+        /// <summary>Sender the attachment arrived from: email address (Email) or phone number (Sms).</summary>
+        public string Source { get; set; }
+
         /// <summary>Committed match state; null when no match activity has occurred yet.</summary>
         public BusinessAttachmentMatchModel Match { get; set; }
+
+        /// <summary>Presigned links to the file content; null when none are available.</summary>
+        public BusinessAttachmentLinksModel Links { get; set; }
     }
 }
