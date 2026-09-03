@@ -11,6 +11,9 @@ namespace PexCard.Api.Client.Core.Models
         /// <summary>BusinessAccountId associated with the token</summary>
         public int BusinessAccountId { get; set; }
 
+        /// <summary>Platform business account id for the same business. Null when the business has no platform account.</summary>
+        public int? PlatformBusinessAccountId { get; set; }
+
         /// <summary>BusinessAccountName associated with the token</summary>
         public string BusinessAccountName { get; set; }
 

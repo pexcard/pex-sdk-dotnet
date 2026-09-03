@@ -7,6 +7,9 @@ namespace PexCard.Api.Client.Core.Models
     {
         public int BusinessAccountId { get; set; }
 
+        /// <summary>Platform business account id for the same business. Null when the business has no platform account.</summary>
+        public int? PlatformBusinessAccountId { get; set; }
+
         public string BusinessAccountNumber { get; set; }
 
         public string BusinessName { get; set; }
