@@ -55,6 +55,30 @@ namespace PexCard.Api.Client.Core
 
         Task<CardholderTransactions> GetCardholderTransactions(string externalToken, int cardholderAccountId, DateTime startDate, DateTime endDate, bool includePending = false, bool includeDeclines = false, CancellationToken cancelToken = default);
 
+        Task<PaginatedModel<TransactionResultModel>> GetBusinessTransactions(string externalToken, BusinessTransactionsQueryModel query = null, CancellationToken cancelToken = default);
+
+        Task<TransactionResultModel> GetBusinessTransaction(string externalToken, long transactionId, CancellationToken cancelToken = default);
+
+        Task<PaginatedModel<TransactionResultModel>> GetCardholderTransactions(string externalToken, CardholderTransactionsQueryModel query = null, CancellationToken cancelToken = default);
+
+        Task<TransactionResultModel> GetCardholderTransaction(string externalToken, long transactionId, CancellationToken cancelToken = default);
+
+        Task<PaginatedModel<TransactionResultModel>> GetCardholderTransactions(string externalToken, int cardholderAccountId, CardholderTransactionsQueryModel query = null, CancellationToken cancelToken = default);
+
+        Task<TransactionResultModel> GetCardholderTransaction(string externalToken, int cardholderAccountId, long transactionId, CancellationToken cancelToken = default);
+
+        Task<PaginatedModel<TransactionResultModel>> GetCardholderPurchases(string externalToken, CardholderPurchasesQueryModel query = null, CancellationToken cancelToken = default);
+
+        Task<TransactionResultModel> GetCardholderPurchase(string externalToken, long transactionId, CancellationToken cancelToken = default);
+
+        Task<PaginatedModel<TransactionResultModel>> GetCardholderPurchases(string externalToken, int cardholderAccountId, CardholderPurchasesQueryModel query = null, CancellationToken cancelToken = default);
+
+        Task<TransactionResultModel> GetCardholderPurchase(string externalToken, int cardholderAccountId, long transactionId, CancellationToken cancelToken = default);
+
+        Task<PaginatedModel<TransactionResultModel>> GetCardholderDeclines(string externalToken, CardholderDeclinesQueryModel query = null, CancellationToken cancelToken = default);
+
+        Task<PaginatedModel<TransactionResultModel>> GetCardholderDeclines(string externalToken, int cardholderAccountId, CardholderDeclinesQueryModel query = null, CancellationToken cancelToken = default);
+
         Task AddTransactionNote(string externalToken, TransactionModel transaction, string noteText, bool visibleToCardholder = false, bool systemGenerated = true, CancellationToken cancelToken = default);
 
         Task AddTransactionRelationshipNote(string externalToken, long transactionRelationshipId, string noteText, CancellationToken cancelToken = default);
