@@ -13,6 +13,8 @@ using PexCard.Api.Client.Models;
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -229,6 +231,66 @@ namespace PexCard.Api.Client
             var responseData = await HandleHttpResponseMessage<TransactionListModel>(response);
 
             return new BusinessAccountTransactions(responseData?.TransactionList ?? new List<TransactionModel>());
+        }
+
+        public async Task<PaginatedModel<TransactionResultModel>> GetBusinessTransactions(string externalToken, BusinessTransactionsQueryModel query = null, CancellationToken cancelToken = default)
+        {
+            return await GetTransactionsPage(externalToken, "V4/Transactions/Business/Transactions", BuildBusinessTransactionsQuery(query), cancelToken);
+        }
+
+        public async Task<TransactionResultModel> GetBusinessTransaction(string externalToken, long transactionId, CancellationToken cancelToken = default)
+        {
+            return await GetTransactionResult(externalToken, $"V4/Transactions/Business/Transactions/{transactionId}", cancelToken);
+        }
+
+        public async Task<PaginatedModel<TransactionResultModel>> GetCardholderTransactions(string externalToken, CardholderTransactionsQueryModel query = null, CancellationToken cancelToken = default)
+        {
+            return await GetTransactionsPage(externalToken, "V4/Transactions/Cardholder/Transactions", BuildCardholderTransactionsQuery(query), cancelToken);
+        }
+
+        public async Task<TransactionResultModel> GetCardholderTransaction(string externalToken, long transactionId, CancellationToken cancelToken = default)
+        {
+            return await GetTransactionResult(externalToken, $"V4/Transactions/Cardholder/Transactions/{transactionId}", cancelToken);
+        }
+
+        public async Task<PaginatedModel<TransactionResultModel>> GetCardholderTransactions(string externalToken, int cardholderAccountId, CardholderTransactionsQueryModel query = null, CancellationToken cancelToken = default)
+        {
+            return await GetTransactionsPage(externalToken, $"V4/Transactions/Cardholder/{cardholderAccountId}/Transactions", BuildCardholderTransactionsQuery(query), cancelToken);
+        }
+
+        public async Task<TransactionResultModel> GetCardholderTransaction(string externalToken, int cardholderAccountId, long transactionId, CancellationToken cancelToken = default)
+        {
+            return await GetTransactionResult(externalToken, $"V4/Transactions/Cardholder/{cardholderAccountId}/Transactions/{transactionId}", cancelToken);
+        }
+
+        public async Task<PaginatedModel<TransactionResultModel>> GetCardholderPurchases(string externalToken, CardholderPurchasesQueryModel query = null, CancellationToken cancelToken = default)
+        {
+            return await GetTransactionsPage(externalToken, "V4/Transactions/Cardholder/Purchases", BuildCardholderPurchasesQuery(query), cancelToken);
+        }
+
+        public async Task<TransactionResultModel> GetCardholderPurchase(string externalToken, long transactionId, CancellationToken cancelToken = default)
+        {
+            return await GetTransactionResult(externalToken, $"V4/Transactions/Cardholder/Purchases/{transactionId}", cancelToken);
+        }
+
+        public async Task<PaginatedModel<TransactionResultModel>> GetCardholderPurchases(string externalToken, int cardholderAccountId, CardholderPurchasesQueryModel query = null, CancellationToken cancelToken = default)
+        {
+            return await GetTransactionsPage(externalToken, $"V4/Transactions/Cardholder/{cardholderAccountId}/Purchases", BuildCardholderPurchasesQuery(query), cancelToken);
+        }
+
+        public async Task<TransactionResultModel> GetCardholderPurchase(string externalToken, int cardholderAccountId, long transactionId, CancellationToken cancelToken = default)
+        {
+            return await GetTransactionResult(externalToken, $"V4/Transactions/Cardholder/{cardholderAccountId}/Purchases/{transactionId}", cancelToken);
+        }
+
+        public async Task<PaginatedModel<TransactionResultModel>> GetCardholderDeclines(string externalToken, CardholderDeclinesQueryModel query = null, CancellationToken cancelToken = default)
+        {
+            return await GetTransactionsPage(externalToken, "V4/Transactions/Cardholder/Declines", BuildCardholderDeclinesQuery(query), cancelToken);
+        }
+
+        public async Task<PaginatedModel<TransactionResultModel>> GetCardholderDeclines(string externalToken, int cardholderAccountId, CardholderDeclinesQueryModel query = null, CancellationToken cancelToken = default)
+        {
+            return await GetTransactionsPage(externalToken, $"V4/Transactions/Cardholder/{cardholderAccountId}/Declines", BuildCardholderDeclinesQuery(query), cancelToken);
         }
 
         public async Task<List<AttachmentLinkModel>> GetTransactionAttachments(string externalToken, long transactionId, CancellationToken cancelToken = default)
@@ -1928,6 +1990,150 @@ namespace PexCard.Api.Client
             var response = await _httpClient.SendAsync(request, cancelToken);
 
             return await HandleHttpResponseMessage<TTagModel>(response);
+        }
+
+        private async Task<PaginatedModel<TransactionResultModel>> GetTransactionsPage(string externalToken, string path, NameValueCollection queryParams, CancellationToken cancelToken)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, path))
+            {
+                Query = queryParams.ToString()
+            };
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationHeader(externalToken, _tokenScheme);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<PaginatedModel<TransactionResultModel>>(response);
+        }
+
+        private async Task<TransactionResultModel> GetTransactionResult(string externalToken, string path, CancellationToken cancelToken)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, path));
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationHeader(externalToken, _tokenScheme);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<TransactionResultModel>(response, returnValueForNotFound: true);
+        }
+
+        private static NameValueCollection BuildBusinessTransactionsQuery(BusinessTransactionsQueryModel query)
+        {
+            var queryParams = BuildTransactionsQuery(query);
+
+            if (query != null)
+            {
+                AddQueryValues(queryParams, "OnlyCategoryIds", query.OnlyCategoryIds);
+                AddQueryValues(queryParams, "NotCategoryIds", query.NotCategoryIds);
+            }
+
+            return queryParams;
+        }
+
+        private static NameValueCollection BuildCardholderTransactionsQuery(CardholderTransactionsQueryModel query)
+        {
+            var queryParams = BuildTransactionsQuery(query);
+
+            if (query != null)
+            {
+                AddQueryValues(queryParams, "OnlyCategoryIds", query.OnlyCategoryIds);
+                AddQueryValues(queryParams, "NotCategoryIds", query.NotCategoryIds);
+            }
+
+            return queryParams;
+        }
+
+        private static NameValueCollection BuildCardholderPurchasesQuery(CardholderPurchasesQueryModel query)
+        {
+            var queryParams = BuildTransactionsQuery(query);
+
+            if (query != null)
+            {
+                if (query.Pending.HasValue)
+                {
+                    queryParams.Add("Pending", query.Pending.Value.ToString());
+                }
+                if (!string.IsNullOrWhiteSpace(query.Search))
+                {
+                    queryParams.Add("Search", query.Search);
+                }
+                AddQueryValues(queryParams, "Approval", query.Approval);
+            }
+
+            return queryParams;
+        }
+
+        private static NameValueCollection BuildCardholderDeclinesQuery(CardholderDeclinesQueryModel query)
+        {
+            var queryParams = BuildTransactionsQuery(query);
+
+            if (query != null && !string.IsNullOrWhiteSpace(query.Search))
+            {
+                queryParams.Add("Search", query.Search);
+            }
+
+            return queryParams;
+        }
+
+        private static NameValueCollection BuildTransactionsQuery(TransactionsQueryModel query)
+        {
+            var queryParams = HttpUtility.ParseQueryString(string.Empty);
+
+            if (query == null)
+            {
+                return queryParams;
+            }
+
+            if (query.MinDate.HasValue)
+            {
+                queryParams.Add("MinDate", query.MinDate.Value.ToDateTimeString());
+            }
+            if (query.MaxDate.HasValue)
+            {
+                queryParams.Add("MaxDate", query.MaxDate.Value.ToDateTimeString());
+            }
+            if (query.OnDate.HasValue)
+            {
+                queryParams.Add("OnDate", query.OnDate.Value.ToDateTimeString());
+            }
+            if (query.MinAmount.HasValue)
+            {
+                queryParams.Add("MinAmount", query.MinAmount.Value.ToString(CultureInfo.InvariantCulture));
+            }
+            if (query.MaxAmount.HasValue)
+            {
+                queryParams.Add("MaxAmount", query.MaxAmount.Value.ToString(CultureInfo.InvariantCulture));
+            }
+            if (query.EqualsAmount.HasValue)
+            {
+                queryParams.Add("EqualsAmount", query.EqualsAmount.Value.ToString(CultureInfo.InvariantCulture));
+            }
+
+            queryParams.Add("SortBy", query.SortBy.ToString());
+            queryParams.Add("OrderBy", query.OrderBy.ToString());
+            queryParams.Add("PageIndex", query.PageIndex.ToString(CultureInfo.InvariantCulture));
+            queryParams.Add("PageSize", query.PageSize.ToString(CultureInfo.InvariantCulture));
+
+            return queryParams;
+        }
+
+        private static void AddQueryValues<TValue>(NameValueCollection queryParams, string name, IEnumerable<TValue> values)
+        {
+            if (values == null)
+            {
+                return;
+            }
+
+            foreach (var value in values)
+            {
+                queryParams.Add(name, string.Format(CultureInfo.InvariantCulture, "{0}", value));
+            }
         }
 
         private async Task<TData> HandleHttpResponseMessage<TData>(HttpResponseMessage response, bool returnValueForNotFound = false, TData notFoundValue = default)
