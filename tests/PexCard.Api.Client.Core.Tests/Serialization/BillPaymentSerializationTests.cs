@@ -62,5 +62,73 @@ namespace PexCard.Api.Client.Core.Tests.Serialization
             Assert.Single(roundTripped.Items);
             Assert.Equal(new DateTimeOffset(2026, 1, 15, 0, 0, 0, TimeSpan.Zero), roundTripped.Items[0].BillDate);
         }
+
+        [Fact]
+        public void BillPaymentModel_DeserializesSettlementTransactionIdFromServer()
+        {
+            const string json = @"{
+                ""BillId"": 501,
+                ""BillRefNo"": ""INV-501"",
+                ""SettlementTransactionId"": ""1234567890""
+            }";
+
+            var model = JsonConvert.DeserializeObject<BillPaymentModel>(json);
+
+            Assert.Equal("1234567890", model.SettlementTransactionId);
+        }
+
+        [Fact]
+        public void BillPaymentModel_SettlementTransactionId_IsNullWhenServerOmitsIt()
+        {
+            const string json = @"{
+                ""BillId"": 501,
+                ""BillRefNo"": ""INV-501""
+            }";
+
+            var model = JsonConvert.DeserializeObject<BillPaymentModel>(json);
+
+            Assert.Null(model.SettlementTransactionId);
+        }
+
+        [Fact]
+        public void BillPaymentModel_PreservesNonNumericSettlementTransactionId()
+        {
+            const string json = @"{
+                ""BillId"": 501,
+                ""SettlementTransactionId"": ""SETTLE-1""
+            }";
+
+            var model = JsonConvert.DeserializeObject<BillPaymentModel>(json);
+
+            Assert.Equal("SETTLE-1", model.SettlementTransactionId);
+        }
+
+        [Fact]
+        public void BillPaymentRequestModel_DeserializesSettlementTransactionIdFromServer()
+        {
+            const string json = @"{
+                ""PaymentRequestId"": 42,
+                ""BillRefNo"": ""INV-42"",
+                ""SettlementTransactionId"": ""9876543210""
+            }";
+
+            var model = JsonConvert.DeserializeObject<BillPaymentRequestModel>(json);
+
+            Assert.Equal(42, model.PaymentRequestId);
+            Assert.Equal("9876543210", model.SettlementTransactionId);
+        }
+
+        [Fact]
+        public void BillPaymentRequestModel_SettlementTransactionId_IsNullWhenServerOmitsIt()
+        {
+            const string json = @"{
+                ""PaymentRequestId"": 42,
+                ""BillRefNo"": ""INV-42""
+            }";
+
+            var model = JsonConvert.DeserializeObject<BillPaymentRequestModel>(json);
+
+            Assert.Null(model.SettlementTransactionId);
+        }
     }
 }
