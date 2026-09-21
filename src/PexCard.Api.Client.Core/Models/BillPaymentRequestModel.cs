@@ -19,5 +19,7 @@ namespace PexCard.Api.Client.Core.Models
         public DateTimeOffset Created { get; set; }
 
         public long? PayeePexId { get; set; }
+
+        public string SettlementTransactionId { get; set; }
     }
 }

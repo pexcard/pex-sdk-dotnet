@@ -30,5 +30,7 @@ namespace PexCard.Api.Client.Core.Models
         public PaymentRequestStatus PaymentRequestStatus { get; set; }
 
         public PaymentRequestStatusTrigger PaymentRequestStatusTrigger { get; set; }
+
+        public string SettlementTransactionId { get; set; }
     }
 }
