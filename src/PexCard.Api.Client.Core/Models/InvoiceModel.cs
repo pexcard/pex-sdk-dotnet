@@ -9,5 +9,6 @@ namespace PexCard.Api.Client.Core.Models
         public decimal InvoiceAmount { get; set; }
         public InvoiceStatus Status { get; set; }
         public DateTime DueDate { get; set; }
+        public bool IsSettled { get; set; }
     }
 }

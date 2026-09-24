@@ -9,6 +9,7 @@
         RebateCredit,
         RebateCreditReversal,
         SameDayACH,
-        CarryOverCredit
+        CarryOverCredit,
+        WriteOffReversal
     }
 }
