@@ -202,6 +202,12 @@ namespace PexCard.Api.Client.Core
 
         Task<List<InvoiceModel>> GetInvoices(string externalToken, DateTime starDate, CancellationToken cancelToken = default);
 
+        /// <summary>Gets one page of invoices sorted by date assessed.</summary>
+        /// <param name="pageSize">Invoices per page, 1 to 1000.</param>
+        Task<List<InvoiceModel>> GetInvoices(string externalToken, DateTime startDate, int pageSize, int pageNumber, SortDirection sortDirection, CancellationToken cancelToken = default);
+
+        Task<InvoiceDetailModel> GetInvoice(string externalToken, int invoiceId, CancellationToken cancelToken = default);
+
         Task<List<InvoiceAllocationModel>> GetInvoiceAllocations(string externalToken, int invoiceId, CancellationToken cancelToken = default);
 
         Task<List<InvoicePaymentModel>> GetInvoicePayments(string externalToken, int invoiceId, CancellationToken cancelToken = default);

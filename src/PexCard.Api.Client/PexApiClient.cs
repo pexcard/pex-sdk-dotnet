@@ -1215,6 +1215,40 @@ namespace PexCard.Api.Client
             return await HandleHttpResponseMessage<List<InvoiceModel>>(response);
         }
 
+        public async Task<List<InvoiceModel>> GetInvoices(string externalToken, DateTime startDate, int pageSize, int pageNumber, SortDirection sortDirection, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Invoices"));
+            var requestUriQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
+            requestUriQueryParams.Add("startDate", startDate.ToString());
+            requestUriQueryParams.Add("pageSize", pageSize.ToString());
+            requestUriQueryParams.Add("pageNumber", pageNumber.ToString());
+            requestUriQueryParams.Add("sortOrder", sortDirection == SortDirection.Ascending ? "ASC" : "DESC");
+            requestUriBuilder.Query = requestUriQueryParams.ToString();
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationHeader(externalToken, _tokenScheme);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<List<InvoiceModel>>(response);
+        }
+
+        public async Task<InvoiceDetailModel> GetInvoice(string externalToken, int invoiceId, CancellationToken cancelToken = default)
+        {
+            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Invoice/{invoiceId}"));
+
+            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
+            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
+            request.SetPexAcceptJsonHeader();
+            request.SetPexAuthorizationHeader(externalToken, _tokenScheme);
+
+            var response = await _httpClient.SendAsync(request, cancelToken);
+
+            return await HandleHttpResponseMessage<InvoiceDetailModel>(response);
+        }
+
         public async Task<List<InvoiceAllocationModel>> GetInvoiceAllocations(string externalToken, int invoiceId, CancellationToken cancelToken = default)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Invoice/{invoiceId}/allocations"));
