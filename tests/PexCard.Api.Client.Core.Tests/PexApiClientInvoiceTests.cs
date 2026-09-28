@@ -24,7 +24,7 @@ namespace PexCard.Api.Client.Core.Tests
                 return Ok("[]");
             }));
 
-            await client.GetInvoices(Token, new DateTime(2026, 1, 1), 100, 2, SortDirection.Ascending);
+            await client.GetInvoices(Token, new DateTime(2026, 1, 1), pageSize: 100, pageNumber: 2, sortDirection: SortDirection.Ascending);
 
             Assert.Equal("/V4/Invoices", capturedUri.AbsolutePath);
             Assert.Contains("startDate=", capturedUri.Query);
@@ -34,7 +34,7 @@ namespace PexCard.Api.Client.Core.Tests
         }
 
         [Fact]
-        public async Task GetInvoices_Descending_SendsDesc()
+        public async Task GetInvoices_OnlySortDirection_SendsOnlySortOrder()
         {
             Uri capturedUri = null;
             var client = CreateClient(new StubHandler(req =>
@@ -43,7 +43,9 @@ namespace PexCard.Api.Client.Core.Tests
                 return Ok("[]");
             }));
 
-            await client.GetInvoices(Token, new DateTime(2026, 1, 1), 10, 1, SortDirection.Descending);
+            await client.GetInvoices(Token, new DateTime(2026, 1, 1), sortDirection: SortDirection.Descending);
+
+            Assert.DoesNotContain("pageSize", capturedUri.Query);
 
             Assert.Contains("sortOrder=DESC", capturedUri.Query);
         }
@@ -70,7 +72,7 @@ namespace PexCard.Api.Client.Core.Tests
         {
             var client = CreateClient(new StubHandler(_ => Ok("[" + InvoiceJson + "}]")));
 
-            var invoice = Assert.Single(await client.GetInvoices(Token, new DateTime(2026, 1, 1), 10, 1, SortDirection.Descending));
+            var invoice = Assert.Single(await client.GetInvoices(Token, new DateTime(2026, 1, 1)));
 
             Assert.Equal(98761, invoice.InvoiceId);
             Assert.Equal(5331803, invoice.BusinessAccountId);

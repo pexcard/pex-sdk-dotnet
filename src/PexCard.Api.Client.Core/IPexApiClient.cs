@@ -200,11 +200,7 @@ namespace PexCard.Api.Client.Core
 
         Task DeleteCallbackSubscription(string externalToken, int callbackId, CancellationToken cancelToken = default);
 
-        Task<List<InvoiceModel>> GetInvoices(string externalToken, DateTime starDate, CancellationToken cancelToken = default);
-
-        /// <summary>Gets one page of invoices sorted by date assessed.</summary>
-        /// <param name="pageSize">Invoices per page, 1 to 1000.</param>
-        Task<List<InvoiceModel>> GetInvoices(string externalToken, DateTime startDate, int pageSize, int pageNumber, SortDirection sortDirection, CancellationToken cancelToken = default);
+        Task<List<InvoiceModel>> GetInvoices(string externalToken, DateTime starDate, CancellationToken cancelToken = default, int? pageSize = null, int? pageNumber = null, SortDirection? sortDirection = null);
 
         Task<InvoiceDetailModel> GetInvoice(string externalToken, int invoiceId, CancellationToken cancelToken = default);
 

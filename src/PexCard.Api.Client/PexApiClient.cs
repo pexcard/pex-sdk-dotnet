@@ -1201,28 +1201,23 @@ namespace PexCard.Api.Client
             await HandleHttpResponseMessage(response);
         }
 
-        public async Task<List<InvoiceModel>> GetInvoices(string externalToken, DateTime starDate, CancellationToken cancelToken = default)
-        {
-            var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Invoices?startDate={starDate}"));
-
-            var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
-            request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
-            request.SetPexAcceptJsonHeader();
-            request.SetPexAuthorizationHeader(externalToken, _tokenScheme);
-
-            var response = await _httpClient.SendAsync(request, cancelToken);
-
-            return await HandleHttpResponseMessage<List<InvoiceModel>>(response);
-        }
-
-        public async Task<List<InvoiceModel>> GetInvoices(string externalToken, DateTime startDate, int pageSize, int pageNumber, SortDirection sortDirection, CancellationToken cancelToken = default)
+        public async Task<List<InvoiceModel>> GetInvoices(string externalToken, DateTime starDate, CancellationToken cancelToken = default, int? pageSize = null, int? pageNumber = null, SortDirection? sortDirection = null)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Invoices"));
             var requestUriQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
-            requestUriQueryParams.Add("startDate", startDate.ToString());
-            requestUriQueryParams.Add("pageSize", pageSize.ToString());
-            requestUriQueryParams.Add("pageNumber", pageNumber.ToString());
-            requestUriQueryParams.Add("sortOrder", sortDirection == SortDirection.Ascending ? "ASC" : "DESC");
+            requestUriQueryParams.Add("startDate", starDate.ToString());
+            if (pageSize.HasValue)
+            {
+                requestUriQueryParams.Add("pageSize", pageSize.Value.ToString());
+            }
+            if (pageNumber.HasValue)
+            {
+                requestUriQueryParams.Add("pageNumber", pageNumber.Value.ToString());
+            }
+            if (sortDirection.HasValue)
+            {
+                requestUriQueryParams.Add("sortOrder", sortDirection.Value == SortDirection.Ascending ? "ASC" : "DESC");
+            }
             requestUriBuilder.Query = requestUriQueryParams.ToString();
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);

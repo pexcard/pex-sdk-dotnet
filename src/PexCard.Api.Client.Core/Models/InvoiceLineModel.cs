@@ -9,7 +9,6 @@ namespace PexCard.Api.Client.Core.Models
         public DateTime DateUpdated { get; set; }
         public long? TransactionId { get; set; }
         public string LineType { get; set; }
-        /// <summary>Invoice whose rejected payment this line re-bills; null for an ordinary line. Not part of InvoiceAmount when it is this invoice.</summary>
         public int? SourceInvoiceId { get; set; }
     }
 }
