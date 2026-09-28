@@ -7,5 +7,6 @@
         public string TagValue { get; set; }
         public decimal TotalAmount { get; set; }
         public string TransactionTypeCategory { get; set; }
+        public int? SourceInvoiceId { get; set; }
     }
 }
