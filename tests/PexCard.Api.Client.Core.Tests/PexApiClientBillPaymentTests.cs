@@ -55,6 +55,23 @@ namespace PexCard.Api.Client.Core.Tests
             Assert.DoesNotContain("BillDate", capturedQuery);
         }
 
+        [Fact]
+        public async Task GetBillPayments_ReadsExternalApiPageInfo()
+        {
+            const string body = @"{
+                ""Items"": [{ ""BillId"": 1 }],
+                ""PageInfo"": { ""TotalCount"": 120, ""PageNumber"": 1, ""PageSize"": 50, ""TotalPages"": 3 }
+            }";
+            var handler = new StubHandler(_ => new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(body) });
+            var client = CreateClient(handler);
+
+            var response = await client.GetBillPayments(Token, new BillPaymentListRequestModel(), 1, 50);
+
+            Assert.Equal(1, response.PageInfo.Page);
+            Assert.Equal(50, response.PageInfo.PageSize);
+            Assert.Equal(120, response.PageInfo.TotalItems);
+        }
+
         private static PexApiClient CreateClient(HttpMessageHandler handler)
         {
             var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://coreapi.example/") };
