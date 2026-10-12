@@ -61,6 +61,39 @@ namespace PexCard.Api.Client.Core.Tests.Serialization
 
             Assert.Single(roundTripped.Items);
             Assert.Equal(new DateTimeOffset(2026, 1, 15, 0, 0, 0, TimeSpan.Zero), roundTripped.Items[0].BillDate);
+            Assert.Equal(1, roundTripped.PageInfo.Page);
+            Assert.Equal(15, roundTripped.PageInfo.PageSize);
+            Assert.Equal(1, roundTripped.PageInfo.TotalItems);
+        }
+
+        [Fact]
+        public void BillPaymentListResponse_MapsExternalApiSearchPageInfo()
+        {
+            const string json = @"{
+                ""Items"": [],
+                ""PageInfo"": {
+                    ""TotalCount"": 137,
+                    ""PageNumber"": 2,
+                    ""PageSize"": 50,
+                    ""TotalPages"": 3
+                }
+            }";
+
+            var model = JsonConvert.DeserializeObject<BillPaymentListResponseModel>(json);
+
+            Assert.Equal(2, model.PageInfo.Page);
+            Assert.Equal(50, model.PageInfo.PageSize);
+            Assert.Equal(137, model.PageInfo.TotalItems);
+        }
+
+        [Fact]
+        public void BillPaymentListResponse_PageInfo_IsNullWhenServerReturnsNull()
+        {
+            const string json = @"{ ""Items"": [], ""PageInfo"": null }";
+
+            var model = JsonConvert.DeserializeObject<BillPaymentListResponseModel>(json);
+
+            Assert.Null(model.PageInfo);
         }
 
         [Fact]
