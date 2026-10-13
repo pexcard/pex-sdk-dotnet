@@ -4,12 +4,13 @@ using PexCard.Api.Client.Core.Converters;
 namespace PexCard.Api.Client.Core.Enums
 {
     /// <summary>
-    /// Tag type. Values the SDK does not know (for example a type added to the API after this
-    /// release) deserialize as <c>(CustomFieldType)(-1)</c> instead of throwing.
+    /// Tag type. Names the SDK does not know deserialize as <see cref="Unknown"/> instead of throwing;
+    /// numbers the SDK does not know keep their value.
     /// </summary>
     [JsonConverter(typeof(TolerantCustomFieldTypeConverter))]
     public enum CustomFieldType
     {
+        Unknown = -1,
         Text = 0,
         YesNo = 1,
         Dropdown = 2,

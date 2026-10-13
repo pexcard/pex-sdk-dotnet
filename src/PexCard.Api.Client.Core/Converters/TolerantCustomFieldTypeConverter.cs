@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using System.Linq;
 using System.Numerics;
 using Newtonsoft.Json;
 using PexCard.Api.Client.Core.Enums;
@@ -8,10 +9,6 @@ namespace PexCard.Api.Client.Core.Converters
 {
     internal class TolerantCustomFieldTypeConverter : JsonConverter
     {
-        private const CustomFieldType Unknown = (CustomFieldType)(-1);
-
-        public override bool CanWrite => false;
-
         public override bool CanConvert(Type objectType)
         {
             return (Nullable.GetUnderlyingType(objectType) ?? objectType) == typeof(CustomFieldType);
@@ -22,20 +19,28 @@ namespace PexCard.Api.Client.Core.Converters
             switch (reader.TokenType)
             {
                 case JsonToken.Null:
-                    return Nullable.GetUnderlyingType(objectType) != null ? null : (object)Unknown;
+                    return Nullable.GetUnderlyingType(objectType) != null ? null : (object)CustomFieldType.Unknown;
                 case JsonToken.Integer:
-                    return reader.Value is BigInteger ? Unknown : FromNumber(Convert.ToInt64(reader.Value, CultureInfo.InvariantCulture));
+                    return reader.Value is BigInteger ? CustomFieldType.Unknown : FromNumber(Convert.ToInt64(reader.Value, CultureInfo.InvariantCulture));
                 case JsonToken.String:
                     return FromString((string)reader.Value);
                 default:
                     reader.Skip();
-                    return Unknown;
+                    return CustomFieldType.Unknown;
             }
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            throw new NotSupportedException();
+            // An attribute converter outranks the caller's settings converters, so hand off to theirs (e.g. StringEnumConverter) to keep their output.
+            var settingsConverter = serializer.Converters.FirstOrDefault(c => !(c is TolerantCustomFieldTypeConverter) && c.CanWrite && c.CanConvert(value.GetType()));
+            if (settingsConverter != null)
+            {
+                settingsConverter.WriteJson(writer, value, serializer);
+                return;
+            }
+
+            writer.WriteValue((int)(CustomFieldType)value);
         }
 
         private static CustomFieldType FromString(string value)
@@ -43,7 +48,7 @@ namespace PexCard.Api.Client.Core.Converters
             var text = value?.Trim();
             if (string.IsNullOrEmpty(text))
             {
-                return Unknown;
+                return CustomFieldType.Unknown;
             }
 
             if (long.TryParse(text, NumberStyles.AllowLeadingSign, CultureInfo.InvariantCulture, out var number))
@@ -59,18 +64,17 @@ namespace PexCard.Api.Client.Core.Converters
                 }
             }
 
-            return Unknown;
+            return CustomFieldType.Unknown;
         }
 
         private static CustomFieldType FromNumber(long number)
         {
             if (number < int.MinValue || number > int.MaxValue)
             {
-                return Unknown;
+                return CustomFieldType.Unknown;
             }
 
-            var type = (CustomFieldType)(int)number;
-            return Enum.IsDefined(typeof(CustomFieldType), type) ? type : Unknown;
+            return (CustomFieldType)(int)number;
         }
     }
 }

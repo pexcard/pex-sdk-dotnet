@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using PexCard.Api.Client.Core.Enums;
 using PexCard.Api.Client.Core.Models;
 using System.Collections.Generic;
@@ -8,8 +9,6 @@ namespace PexCard.Api.Client.Core.Tests.Serialization
 {
     public class CustomFieldTypeSerializationTests
     {
-        private const CustomFieldType Unknown = (CustomFieldType)(-1);
-
         [Theory]
         [InlineData("7", CustomFieldType.Odometer)]
         [InlineData("\"7\"", CustomFieldType.Odometer)]
@@ -20,14 +19,16 @@ namespace PexCard.Api.Client.Core.Tests.Serialization
         [InlineData("3", CustomFieldType.Decimal)]
         [InlineData("\"Decimal\"", CustomFieldType.Decimal)]
         [InlineData("10", CustomFieldType.Allocation)]
-        [InlineData("\"Foo\"", Unknown)]
-        [InlineData("\"-1\"", Unknown)]
-        [InlineData("-1", Unknown)]
-        [InlineData("8", Unknown)]
-        [InlineData("\"\"", Unknown)]
-        [InlineData("\"Text, YesNo\"", Unknown)]
-        [InlineData("null", Unknown)]
-        [InlineData("99999999999999999999", Unknown)]
+        [InlineData("\"Foo\"", CustomFieldType.Unknown)]
+        [InlineData("\"-1\"", CustomFieldType.Unknown)]
+        [InlineData("-1", CustomFieldType.Unknown)]
+        [InlineData("\"Unknown\"", CustomFieldType.Unknown)]
+        [InlineData("8", (CustomFieldType)8)]
+        [InlineData("\"8\"", (CustomFieldType)8)]
+        [InlineData("\"\"", CustomFieldType.Unknown)]
+        [InlineData("\"Text, YesNo\"", CustomFieldType.Unknown)]
+        [InlineData("null", CustomFieldType.Unknown)]
+        [InlineData("99999999999999999999", CustomFieldType.Unknown)]
         public void DeserializeTagDetails_ReadsTypeTolerantly(string typeJson, CustomFieldType expected)
         {
             var json = $"{{\"Id\":\"tag\",\"Name\":\"Tag\",\"Type\":{typeJson}}}";
@@ -42,7 +43,7 @@ namespace PexCard.Api.Client.Core.Tests.Serialization
         [Theory]
         [InlineData("\"Odometer\"", CustomFieldType.Odometer)]
         [InlineData("7", CustomFieldType.Odometer)]
-        [InlineData("\"Foo\"", Unknown)]
+        [InlineData("\"Foo\"", CustomFieldType.Unknown)]
         public void DeserializeTagData_ReadsTypeTolerantly(string typeJson, CustomFieldType expected)
         {
             var tag = JsonConvert.DeserializeObject<TagDataModel>($"{{\"Name\":\"Tag\",\"Type\":{typeJson}}}");
@@ -66,9 +67,9 @@ namespace PexCard.Api.Client.Core.Tests.Serialization
 
             Assert.Equal(6, tags.Count);
             Assert.True(tags[0] is TagTextDetailsModel { Type: CustomFieldType.Text, Length: 10 });
-            Assert.True(tags[1].GetType() == typeof(TagDetailsModel) && tags[1].Type == Unknown && tags[1].Id == "foo");
+            Assert.True(tags[1].GetType() == typeof(TagDetailsModel) && tags[1].Type == CustomFieldType.Unknown && tags[1].Id == "foo");
             Assert.True(tags[2] is TagDropdownDetailsModel { Type: CustomFieldType.Dropdown } dropdown && dropdown.Options.Count == 1);
-            Assert.True(tags[3].GetType() == typeof(TagDetailsModel) && tags[3].Type == Unknown);
+            Assert.True(tags[3].GetType() == typeof(TagDetailsModel) && tags[3].Type == CustomFieldType.Unknown);
             Assert.True(tags[4].GetType() == typeof(TagDetailsModel) && tags[4].Type == CustomFieldType.Odometer);
             Assert.True(tags[5].GetType() == typeof(TagDetailsModel) && tags[5].Type == CustomFieldType.Odometer);
         }
@@ -77,11 +78,35 @@ namespace PexCard.Api.Client.Core.Tests.Serialization
         [InlineData(CustomFieldType.Dropdown, "\"Type\":2")]
         [InlineData(CustomFieldType.Odometer, "\"Type\":7")]
         [InlineData(CustomFieldType.MerchantAddress, "\"Type\":6")]
+        [InlineData(CustomFieldType.Unknown, "\"Type\":-1")]
+        [InlineData((CustomFieldType)8, "\"Type\":8")]
         public void SerializeTagData_WritesTypeAsNumber(CustomFieldType type, string expected)
         {
             var json = JsonConvert.SerializeObject(new TagDropdownDataModel { Name = "Tag", Type = type });
 
             Assert.Contains(expected, json);
+        }
+
+        [Theory]
+        [InlineData(CustomFieldType.Dropdown, "\"Type\":\"Dropdown\"")]
+        [InlineData(CustomFieldType.Odometer, "\"Type\":\"Odometer\"")]
+        public void SerializeTagData_WithStringEnumConverterInSettings_WritesTypeAsName(CustomFieldType type, string expected)
+        {
+            var settings = new JsonSerializerSettings { Converters = { new StringEnumConverter() } };
+
+            var json = JsonConvert.SerializeObject(new TagDropdownDataModel { Name = "Tag", Type = type }, settings);
+
+            Assert.Contains(expected, json);
+        }
+
+        [Fact]
+        public void DeserializeTagDetails_WithStringEnumConverterInSettings_ReadsTypeTolerantly()
+        {
+            var settings = new JsonSerializerSettings { Converters = { new StringEnumConverter() } };
+
+            var tag = JsonConvert.DeserializeObject<TagDetailsModel>("{\"Id\":\"tag\",\"Type\":\"Foo\"}", settings);
+
+            Assert.Equal(CustomFieldType.Unknown, tag.Type);
         }
 
         [Fact]
