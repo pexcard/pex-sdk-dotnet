@@ -56,6 +56,54 @@ namespace PexCard.Api.Client.Core.Tests
         }
 
         [Fact]
+        public async Task GetBillPayments_IncludesPayoutDateFilters_InQuery()
+        {
+            string capturedQuery = null;
+            var handler = new StubHandler(req =>
+            {
+                capturedQuery = req.RequestUri?.Query;
+                return Ok();
+            });
+            var client = CreateClient(handler);
+
+            var model = new BillPaymentListRequestModel
+            {
+                PayoutDateFrom = new DateTime(2026, 8, 1),
+                PayoutDateTo = new DateTime(2026, 9, 30),
+            };
+
+            await client.GetBillPayments(Token, model);
+
+            Assert.NotNull(capturedQuery);
+            Assert.Contains("PayoutDateFrom=", capturedQuery);
+            Assert.Contains("PayoutDateTo=", capturedQuery);
+            Assert.DoesNotContain("BillDate", capturedQuery);
+        }
+
+        [Fact]
+        public async Task GetBillPayments_OmitsPayoutDateFilters_WhenNotSet()
+        {
+            string capturedQuery = null;
+            var handler = new StubHandler(req =>
+            {
+                capturedQuery = req.RequestUri?.Query;
+                return Ok();
+            });
+            var client = CreateClient(handler);
+
+            var model = new BillPaymentListRequestModel
+            {
+                BillDateFrom = new DateTime(2026, 1, 1),
+                BillDateTo = new DateTime(2026, 1, 31),
+            };
+
+            await client.GetBillPayments(Token, model);
+
+            Assert.NotNull(capturedQuery);
+            Assert.DoesNotContain("PayoutDate", capturedQuery);
+        }
+
+        [Fact]
         public async Task GetBillPayments_ReadsExternalApiPageInfo()
         {
             const string body = @"{

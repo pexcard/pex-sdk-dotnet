@@ -18,6 +18,10 @@ namespace PexCard.Api.Client.Core.Models
 
         public DateTime? BillDateTo { get; set; }
 
+        public DateTime? PayoutDateFrom { get; set; }
+
+        public DateTime? PayoutDateTo { get; set; }
+
         public long? CreatedByUserId { get; set; }
 
         public int? VendorId { get; set; }
