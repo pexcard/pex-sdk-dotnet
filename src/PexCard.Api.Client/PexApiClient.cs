@@ -1609,6 +1609,14 @@ namespace PexCard.Api.Client
                 {
                     requestUriQueryParams.Add("BillDateTo", model.BillDateTo.Value.ToEst().ToDateTimeString());
                 }
+                if (model.PayoutDateFrom.HasValue)
+                {
+                    requestUriQueryParams.Add("PayoutDateFrom", model.PayoutDateFrom.Value.ToEst().ToDateTimeString());
+                }
+                if (model.PayoutDateTo.HasValue)
+                {
+                    requestUriQueryParams.Add("PayoutDateTo", model.PayoutDateTo.Value.ToEst().ToDateTimeString());
+                }
                 if (model.CreatedByUserId.HasValue)
                 {
                     requestUriQueryParams.Add("CreatedByUserId", model.CreatedByUserId.Value.ToString());
