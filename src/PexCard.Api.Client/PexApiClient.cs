@@ -690,6 +690,18 @@ namespace PexCard.Api.Client
             return await HandleHttpResponseMessage<List<TagDetailsModel>>(response);
         }
 
+        public async Task<List<TagDetailsModel>> GetTags(string externalToken, TagFeatureSource featureSource, CancellationToken cancelToken = default)
+        {
+            if (featureSource == TagFeatureSource.Unknown || !Enum.IsDefined(typeof(TagFeatureSource), featureSource))
+            {
+                throw new ArgumentOutOfRangeException(nameof(featureSource), featureSource, "A defined tag feature source is required.");
+            }
+
+            var response = await GetTagsResponse(externalToken, featureSource, cancelToken);
+
+            return await HandleHttpResponseMessage<List<TagDetailsModel>>(response);
+        }
+
         public async Task<TagDetailsModel> GetTag(string externalToken, string tagId, CancellationToken cancelToken = default)
         {
             return await GetTag<TagDetailsModel>(externalToken, tagId, cancelToken);
@@ -1991,7 +2003,17 @@ namespace PexCard.Api.Client
 
         private async Task<HttpResponseMessage> GetTagsResponse(string externalToken, CancellationToken cancelToken)
         {
+            return await GetTagsResponse(externalToken, null, cancelToken);
+        }
+
+        private async Task<HttpResponseMessage> GetTagsResponse(string externalToken, TagFeatureSource? featureSource, CancellationToken cancelToken)
+        {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Business/Configuration/Tags"));
+            if (featureSource.HasValue)
+            {
+                // the API binds the enum by name; the SDK converter would write the number
+                requestUriBuilder.Query = $"featureSource={featureSource.Value}";
+            }
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
             request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
