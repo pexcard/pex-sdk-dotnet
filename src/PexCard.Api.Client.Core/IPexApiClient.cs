@@ -170,6 +170,12 @@ namespace PexCard.Api.Client.Core
 
         Task<List<TagDetailsModel>> GetTags(string externalToken, CancellationToken cancelToken = default);
 
+        /// <summary>
+        /// Gets the tags shown in one feature (unrestricted tags included) via <c>GET V4/Business/Configuration/Tags?featureSource=...</c>.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="featureSource"/> is <see cref="TagFeatureSource.Unknown"/> or not a defined value.</exception>
+        Task<List<TagDetailsModel>> GetTags(string externalToken, TagFeatureSource featureSource, CancellationToken cancelToken = default);
+
         Task<TagDetailsModel> GetTag(string externalToken, string tagId, CancellationToken cancelToken = default);
 
         Task<TagDropdownDetailsModel> GetDropdownTag(string externalToken, string tagId, CancellationToken cancelToken = default);
