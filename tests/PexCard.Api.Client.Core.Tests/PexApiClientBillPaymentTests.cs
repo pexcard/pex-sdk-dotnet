@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using PexCard.Api.Client.Core.Enums;
 using PexCard.Api.Client.Core.Models;
 using Xunit;
 
@@ -118,6 +119,28 @@ namespace PexCard.Api.Client.Core.Tests
             Assert.Equal(1, response.PageInfo.Page);
             Assert.Equal(50, response.PageInfo.PageSize);
             Assert.Equal(120, response.PageInfo.TotalItems);
+        }
+
+        [Fact]
+        public async Task GetBillPayments_ReadsThePageWhenABillHasAnUnknownPaymentTransferType()
+        {
+            const string body = @"{
+                ""Items"": [
+                    { ""BillId"": 1, ""PaymentTransferType"": ""BillPayAch"" },
+                    { ""BillId"": 2, ""PaymentTransferType"": ""BillPayCheck"" },
+                    { ""BillId"": 3, ""PaymentTransferType"": null }
+                ],
+                ""PageInfo"": { ""TotalCount"": 3, ""PageNumber"": 1, ""PageSize"": 10, ""TotalPages"": 1 }
+            }";
+            var handler = new StubHandler(_ => new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(body) });
+            var client = CreateClient(handler);
+
+            var response = await client.GetBillPayments(Token, new BillPaymentListRequestModel(), 1, 10);
+
+            Assert.Equal(3, response.Items.Count);
+            Assert.Equal(PaymentTransferType.BillPayAch, response.Items[0].PaymentTransferType);
+            Assert.Null(response.Items[1].PaymentTransferType);
+            Assert.Null(response.Items[2].PaymentTransferType);
         }
 
         private static PexApiClient CreateClient(HttpMessageHandler handler)

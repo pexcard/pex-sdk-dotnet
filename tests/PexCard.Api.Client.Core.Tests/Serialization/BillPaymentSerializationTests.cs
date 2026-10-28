@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
+using PexCard.Api.Client.Core.Enums;
 using PexCard.Api.Client.Core.Models;
 using Xunit;
 
@@ -162,6 +164,112 @@ namespace PexCard.Api.Client.Core.Tests.Serialization
             var model = JsonConvert.DeserializeObject<BillPaymentRequestModel>(json);
 
             Assert.Null(model.SettlementTransactionId);
+        }
+
+        [Theory]
+        [InlineData("ReimbursementAch", PaymentTransferType.ReimbursementAch)]
+        [InlineData("BillPayAch", PaymentTransferType.BillPayAch)]
+        [InlineData("BillPayVirtualCards", PaymentTransferType.BillPayVirtualCards)]
+        [InlineData("BillPayNonPlatform", PaymentTransferType.BillPayNonPlatform)]
+        public void BillPaymentModel_DeserializesPaymentTransferTypeFromServer(string serverValue, PaymentTransferType expected)
+        {
+            var json = $@"{{
+                ""BillId"": 501,
+                ""PaymentTransferType"": ""{serverValue}""
+            }}";
+
+            var model = JsonConvert.DeserializeObject<BillPaymentModel>(json);
+
+            Assert.Equal(expected, model.PaymentTransferType);
+        }
+
+        [Fact]
+        public void BillPaymentModel_PaymentTransferType_IsNullWhenServerSendsNull()
+        {
+            const string json = @"{
+                ""BillId"": 501,
+                ""PaymentTransferType"": null
+            }";
+
+            var model = JsonConvert.DeserializeObject<BillPaymentModel>(json);
+
+            Assert.Null(model.PaymentTransferType);
+        }
+
+        [Fact]
+        public void BillPaymentModel_PaymentTransferType_IsNullWhenServerOmitsIt()
+        {
+            const string json = @"{
+                ""BillId"": 501
+            }";
+
+            var model = JsonConvert.DeserializeObject<BillPaymentModel>(json);
+
+            Assert.Null(model.PaymentTransferType);
+        }
+
+        [Fact]
+        public void BillPaymentModel_PaymentTransferType_IsNullWhenServerSendsAnUnknownName()
+        {
+            const string json = @"{
+                ""BillId"": 501,
+                ""PaymentTransferType"": ""BillPayCheck"",
+                ""BillRefNo"": ""INV-501""
+            }";
+
+            var model = JsonConvert.DeserializeObject<BillPaymentModel>(json);
+
+            Assert.Null(model.PaymentTransferType);
+            Assert.Equal(501, model.BillId);
+            Assert.Equal("INV-501", model.BillRefNo);
+        }
+
+        [Fact]
+        public void BillPaymentListResponse_ReadsEveryBillWhenOneHasAnUnknownPaymentTransferType()
+        {
+            const string json = @"{
+                ""Items"": [
+                    { ""BillId"": 1, ""PaymentTransferType"": ""BillPayAch"" },
+                    { ""BillId"": 2, ""PaymentTransferType"": ""BillPayCheck"" },
+                    { ""BillId"": 3, ""PaymentTransferType"": ""BillPayVirtualCards"" }
+                ]
+            }";
+
+            var response = JsonConvert.DeserializeObject<BillPaymentListResponseModel>(json);
+
+            Assert.Equal(
+                new PaymentTransferType?[] { PaymentTransferType.BillPayAch, null, PaymentTransferType.BillPayVirtualCards },
+                response.Items.Select(i => i.PaymentTransferType));
+        }
+
+        [Fact]
+        public void BillPaymentModel_ReadsANumericPaymentTransferType()
+        {
+            const string json = @"{
+                ""BillId"": 501,
+                ""PaymentTransferType"": 20
+            }";
+
+            var model = JsonConvert.DeserializeObject<BillPaymentModel>(json);
+
+            Assert.Equal(PaymentTransferType.BillPayAch, model.PaymentTransferType);
+        }
+
+        [Fact]
+        public void BillPaymentModel_WritesPaymentTransferTypeAsANumber()
+        {
+            var json = JsonConvert.SerializeObject(new BillPaymentModel { PaymentTransferType = PaymentTransferType.BillPayVirtualCards });
+
+            Assert.Contains(@"""PaymentTransferType"":30", json);
+        }
+
+        [Fact]
+        public void PaymentTransferType_ValuesMatchTheServerEnum()
+        {
+            Assert.Equal(10, (int)PaymentTransferType.ReimbursementAch);
+            Assert.Equal(20, (int)PaymentTransferType.BillPayAch);
+            Assert.Equal(30, (int)PaymentTransferType.BillPayVirtualCards);
+            Assert.Equal(40, (int)PaymentTransferType.BillPayNonPlatform);
         }
     }
 }
