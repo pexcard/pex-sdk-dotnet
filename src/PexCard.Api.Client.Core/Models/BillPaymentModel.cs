@@ -1,4 +1,6 @@
 using System;
+using Newtonsoft.Json;
+using PexCard.Api.Client.Core.Converters;
 using PexCard.Api.Client.Core.Enums;
 
 namespace PexCard.Api.Client.Core.Models
@@ -32,5 +34,8 @@ namespace PexCard.Api.Client.Core.Models
         public PaymentRequestStatusTrigger PaymentRequestStatusTrigger { get; set; }
 
         public string SettlementTransactionId { get; set; }
+
+        [JsonConverter(typeof(UnknownEnumNameAsNullConverter))]
+        public PaymentTransferType? PaymentTransferType { get; set; }
     }
 }
