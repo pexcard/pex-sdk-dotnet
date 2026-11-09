@@ -18,5 +18,11 @@ namespace PexCard.Api.Client.Core.Models
         public bool UseReimbursements { get; set; }
         public bool UseBillPay { get; set; }
         public bool UseTagDependencies { get; set; }
+        public bool? FullMetadataRequired { get; set; }
+        public decimal? FullMetadataThresholdAmount { get; set; }
+        public bool? RequiredNotesEnabled { get; set; }
+        public decimal? RequiredNotesThresholdAmount { get; set; }
+        public bool? ReceiptReminderEnabled { get; set; }
+        public decimal? ReceiptReminderThresholdAmount { get; set; }
     }
 }
