@@ -767,7 +767,50 @@ namespace PexCard.Api.Client
 
         public async Task<List<TagDependencyModel>> GetBusinessTagDependencies(string externalToken, CancellationToken cancelToken = default)
         {
+            return await GetBusinessTagDependencies(externalToken, null, cancelToken);
+        }
+
+        /// <summary>
+        /// Gets the tag dependencies of the business via <c>GET V4/tags/dependencies</c>, limited to the given dependency types.
+        /// </summary>
+        /// <param name="externalToken">
+        /// The access token of the calling user.
+        /// </param>
+        /// <param name="types">
+        /// The dependency types to return, sent by name as the repeatable <c>Types</c> query parameter.
+        /// <c>null</c> or empty sends no filter, which is the same request as <see cref="GetBusinessTagDependencies(string, CancellationToken)"/>.
+        /// </param>
+        /// <param name="cancelToken">
+        /// The cancellation token.
+        /// </param>
+        /// <returns>
+        /// The tag dependencies of the requested types.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="types"/> contains a value that is not a defined <see cref="TagDependencyType"/>.
+        /// </exception>
+        public async Task<List<TagDependencyModel>> GetBusinessTagDependencies(string externalToken, IEnumerable<TagDependencyType> types, CancellationToken cancelToken = default)
+        {
+            var distinctTypes = types?.Distinct().ToList() ?? new List<TagDependencyType>();
+            foreach (var type in distinctTypes)
+            {
+                if (!Enum.IsDefined(typeof(TagDependencyType), type))
+                {
+                    throw new ArgumentOutOfRangeException(nameof(types), type, "A defined tag dependency type is required.");
+                }
+            }
+
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/tags/dependencies"));
+            if (distinctTypes.Count > 0)
+            {
+                var requestUriQueryParams = HttpUtility.ParseQueryString(requestUriBuilder.Query);
+                foreach (var type in distinctTypes)
+                {
+                    // the API binds the enum by name
+                    requestUriQueryParams.Add("Types", type.ToString());
+                }
+                requestUriBuilder.Query = requestUriQueryParams.ToString();
+            }
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
             request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
