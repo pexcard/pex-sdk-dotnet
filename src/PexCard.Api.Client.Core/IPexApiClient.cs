@@ -190,6 +190,29 @@ namespace PexCard.Api.Client.Core
 
         // Tag Dependencies
         Task<List<TagDependencyModel>> GetBusinessTagDependencies(string externalToken, CancellationToken cancelToken = default);
+
+        /// <summary>
+        /// Gets the tag dependencies of the business via <c>GET V4/tags/dependencies?Types=...</c>, limited to the given dependency types.
+        /// Pass the types you need explicitly rather than relying on the server's default when no filter is sent.
+        /// </summary>
+        /// <param name="externalToken">
+        /// The access token of the calling user.
+        /// </param>
+        /// <param name="types">
+        /// The dependency types to return, sent by name as the repeatable <c>Types</c> query parameter.
+        /// <c>null</c> or empty sends no filter, which is the same request as <see cref="GetBusinessTagDependencies(string, CancellationToken)"/>.
+        /// </param>
+        /// <param name="cancelToken">
+        /// The cancellation token.
+        /// </param>
+        /// <returns>
+        /// The tag dependencies of the requested types.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="types"/> contains a value that is not a defined <see cref="TagDependencyType"/>.
+        /// </exception>
+        Task<List<TagDependencyModel>> GetBusinessTagDependencies(string externalToken, IEnumerable<TagDependencyType> types, CancellationToken cancelToken = default);
+
         Task<List<TagOptionsDependencyModel>> GetTagOptionDependencies(string externalToken, string tagId, CancellationToken cancelToken = default);
         Task<TagOptionsDependencyModel> GetTagOptionDependency(string externalToken, string tagId, string dependencyId, CancellationToken cancelToken = default);
         Task<TagOptionsDependencyModel> CreateTagOptionDependency(string externalToken, string tagId, CreateTagOptionsDependencyModel dependency, CancellationToken cancelToken = default);
