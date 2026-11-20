@@ -4,17 +4,19 @@ namespace PexCard.Api.Client.Core.Models
 {
     public class DisputeModel
     {
-        /// <summary>Open, Pending or Closed.</summary>
+        /// <summary>Dispute status: Open, Pending or Closed.</summary>
         public string Status { get; set; }
 
-        /// <summary>WriteOff, Recovered, MerchantIssuedCredit, Expired, Withdrawn, Denied or Pending. Null until a decision is made.</summary>
+        /// <summary>Dispute decision: WriteOff, Recovered, MerchantIssuedCredit, Expired, Withdrawn, Denied or Pending. Null until a decision is made.</summary>
         public string Decision { get; set; }
 
+        /// <summary>Time the decision was made (UTC). Null until a decision is made.</summary>
         public DateTime? DecisionDate { get; set; }
 
+        /// <summary>Time the dispute was opened (UTC).</summary>
         public DateTime OpenedDate { get; set; }
 
-        /// <summary>Credit issued for the purchase. Null until a credit is issued.</summary>
+        /// <summary>Credit issued to the card for this purchase. Null until a credit is issued.</summary>
         public DisputeCreditModel Credit { get; set; }
     }
 }
