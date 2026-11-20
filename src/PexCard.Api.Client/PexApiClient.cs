@@ -186,7 +186,7 @@ namespace PexCard.Api.Client
             return await HandleHttpResponseMessage<int>(response);
         }
 
-        public async Task<CardholderTransactions> GetAllCardholderTransactions(string externalToken, DateTime startDate, DateTime endDate, bool includePendings = false, bool includeDeclines = false, bool includeVendorBillPay = true, CancellationToken cancelToken = default, bool includeDisputes = false)
+        public async Task<CardholderTransactions> GetAllCardholderTransactions(string externalToken, DateTime startDate, DateTime endDate, bool includePendings = false, bool includeDeclines = false, bool includeVendorBillPay = true, bool includeDisputes = false, CancellationToken cancelToken = default)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Details/AllCardholderTransactions"));
 
@@ -211,7 +211,7 @@ namespace PexCard.Api.Client
             return new CardholderTransactions(responseData?.TransactionList ?? new List<TransactionModel>());
         }
 
-        public async Task<BusinessAccountTransactions> GetBusinessAccountTransactions(string externalToken, DateTime startDate, DateTime endDate, bool includePendings = false, bool includeDeclines = false, CancellationToken cancelToken = default, bool includeDisputes = false)
+        public async Task<BusinessAccountTransactions> GetBusinessAccountTransactions(string externalToken, DateTime startDate, DateTime endDate, bool includePendings = false, bool includeDeclines = false, bool includeDisputes = false, CancellationToken cancelToken = default)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Details/TransactionDetails"));
 
@@ -270,7 +270,7 @@ namespace PexCard.Api.Client
             return await GetTransactionsPage(externalToken, "V4/Transactions/Cardholder/Purchases", BuildCardholderPurchasesQuery(query), cancelToken);
         }
 
-        public async Task<TransactionResultModel> GetCardholderPurchase(string externalToken, long transactionId, CancellationToken cancelToken = default, bool includeDisputes = false)
+        public async Task<TransactionResultModel> GetCardholderPurchase(string externalToken, long transactionId, bool includeDisputes = false, CancellationToken cancelToken = default)
         {
             return await GetTransactionResult(externalToken, $"V4/Transactions/Cardholder/Purchases/{transactionId}", cancelToken, includeDisputes);
         }
@@ -280,7 +280,7 @@ namespace PexCard.Api.Client
             return await GetTransactionsPage(externalToken, $"V4/Transactions/Cardholder/{cardholderAccountId}/Purchases", BuildCardholderPurchasesQuery(query), cancelToken);
         }
 
-        public async Task<TransactionResultModel> GetCardholderPurchase(string externalToken, int cardholderAccountId, long transactionId, CancellationToken cancelToken = default, bool includeDisputes = false)
+        public async Task<TransactionResultModel> GetCardholderPurchase(string externalToken, int cardholderAccountId, long transactionId, bool includeDisputes = false, CancellationToken cancelToken = default)
         {
             return await GetTransactionResult(externalToken, $"V4/Transactions/Cardholder/{cardholderAccountId}/Purchases/{transactionId}", cancelToken, includeDisputes);
         }
@@ -614,7 +614,7 @@ namespace PexCard.Api.Client
             return await HandleHttpResponseMessage<FundResponseModel>(response);
         }
 
-        public async Task<CardholderTransactions> GetCardholderTransactions(string externalToken, int cardholderAccountId, DateTime startDate, DateTime endDate, bool includePending = false, bool includeDeclines = false, CancellationToken cancelToken = default, bool includeDisputes = false)
+        public async Task<CardholderTransactions> GetCardholderTransactions(string externalToken, int cardholderAccountId, DateTime startDate, DateTime endDate, bool includePending = false, bool includeDeclines = false, bool includeDisputes = false, CancellationToken cancelToken = default)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Details/TransactionDetails/{cardholderAccountId}"));
 
