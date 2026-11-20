@@ -42,6 +42,7 @@ namespace PexCard.Api.Client.Core.Models
         public TransactionTagsModel TransactionTags { get; set; }
         public string MetadataApprovalStatus { get; set; }
         public string TransactionTypeCategory { get; set; }
+        public DisputeModel Dispute { get; set; }
 
         public TransactionTagModel GetTagValue(string tagId)
         {

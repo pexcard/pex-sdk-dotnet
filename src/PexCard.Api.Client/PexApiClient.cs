@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 using Newtonsoft.Json;
@@ -186,7 +186,7 @@ namespace PexCard.Api.Client
             return await HandleHttpResponseMessage<int>(response);
         }
 
-        public async Task<CardholderTransactions> GetAllCardholderTransactions(string externalToken, DateTime startDate, DateTime endDate, bool includePendings = false, bool includeDeclines = false, bool includeVendorBillPay = true, CancellationToken cancelToken = default)
+        public async Task<CardholderTransactions> GetAllCardholderTransactions(string externalToken, DateTime startDate, DateTime endDate, bool includePendings = false, bool includeDeclines = false, bool includeVendorBillPay = true, CancellationToken cancelToken = default, bool includeDisputes = false)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Details/AllCardholderTransactions"));
 
@@ -196,6 +196,7 @@ namespace PexCard.Api.Client
             requestUriQueryParams.Add("IncludeVendorBillPay", includeVendorBillPay.ToString());
             requestUriQueryParams.Add("StartDate", startDate.ToEst().ToDateTimeString());
             requestUriQueryParams.Add("EndDate", endDate.ToEst().ToDateTimeString());
+            AddIncludeDisputes(requestUriQueryParams, includeDisputes);
             requestUriBuilder.Query = requestUriQueryParams.ToString();
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
@@ -210,7 +211,7 @@ namespace PexCard.Api.Client
             return new CardholderTransactions(responseData?.TransactionList ?? new List<TransactionModel>());
         }
 
-        public async Task<BusinessAccountTransactions> GetBusinessAccountTransactions(string externalToken, DateTime startDate, DateTime endDate, bool includePendings = false, bool includeDeclines = false, CancellationToken cancelToken = default)
+        public async Task<BusinessAccountTransactions> GetBusinessAccountTransactions(string externalToken, DateTime startDate, DateTime endDate, bool includePendings = false, bool includeDeclines = false, CancellationToken cancelToken = default, bool includeDisputes = false)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, "V4/Details/TransactionDetails"));
 
@@ -219,6 +220,7 @@ namespace PexCard.Api.Client
             requestUriQueryParams.Add("IncludeDeclines", includeDeclines.ToString());
             requestUriQueryParams.Add("StartDate", startDate.ToEst().ToDateTimeString());
             requestUriQueryParams.Add("EndDate", endDate.ToEst().ToDateTimeString());
+            AddIncludeDisputes(requestUriQueryParams, includeDisputes);
             requestUriBuilder.Query = requestUriQueryParams.ToString();
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
@@ -268,9 +270,9 @@ namespace PexCard.Api.Client
             return await GetTransactionsPage(externalToken, "V4/Transactions/Cardholder/Purchases", BuildCardholderPurchasesQuery(query), cancelToken);
         }
 
-        public async Task<TransactionResultModel> GetCardholderPurchase(string externalToken, long transactionId, CancellationToken cancelToken = default)
+        public async Task<TransactionResultModel> GetCardholderPurchase(string externalToken, long transactionId, CancellationToken cancelToken = default, bool includeDisputes = false)
         {
-            return await GetTransactionResult(externalToken, $"V4/Transactions/Cardholder/Purchases/{transactionId}", cancelToken);
+            return await GetTransactionResult(externalToken, $"V4/Transactions/Cardholder/Purchases/{transactionId}", cancelToken, includeDisputes);
         }
 
         public async Task<PaginatedModel<TransactionResultModel>> GetCardholderPurchases(string externalToken, int cardholderAccountId, CardholderPurchasesQueryModel query = null, CancellationToken cancelToken = default)
@@ -278,9 +280,9 @@ namespace PexCard.Api.Client
             return await GetTransactionsPage(externalToken, $"V4/Transactions/Cardholder/{cardholderAccountId}/Purchases", BuildCardholderPurchasesQuery(query), cancelToken);
         }
 
-        public async Task<TransactionResultModel> GetCardholderPurchase(string externalToken, int cardholderAccountId, long transactionId, CancellationToken cancelToken = default)
+        public async Task<TransactionResultModel> GetCardholderPurchase(string externalToken, int cardholderAccountId, long transactionId, CancellationToken cancelToken = default, bool includeDisputes = false)
         {
-            return await GetTransactionResult(externalToken, $"V4/Transactions/Cardholder/{cardholderAccountId}/Purchases/{transactionId}", cancelToken);
+            return await GetTransactionResult(externalToken, $"V4/Transactions/Cardholder/{cardholderAccountId}/Purchases/{transactionId}", cancelToken, includeDisputes);
         }
 
         public async Task<PaginatedModel<TransactionResultModel>> GetCardholderDeclines(string externalToken, CardholderDeclinesQueryModel query = null, CancellationToken cancelToken = default)
@@ -612,7 +614,7 @@ namespace PexCard.Api.Client
             return await HandleHttpResponseMessage<FundResponseModel>(response);
         }
 
-        public async Task<CardholderTransactions> GetCardholderTransactions(string externalToken, int cardholderAccountId, DateTime startDate, DateTime endDate, bool includePending = false, bool includeDeclines = false, CancellationToken cancelToken = default)
+        public async Task<CardholderTransactions> GetCardholderTransactions(string externalToken, int cardholderAccountId, DateTime startDate, DateTime endDate, bool includePending = false, bool includeDeclines = false, CancellationToken cancelToken = default, bool includeDisputes = false)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, $"V4/Details/TransactionDetails/{cardholderAccountId}"));
 
@@ -621,6 +623,7 @@ namespace PexCard.Api.Client
             requestUriQueryParams.Add("IncludeDeclines", includeDeclines.ToString());
             requestUriQueryParams.Add("StartDate", startDate.ToEst().ToDateTimeString());
             requestUriQueryParams.Add("EndDate", endDate.ToEst().ToDateTimeString());
+            AddIncludeDisputes(requestUriQueryParams, includeDisputes);
             requestUriBuilder.Query = requestUriQueryParams.ToString();
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
@@ -2111,9 +2114,13 @@ namespace PexCard.Api.Client
             return await HandleHttpResponseMessage<PaginatedModel<TransactionResultModel>>(response);
         }
 
-        private async Task<TransactionResultModel> GetTransactionResult(string externalToken, string path, CancellationToken cancelToken)
+        private async Task<TransactionResultModel> GetTransactionResult(string externalToken, string path, CancellationToken cancelToken, bool includeDisputes = false)
         {
             var requestUriBuilder = new UriBuilder(new Uri(BaseUri, path));
+
+            var queryParams = HttpUtility.ParseQueryString(string.Empty);
+            AddIncludeDisputes(queryParams, includeDisputes);
+            requestUriBuilder.Query = queryParams.ToString();
 
             var request = new HttpRequestMessage(HttpMethod.Get, requestUriBuilder.Uri);
             request.SetPexCorrelationIdHeader(_correlationIdResolver.GetValue());
@@ -2166,6 +2173,7 @@ namespace PexCard.Api.Client
                     queryParams.Add("Search", query.Search);
                 }
                 AddQueryValues(queryParams, "Approval", query.Approval);
+                AddIncludeDisputes(queryParams, query.IncludeDisputes);
             }
 
             return queryParams;
@@ -2223,6 +2231,14 @@ namespace PexCard.Api.Client
             queryParams.Add("PageSize", query.PageSize.ToString(CultureInfo.InvariantCulture));
 
             return queryParams;
+        }
+
+        private static void AddIncludeDisputes(NameValueCollection queryParams, bool includeDisputes)
+        {
+            if (includeDisputes)
+            {
+                queryParams.Add("IncludeDisputes", bool.TrueString);
+            }
         }
 
         private static void AddQueryValues<TValue>(NameValueCollection queryParams, string name, IEnumerable<TValue> values)

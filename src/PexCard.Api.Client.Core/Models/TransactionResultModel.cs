@@ -52,5 +52,7 @@ namespace PexCard.Api.Client.Core.Models
         public IList<TransactionResultNoteModel> Notes { get; set; } = new List<TransactionResultNoteModel>();
 
         public IList<TransactionResultTagModel> Tags { get; set; } = new List<TransactionResultTagModel>();
+
+        public DisputeModel Dispute { get; set; }
     }
 }

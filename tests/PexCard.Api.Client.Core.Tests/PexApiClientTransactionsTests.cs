@@ -185,6 +185,198 @@ namespace PexCard.Api.Client.Core.Tests
             Assert.Null(result);
         }
 
+        [Fact]
+        public async Task GetCardholderPurchases_WithIncludeDisputes_SendsIncludeDisputesTrue()
+        {
+            Uri capturedUri = null;
+            var handler = new StubHandler(req =>
+            {
+                capturedUri = req.RequestUri;
+                return OkPaginated();
+            });
+            var client = CreateClient(handler);
+
+            await client.GetCardholderPurchases(Token, new CardholderPurchasesQueryModel { IncludeDisputes = true });
+
+            Assert.Equal("/V4/Transactions/Cardholder/Purchases", capturedUri.AbsolutePath);
+            Assert.Contains("IncludeDisputes=True", capturedUri.Query);
+        }
+
+        [Fact]
+        public async Task GetCardholderPurchases_ByDefault_DoesNotSendIncludeDisputes()
+        {
+            Uri capturedUri = null;
+            var handler = new StubHandler(req =>
+            {
+                capturedUri = req.RequestUri;
+                return OkPaginated();
+            });
+            var client = CreateClient(handler);
+
+            await client.GetCardholderPurchases(Token, 42, new CardholderPurchasesQueryModel());
+
+            Assert.DoesNotContain("IncludeDisputes", capturedUri.Query);
+        }
+
+        [Fact]
+        public async Task GetCardholderPurchase_WithIncludeDisputes_SendsIncludeDisputesTrue()
+        {
+            Uri capturedUri = null;
+            var handler = new StubHandler(req =>
+            {
+                capturedUri = req.RequestUri;
+                return OkTransaction();
+            });
+            var client = CreateClient(handler);
+
+            await client.GetCardholderPurchase(Token, 42, 987654321L, includeDisputes: true);
+
+            Assert.Equal("/V4/Transactions/Cardholder/42/Purchases/987654321", capturedUri.AbsolutePath);
+            Assert.Equal("?IncludeDisputes=True", capturedUri.Query);
+        }
+
+        [Fact]
+        public async Task GetCardholderPurchase_ByDefault_SendsNoQueryParams()
+        {
+            Uri capturedUri = null;
+            var handler = new StubHandler(req =>
+            {
+                capturedUri = req.RequestUri;
+                return OkTransaction();
+            });
+            var client = CreateClient(handler);
+
+            await client.GetCardholderPurchase(Token, 987654321L);
+
+            Assert.Equal("https://coreapi.example/V4/Transactions/Cardholder/Purchases/987654321", capturedUri.ToString());
+        }
+
+        [Fact]
+        public async Task DetailsTransactionMethods_WithIncludeDisputes_SendIncludeDisputesTrue()
+        {
+            var capturedQueries = new List<string>();
+            var handler = new StubHandler(req =>
+            {
+                capturedQueries.Add(req.RequestUri?.Query);
+                return Ok();
+            });
+            var client = CreateClient(handler);
+            var start = new DateTime(2026, 1, 1);
+            var end = new DateTime(2026, 1, 31);
+
+            await client.GetAllCardholderTransactions(Token, start, end, includeDisputes: true);
+            await client.GetBusinessAccountTransactions(Token, start, end, includeDisputes: true);
+            await client.GetCardholderTransactions(Token, 42, start, end, includeDisputes: true);
+
+            Assert.Equal(3, capturedQueries.Count);
+            Assert.All(capturedQueries, query => Assert.Contains("IncludeDisputes=True", query));
+        }
+
+        [Fact]
+        public async Task DetailsTransactionMethods_ByDefault_DoNotSendIncludeDisputes()
+        {
+            var capturedQueries = new List<string>();
+            var handler = new StubHandler(req =>
+            {
+                capturedQueries.Add(req.RequestUri?.Query);
+                return Ok();
+            });
+            var client = CreateClient(handler);
+            var start = new DateTime(2026, 1, 1);
+            var end = new DateTime(2026, 1, 31);
+
+            await client.GetAllCardholderTransactions(Token, start, end);
+            await client.GetBusinessAccountTransactions(Token, start, end);
+            await client.GetCardholderTransactions(Token, 42, start, end);
+
+            Assert.Equal(3, capturedQueries.Count);
+            Assert.All(capturedQueries, query => Assert.DoesNotContain("IncludeDisputes", query));
+        }
+
+        [Fact]
+        public async Task GetCardholderPurchase_DeserializesDisputeWithCredit()
+        {
+            var handler = new StubHandler(_ => OkJson(TransactionJsonWith(DisputeJson)));
+            var client = CreateClient(handler);
+
+            var result = await client.GetCardholderPurchase(Token, 5551234L, includeDisputes: true);
+
+            AssertFullDispute(result.Dispute);
+        }
+
+        [Fact]
+        public async Task GetAllCardholderTransactions_DeserializesDisputeWithCredit()
+        {
+            var handler = new StubHandler(_ => OkJson("{\"TransactionList\":[{\"TransactionId\":5551234,\"Dispute\":" + DisputeJson + "}]}"));
+            var client = CreateClient(handler);
+
+            var result = await client.GetAllCardholderTransactions(Token, new DateTime(2026, 1, 1), new DateTime(2026, 1, 31), includeDisputes: true);
+
+            AssertFullDispute(Assert.Single(result).Dispute);
+        }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(",\"Dispute\":null")]
+        public async Task GetCardholderPurchase_WithoutDispute_LeavesDisputeNull(string disputeJson)
+        {
+            var handler = new StubHandler(_ => OkJson(TransactionJsonWith(disputeJson, raw: true)));
+            var client = CreateClient(handler);
+
+            var result = await client.GetCardholderPurchase(Token, 5551234L);
+
+            Assert.NotNull(result);
+            Assert.Null(result.Dispute);
+        }
+
+        [Fact]
+        public async Task GetAllCardholderTransactions_WithNullDispute_LeavesDisputeNull()
+        {
+            var handler = new StubHandler(_ => OkJson("{\"TransactionList\":[{\"TransactionId\":5551234,\"Dispute\":null},{\"TransactionId\":5551235}]}"));
+            var client = CreateClient(handler);
+
+            var result = await client.GetAllCardholderTransactions(Token, new DateTime(2026, 1, 1), new DateTime(2026, 1, 31));
+
+            Assert.All(result, transaction => Assert.Null(transaction.Dispute));
+        }
+
+        [Fact]
+        public async Task GetCardholderPurchase_WithUnknownDisputeValues_KeepsThemAsStrings()
+        {
+            const string disputeJson = "{\"Status\":\"Escalated\",\"Decision\":\"Arbitration\",\"OpenedDate\":\"2026-02-01T10:00:00Z\",\"Credit\":{\"Type\":\"GoodwillCredit\",\"Amount\":5.00,\"Status\":\"Reversed\"}}";
+            var handler = new StubHandler(_ => OkJson(TransactionJsonWith(disputeJson)));
+            var client = CreateClient(handler);
+
+            var result = await client.GetCardholderPurchase(Token, 5551234L, includeDisputes: true);
+
+            Assert.Equal("Escalated", result.Dispute.Status);
+            Assert.Equal("Arbitration", result.Dispute.Decision);
+            Assert.Equal("GoodwillCredit", result.Dispute.Credit.Type);
+            Assert.Equal("Reversed", result.Dispute.Credit.Status);
+        }
+
+        private const string DisputeJson = "{\"Status\":\"Closed\",\"Decision\":\"Recovered\",\"DecisionDate\":\"2026-02-10T15:30:00Z\",\"OpenedDate\":\"2026-02-01T10:00:00Z\",\"Credit\":{\"Type\":\"IsaFeeReversal\",\"Amount\":25.75,\"Status\":\"Done\",\"Date\":\"2026-02-11T09:00:00Z\"}}";
+
+        private static string TransactionJsonWith(string dispute, bool raw = false)
+            => TransactionJson.Substring(0, TransactionJson.Length - 1) + (raw ? dispute : ",\"Dispute\":" + dispute) + "}";
+
+        private static void AssertFullDispute(DisputeModel dispute)
+        {
+            Assert.NotNull(dispute);
+            Assert.Equal("Closed", dispute.Status);
+            Assert.Equal("Recovered", dispute.Decision);
+            Assert.Equal(new DateTime(2026, 2, 10, 15, 30, 0, DateTimeKind.Utc), dispute.DecisionDate?.ToUniversalTime());
+            Assert.Equal(new DateTime(2026, 2, 1, 10, 0, 0, DateTimeKind.Utc), dispute.OpenedDate.ToUniversalTime());
+            Assert.NotNull(dispute.Credit);
+            Assert.Equal("IsaFeeReversal", dispute.Credit.Type);
+            Assert.Equal(25.75m, dispute.Credit.Amount);
+            Assert.Equal("Done", dispute.Credit.Status);
+            Assert.Equal(new DateTime(2026, 2, 11, 9, 0, 0, DateTimeKind.Utc), dispute.Credit.Date?.ToUniversalTime());
+        }
+
+        private static HttpResponseMessage OkJson(string json)
+            => new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(json) };
+
         private static PexApiClient CreateClient(HttpMessageHandler handler)
         {
             var httpClient = new HttpClient(handler) { BaseAddress = new Uri("https://coreapi.example/") };
