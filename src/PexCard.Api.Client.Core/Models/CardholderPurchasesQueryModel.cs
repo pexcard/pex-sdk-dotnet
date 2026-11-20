@@ -10,5 +10,7 @@ namespace PexCard.Api.Client.Core.Models
         public string Search { get; set; }
 
         public IList<TransactionApprovalStatus> Approval { get; set; }
+
+        public bool IncludeDisputes { get; set; }
     }
 }
