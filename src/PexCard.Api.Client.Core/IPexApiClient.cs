@@ -47,13 +47,13 @@ namespace PexCard.Api.Client.Core
 
         Task<decimal> GetPexAccountBalance(string externalToken, CancellationToken cancelToken = default);
 
-        Task<BusinessAccountTransactions> GetBusinessAccountTransactions(string externalToken, DateTime startDate, DateTime endDate, bool includePendings = false, bool includeDeclines = false, CancellationToken cancelToken = default);
+        Task<BusinessAccountTransactions> GetBusinessAccountTransactions(string externalToken, DateTime startDate, DateTime endDate, bool includePendings = false, bool includeDeclines = false, bool includeDisputes = false, CancellationToken cancelToken = default);
 
         Task<int> GetAllCardholderTransactionsCount(string externalToken, DateTime startDate, DateTime endDate, bool includePendings = false, bool includeDeclines = false, CancellationToken cancelToken = default);
 
-        Task<CardholderTransactions> GetAllCardholderTransactions(string externalToken, DateTime startDate, DateTime endDate, bool includePendings = false, bool includeDeclines = false, bool includeVendorBillPay = true, CancellationToken cancelToken = default);
+        Task<CardholderTransactions> GetAllCardholderTransactions(string externalToken, DateTime startDate, DateTime endDate, bool includePendings = false, bool includeDeclines = false, bool includeVendorBillPay = true, bool includeDisputes = false, CancellationToken cancelToken = default);
 
-        Task<CardholderTransactions> GetCardholderTransactions(string externalToken, int cardholderAccountId, DateTime startDate, DateTime endDate, bool includePending = false, bool includeDeclines = false, CancellationToken cancelToken = default);
+        Task<CardholderTransactions> GetCardholderTransactions(string externalToken, int cardholderAccountId, DateTime startDate, DateTime endDate, bool includePending = false, bool includeDeclines = false, bool includeDisputes = false, CancellationToken cancelToken = default);
 
         Task<PaginatedModel<TransactionResultModel>> GetBusinessTransactions(string externalToken, BusinessTransactionsQueryModel query = null, CancellationToken cancelToken = default);
 
@@ -69,11 +69,11 @@ namespace PexCard.Api.Client.Core
 
         Task<PaginatedModel<TransactionResultModel>> GetCardholderPurchases(string externalToken, CardholderPurchasesQueryModel query = null, CancellationToken cancelToken = default);
 
-        Task<TransactionResultModel> GetCardholderPurchase(string externalToken, long transactionId, CancellationToken cancelToken = default);
+        Task<TransactionResultModel> GetCardholderPurchase(string externalToken, long transactionId, bool includeDisputes = false, CancellationToken cancelToken = default);
 
         Task<PaginatedModel<TransactionResultModel>> GetCardholderPurchases(string externalToken, int cardholderAccountId, CardholderPurchasesQueryModel query = null, CancellationToken cancelToken = default);
 
-        Task<TransactionResultModel> GetCardholderPurchase(string externalToken, int cardholderAccountId, long transactionId, CancellationToken cancelToken = default);
+        Task<TransactionResultModel> GetCardholderPurchase(string externalToken, int cardholderAccountId, long transactionId, bool includeDisputes = false, CancellationToken cancelToken = default);
 
         Task<PaginatedModel<TransactionResultModel>> GetCardholderDeclines(string externalToken, CardholderDeclinesQueryModel query = null, CancellationToken cancelToken = default);
 
